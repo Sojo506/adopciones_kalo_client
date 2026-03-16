@@ -1,1 +1,88 @@
-// Página de login
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+
+const Login = () => {
+  const { register, handleSubmit, formState } = useForm({
+    defaultValues: {
+      correo: "",
+      password: "",
+    },
+  });
+
+  const { errors } = formState;
+  const { login, loading } = useAuth();
+
+  const onSubmit = async (values) => {
+    await login(values);
+  };
+
+  useEffect(() => {
+    document.title = "Iniciar sesión | Adopciones Kalö";
+  }, []);
+
+  return (
+    <div className="container py-5">
+      <div className="row justify-content-center">
+        <div className="col-md-6 col-lg-5">
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <h2 className="card-title mb-4">Iniciar sesión</h2>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="mb-3">
+                  <label className="form-label">Correo electrónico</label>
+                  <input
+                    {...register("correo", {
+                      required: "El correo es obligatorio",
+                      pattern: {
+                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                        message: "Ingrese un correo válido",
+                      },
+                    })}
+                    className={`form-control ${errors.correo ? "is-invalid" : ""}`}
+                    type="email"
+                    autoComplete="email"
+                  />
+                  {errors.correo && <div className="invalid-feedback">{errors.correo.message}</div>}
+                </div>
+
+                <div className="mb-4">
+                  <label className="form-label">Contraseña</label>
+                  <input
+                    {...register("password", { required: "La contraseña es obligatoria" })}
+                    className={`form-control ${errors.password ? "is-invalid" : ""}`}
+                    type="password"
+                    autoComplete="current-password"
+                  />
+                  {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
+                </div>
+
+                <button className="btn btn-primary w-100" type="submit" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" />
+                      Cargando...
+                    </>
+                  ) : (
+                    "Ingresar"
+                  )}
+                </button>
+              </form>
+
+              <div className="text-center mt-4">
+                <span>¿No tienes cuenta? </span>
+                <Link to="/signup">Regístrate aquí</Link>
+              </div>
+              <div className="text-center mt-2">
+                <Link to="/verify-email">No me llegó el correo de verificación</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
