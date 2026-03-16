@@ -11,7 +11,7 @@ const DashboardHome = () => {
 
   return (
     <div className="dashboard-page">
-      <div className="dashboard-page__header">
+      <div className="dashboard-page__header mt-4">
         <div>
           <p className="dashboard-page__eyebrow">Resumen</p>
           <h1>{isAdmin ? "Panel administrativo" : "Panel operativo"}</h1>

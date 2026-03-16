@@ -119,7 +119,7 @@ const UsersDashboard = () => {
 
   return (
     <div className="dashboard-page">
-      <div className="dashboard-page__header mt-3">
+      <div className="dashboard-page__header mt-4">
         <div>
           <p className="dashboard-page__eyebrow">Gestion de usuarios</p>
           <h1>Usuarios</h1>
