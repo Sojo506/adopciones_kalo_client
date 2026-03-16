@@ -2,14 +2,19 @@ import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const Header = () => {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, isAdmin, user, logout } = useAuth();
+  const displayName = user?.nombre || user?.name || "Usuario";
+  const roleLabel = user?.roleName || user?.tipoUsuario || user?.tipo || "Cliente";
 
   return (
-    <header>
-      <nav className="navbar navbar-expand-md navbar-dark bg-primary">
+    <header className="site-header">
+      <nav className="navbar navbar-expand-lg navbar-dark">
         <div className="container">
-          <Link className="navbar-brand" to="/">
-            Adopciones Kalö
+          <Link className="navbar-brand brand-mark" to="/">
+            <span className="brand-mark__icon">K</span>
+            <span>
+              Adopciones <strong>Kalö</strong>
+            </span>
           </Link>
 
           <button
@@ -25,42 +30,55 @@ const Header = () => {
           </button>
 
           <div className="collapse navbar-collapse" id="mainNavbar">
-            <ul className="navbar-nav me-auto mb-2 mb-md-0">
+            <ul className="navbar-nav me-auto mb-3 mb-lg-0 align-items-lg-center">
               <li className="nav-item">
-                <NavLink className="nav-link" to="/">
+                <NavLink className="nav-link nav-link-custom" to="/">
                   Inicio
                 </NavLink>
               </li>
-              {isAuthenticated && (
+              {isAuthenticated && isAdmin && (
                 <li className="nav-item">
-                  <NavLink className="nav-link" to="/dashboard">
+                  <NavLink className="nav-link nav-link-custom" to="/dashboard">
                     Dashboard
                   </NavLink>
                 </li>
               )}
             </ul>
 
-            <ul className="navbar-nav ms-auto mb-2 mb-md-0">
+            <ul className="navbar-nav ms-auto mb-0 align-items-lg-center gap-lg-2">
               {isAuthenticated ? (
                 <>
-                  <li className="nav-item d-flex align-items-center">
-                    <span className="nav-link text-light">{user?.nombre || user?.name}</span>
-                  </li>
                   <li className="nav-item">
-                    <button className="btn btn-outline-light btn-sm" onClick={logout}>
+                    <div className="user-chip">
+                      <span className="user-chip__label">Sesión activa</span>
+                      <strong>{displayName}</strong>
+                      <span className={`role-badge ${isAdmin ? "role-badge--admin" : ""}`}>
+                        {roleLabel}
+                      </span>
+                    </div>
+                  </li>
+                  {isAdmin && (
+                    <li className="nav-item">
+                      <Link className="btn btn-light header-action" to="/dashboard">
+                        Ir al dashboard
+                      </Link>
+                    </li>
+                  )}
+                  <li className="nav-item mt-3 mt-lg-0">
+                    <button className="btn btn-outline-light header-action" onClick={logout}>
                       Cerrar sesión
                     </button>
                   </li>
                 </>
               ) : (
                 <>
-                  <li className="nav-item">
-                    <NavLink className="nav-link" to="/login">
+                  <li className="nav-item mt-3 mt-lg-0">
+                    <NavLink className="nav-link nav-link-custom" to="/login">
                       Iniciar sesión
                     </NavLink>
                   </li>
-                  <li className="nav-item">
-                    <NavLink className="nav-link" to="/signup">
+                  <li className="nav-item mt-2 mt-lg-0">
+                    <NavLink className="btn btn-light header-action" to="/signup">
                       Registrarse
                     </NavLink>
                   </li>
