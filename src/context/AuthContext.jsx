@@ -5,6 +5,30 @@ import Swal from "sweetalert2";
 import * as authApi from "../api/auth";
 
 const AuthContext = createContext(null);
+const ADMIN_ROLE_NAME = "administrador";
+
+const normalizeUser = (rawUser) => {
+  if (!rawUser) {
+    return null;
+  }
+
+  const roleName = rawUser.tipoUsuario || rawUser.tipo || rawUser.rol || "";
+  const roleId = Number(rawUser.idTipoUsuario || rawUser.tipoUsuarioId || rawUser.roleId || 0);
+
+  return {
+    ...rawUser,
+    roleName,
+    roleId,
+  };
+};
+
+const isAdminUser = (currentUser) => {
+  if (!currentUser) {
+    return false;
+  }
+
+  return currentUser.roleId === 1 || currentUser.roleName.toLowerCase() === ADMIN_ROLE_NAME;
+};
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
@@ -12,13 +36,14 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const isAuthenticated = useMemo(() => Boolean(user), [user]);
+  const isAdmin = useMemo(() => isAdminUser(user), [user]);
 
   const handleLogin = async (credentials) => {
     setLoading(true);
     try {
       const data = await authApi.signIn(credentials);
       const token = data?.accessToken || data?.token;
-      const userData = data?.user || null;
+      const userData = normalizeUser(data?.user || null);
 
       if (token) {
         localStorage.setItem("authToken", token);
@@ -28,10 +53,10 @@ export const AuthProvider = ({ children }) => {
         setUser(userData);
       } else {
         const me = await authApi.getMe();
-        setUser(me?.user || me || null);
+        setUser(normalizeUser(me?.user || me || null));
       }
 
-      navigate("/dashboard");
+      navigate(isAdminUser(userData) ? "/dashboard" : "/");
       return true;
     } catch (error) {
       console.error("Login error", error);
@@ -98,7 +123,7 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const me = await authApi.getMe();
-      setUser(me?.user || me || null);
+      setUser(normalizeUser(me?.user || me || null));
     } catch (error) {
       console.warn("Unable to refresh user", error);
       localStorage.removeItem("authToken");
@@ -118,6 +143,7 @@ export const AuthProvider = ({ children }) => {
         user,
         loading,
         isAuthenticated,
+        isAdmin,
         login: handleLogin,
         register: handleRegister,
         logout: handleLogout,
