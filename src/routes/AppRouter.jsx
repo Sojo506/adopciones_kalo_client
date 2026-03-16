@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import Home from "../pages/public/Home";
 import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";

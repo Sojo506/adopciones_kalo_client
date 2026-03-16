@@ -1,48 +1,33 @@
 import { useEffect } from "react";
 import Sidebar from "../../components/layout/Sidebar";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
+import { dashboardModuleGroups, dashboardNavigationSections, dashboardReadinessItems } from "../../data/dashboardModules";
 
 const Dashboard = () => {
   const { user, isAdmin } = useAuth();
 
   const stats = [
-    { value: "08", label: "Modulos preparados", detail: "Usuarios, adopciones, solicitudes y mas" },
-    { value: "03", label: "Frentes criticos", detail: "Operacion, seguimiento y reporteria" },
-    { value: isAdmin ? "Admin" : "Cliente", label: "Perfil activo", detail: "Permisos detectados en tiempo real" },
-  ];
-
-  const priorityModules = [
     {
-      title: "Gestion de usuarios",
-      badge: "Acceso y roles",
-      description: "Administra perfiles, tipos de usuario y estados de cuenta desde una sola vista.",
-      items: ["Administradores y clientes", "Cambios de estado", "Validacion de acceso"],
+      value: String(dashboardNavigationSections.reduce((total, section) => total + section.items.length, 0)).padStart(2, "0"),
+      label: "Modulos preparados",
+      detail: "Navegacion inicial lista para usuarios, adopciones, inventario, ventas y finanzas",
     },
     {
-      title: "Solicitudes y adopciones",
-      badge: "Operacion diaria",
-      description: "Supervisa solicitudes entrantes, aprobaciones y seguimiento de adopciones activas.",
-      items: ["Panel de solicitudes", "Adopciones activas", "Seguimiento post adopcion"],
+      value: "47",
+      label: "Tablas detectadas",
+      detail: "El esquema actual deja suficiente base para preparar modulos reales por dominio",
     },
     {
-      title: "Campanas y donaciones",
-      badge: "Impacto social",
-      description: "Centraliza recaudacion, campanas activas y su rendimiento financiero.",
-      items: ["Campanas vigentes", "Donaciones recibidas", "Total recaudado por campana"],
+      value: "06",
+      label: "Bloques funcionales",
+      detail: "Adopciones, bienestar, comercial, facturacion, donaciones y control",
     },
-  ];
-
-  const supportModules = [
-    { name: "Perfiles y direcciones", state: "Listo para integrar", note: "Vista de perfil completo y ubicaciones." },
-    { name: "Auditoria del sistema", state: "Listo para integrar", note: "Trazabilidad de cambios y responsables." },
-    { name: "Reportes financieros", state: "Listo para integrar", note: "Resumen mensual y metricas de adopcion." },
-    { name: "Casas cuna y refugios", state: "Listo para integrar", note: "Capacidad, ubicacion y seguimiento." },
   ];
 
   const commandLines = [
-    "Usuarios y roles sincronizados",
-    "Solicitudes listas para clasificacion",
-    "Seguimiento de adopciones en observacion",
+    "Usuarios, cuentas y contactos listos para convertirse en modulo",
+    "Perritos, eventos y casas cuna ya mapeados desde el esquema",
+    "Ventas, facturas, donaciones e inventario preparados por dominio",
   ];
 
   useEffect(() => {
@@ -58,12 +43,12 @@ const Dashboard = () => {
           <div className="dashboard-shell">
             <section className="dashboard-hero">
               <div className="dashboard-hero__content">
-                <span className="dashboard-hero__eyebrow">Centro de mando</span>
-                <h1>Operacion central{user?.nombre ? `, ${user.nombre}` : ""}</h1>
+                <span className="dashboard-hero__eyebrow">Arquitectura funcional</span>
+                <h1>Dashboard preparado con modulos reales del sistema.</h1>
                 <p>
                   {isAdmin
-                    ? "Una interfaz mas firme, densa y ejecutiva para supervisar las areas clave de Adopciones Kalö desde un solo punto."
-                    : "Tu panel ya esta listo para organizar informacion operativa con una lectura mas clara y estructurada."}
+                    ? "Este panel ya no muestra bloques genericos. Ahora organiza los dominios funcionales reales que aparecen en scheme.sql para que luego podamos construir cada vista encima de una base clara."
+                    : "Tu panel ya fue reorganizado para reflejar las areas reales del sistema, con una lectura mas clara y una estructura preparada para crecer."}
                 </p>
 
                 <div className="dashboard-command-strip">
@@ -80,12 +65,16 @@ const Dashboard = () => {
                 <div className="dashboard-role-card">
                   <span>Rol detectado</span>
                   <strong>{user?.roleName || user?.tipoUsuario || "Cliente"}</strong>
-                  <p>{isAdmin ? "Acceso completo a modulos administrativos." : "Acceso limitado segun tu perfil."}</p>
+                  <p>
+                    {isAdmin
+                      ? "Acceso administrativo para preparar modulos operativos y comerciales."
+                      : "Vista general disponible mientras se conectan las pantallas reales del sistema."}
+                  </p>
                 </div>
                 <div className="dashboard-signal-card">
-                  <span>Nivel de control</span>
-                  <strong>{isAdmin ? "Elevado" : "Basico"}</strong>
-                  <p>{isAdmin ? "Capacidad de orquestar modulos, reportes y supervisiones." : "Consulta y seguimiento de tu informacion."}</p>
+                  <span>Estado del panel</span>
+                  <strong>Listo para crecer</strong>
+                  <p>Los modulos ya tienen nombre, objetivo y relacion con tablas concretas; faltan solo sus vistas internas.</p>
                 </div>
               </div>
             </section>
@@ -106,19 +95,24 @@ const Dashboard = () => {
                   <div className="dashboard-panel__header">
                     <div>
                       <span className="dashboard-panel__eyebrow">Mapa operativo</span>
-                      <h2>Nucleo de modulos del panel</h2>
+                      <h2>Modulos funcionales preparados</h2>
                     </div>
-                    <span className="dashboard-status-tag">Robusto y escalable</span>
+                    <span className="dashboard-status-tag">Basado en scheme.sql</span>
                   </div>
 
                   <div className="dashboard-module-grid">
-                    {priorityModules.map((module) => (
+                    {dashboardModuleGroups.map((module) => (
                       <article key={module.title} className="dashboard-module-card">
                         <span className="dashboard-module-card__badge">{module.badge}</span>
                         <h3>{module.title}</h3>
                         <p>{module.description}</p>
+                        <div className="dashboard-module-card__tables">
+                          {module.tables.map((tableName) => (
+                            <span key={tableName}>{tableName}</span>
+                          ))}
+                        </div>
                         <ul>
-                          {module.items.map((item) => (
+                          {module.modules.map((item) => (
                             <li key={item}>{item}</li>
                           ))}
                         </ul>
@@ -130,8 +124,8 @@ const Dashboard = () => {
                 <div className="dashboard-panel">
                   <div className="dashboard-panel__header">
                     <div>
-                      <span className="dashboard-panel__eyebrow">Identidad activa</span>
-                      <h2>Perfil operativo actual</h2>
+                      <span className="dashboard-panel__eyebrow">Contexto actual</span>
+                      <h2>Perfil y alcance del panel</h2>
                     </div>
                   </div>
 
@@ -145,8 +139,12 @@ const Dashboard = () => {
                       <strong>{user?.identificacion || "-"}</strong>
                     </div>
                     <div className="dashboard-user-card__row">
-                      <span>Tipo de usuario</span>
-                      <strong>{user?.roleName || user?.tipoUsuario || user?.tipo || "-"}</strong>
+                      <span>Alcance preparado</span>
+                      <strong>Usuarios, perritos, inventario, ventas, donaciones y reportes</strong>
+                    </div>
+                    <div className="dashboard-user-card__row">
+                      <span>Estado de construccion</span>
+                      <strong>Modulos definidos sin vistas internas</strong>
                     </div>
                   </div>
                 </div>
@@ -156,13 +154,13 @@ const Dashboard = () => {
                 <div className="dashboard-panel">
                   <div className="dashboard-panel__header">
                     <div>
-                      <span className="dashboard-panel__eyebrow">Expansion</span>
-                      <h2>Modulos listos para conectar</h2>
+                      <span className="dashboard-panel__eyebrow">Capas transversales</span>
+                      <h2>Areas listas para conectar</h2>
                     </div>
                   </div>
 
                   <div className="dashboard-readiness-list">
-                    {supportModules.map((module) => (
+                    {dashboardReadinessItems.map((module) => (
                       <article key={module.name} className="dashboard-readiness-item">
                         <div>
                           <h3>{module.name}</h3>
@@ -175,11 +173,11 @@ const Dashboard = () => {
                 </div>
 
                 <div className="dashboard-panel dashboard-panel--accent">
-                  <span className="dashboard-panel__eyebrow">Direccion del panel</span>
-                  <h2>Una base visual mas firme para crecer por capas.</h2>
+                  <span className="dashboard-panel__eyebrow">Siguiente fase</span>
+                  <h2>Las vistas pueden construirse modulo por modulo sin rehacer la arquitectura.</h2>
                   <p>
-                    La siguiente iteracion puede conectar estas superficies con rutas reales, tablas de gestion,
-                    indicadores vivos y filtros por modulo.
+                    La navegacion ya esta preparada para usuarios, perritos, productos, categorias, inventario,
+                    movimientos, ventas, facturas, donaciones, seguimiento de responsabilidad, auditoria y reportes.
                   </p>
                 </div>
               </aside>
