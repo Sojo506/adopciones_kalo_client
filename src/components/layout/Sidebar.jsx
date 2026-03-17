@@ -2,32 +2,39 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { dashboardNavigationSections } from "../../data/dashboardModules";
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onClose }) => {
   const { user, isAdmin } = useAuth();
 
   return (
-    <aside className="col-12 col-lg-3 col-xl-3 mb-4">
-      <div className="dashboard-sidebar">
-        <div className="dashboard-sidebar__top">
-          <span className="dashboard-sidebar__eyebrow">Centro de control</span>
-          <h3>{isAdmin ? "Modulos del sistema" : "Panel operativo"}</h3>
-          <p>
-            {user?.nombre ? `${user.nombre}, ` : ""}
-            {isAdmin
-              ? "aqui tienes el mapa funcional preparado segun el esquema actual de la base de datos."
-              : "aqui puedes consultar las areas principales habilitadas dentro del sistema."}
-          </p>
+    <>
+      <div className={`dashboard-sidebar-backdrop${isOpen ? " is-visible" : ""}`} onClick={onClose} />
+      <aside className={`dashboard-sidebar-minimal${isOpen ? " is-open" : ""}`}>
+        <div className="dashboard-sidebar-minimal__header">
+          <div>
+            <p className="dashboard-sidebar-minimal__eyebrow">Dashboard</p>
+            <h2>{isAdmin ? "Panel admin" : "Panel"}</h2>
+          </div>
+          <button className="dashboard-sidebar-minimal__close" onClick={onClose} type="button">
+            Cerrar
+          </button>
+        </div>
+
+        <div className="dashboard-sidebar-minimal__profile">
+          <strong>{user?.nombre || "Usuario"}</strong>
+          <span>{user?.correo || user?.usuario || "Sesion activa"}</span>
+          <small>{user?.roleName || user?.tipoUsuario || "Cliente"}</small>
         </div>
 
         {dashboardNavigationSections.map((section) => (
-          <div key={section.title} className="dashboard-sidebar__section">
-            <span className="dashboard-sidebar__label">{section.title}</span>
-            <nav className="dashboard-nav">
+          <div key={section.title} className="dashboard-sidebar-minimal__section">
+            <p>{section.title}</p>
+            <nav>
               {section.items.map((item) => (
                 <NavLink
                   key={item.to}
-                  className={({ isActive }) => `dashboard-nav__item${isActive ? " active" : ""}`}
+                  className={({ isActive }) => `dashboard-sidebar-minimal__link${isActive ? " is-active" : ""}`}
                   end={item.to === "/dashboard"}
+                  onClick={onClose}
                   to={item.to}
                 >
                   <strong>{item.label}</strong>
@@ -37,8 +44,8 @@ const Sidebar = () => {
             </nav>
           </div>
         ))}
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 };
 

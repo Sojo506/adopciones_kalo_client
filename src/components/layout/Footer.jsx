@@ -3,30 +3,35 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <footer className="site-footer mt-auto">
-      <div className="container">
+      <div className="footer-frame">
         <div className="footer-shell">
-          <div className="footer-top">
-            <div className="footer-main">
+          <section className="footer-hero">
+            <div className="footer-brand-block">
               <span className="footer-kicker">Adopciones Kalö</span>
-              <h2>Un espacio para iniciar adopciones responsables con más claridad, seguimiento y confianza.</h2>
+              <h2>Una plataforma más humana para empezar adopciones responsables.</h2>
               <p className="footer-copy">
-                Acompañamos a personas y familias durante el proceso de adopción con información clara, validación de
-                cuenta y un seguimiento más ordenado en cada etapa.
+                Diseñamos una experiencia clara, cálida y confiable para acompañar a personas y
+                familias durante el proceso de adopción.
               </p>
             </div>
 
-            <div className="footer-note">
-              <span className="footer-column__title">Importante</span>
-              <p>
-                La aprobación de una adopción depende de validación, disponibilidad y del bienestar integral del
-                animal.
-              </p>
+            <div className="footer-meta-block">
+              <span>Atención de lunes a viernes</span>
+              <strong>8:00 a.m. a 5:00 p.m.</strong>
+              <p>Consultas, verificación de cuentas y acompañamiento inicial del proceso.</p>
             </div>
-          </div>
+          </section>
 
           <div className="footer-grid">
             <div className="footer-column">
-              <span className="footer-column__title">Ayuda</span>
+              <span className="footer-column__title">Organización</span>
+              <span>Adopciones Kalö</span>
+              <span>San José, Costa Rica</span>
+              <span>Plataforma de adopción y seguimiento</span>
+            </div>
+
+            <div className="footer-column">
+              <span className="footer-column__title">Accesos</span>
               <Link to="/signup">Crear cuenta</Link>
               <Link to="/login">Iniciar sesión</Link>
               <Link to="/verify-email">Verificar correo</Link>
@@ -34,22 +39,22 @@ const Footer = () => {
 
             <div className="footer-column">
               <span className="footer-column__title">Contacto</span>
-              <span>apoyo@adopcioneskalo.org</span>
+              <a href="mailto:apoyo@adopcioneskalo.org">apoyo@adopcioneskalo.org</a>
               <span>+506 2222-4455</span>
-              <span>San José, Costa Rica</span>
+              <span>Seguimiento por correo</span>
             </div>
 
             <div className="footer-column">
-              <span className="footer-column__title">Atención</span>
-              <span>Lunes a viernes</span>
-              <span>8:00 a.m. a 5:00 p.m.</span>
-              <span>Seguimiento sujeto a revisión</span>
+              <span className="footer-column__title">Enfoque</span>
+              <span>Bienestar animal</span>
+              <span>Claridad en el proceso</span>
+              <span>Experiencia centrada en las personas</span>
             </div>
           </div>
 
           <div className="footer-bottom">
             <span>© {new Date().getFullYear()} Adopciones Kalö. Todos los derechos reservados.</span>
-            <span>Plataforma orientada a adopciones responsables y seguimiento del proceso.</span>
+            <span>Diseño de experiencia, trazabilidad y acompañamiento para adopciones responsables.</span>
           </div>
         </div>
       </div>
