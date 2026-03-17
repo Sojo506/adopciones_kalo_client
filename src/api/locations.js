@@ -1,4 +1,5 @@
 import axiosInstance from "./axiosConfig";
+import { dedupeRequest } from "./requestCache";
 
 const unwrapResponse = (response) => response.data?.data ?? response.data ?? [];
 let countriesCache = null;
@@ -11,9 +12,11 @@ export const getCountries = async ({ force = false } = {}) => {
     return countriesCache;
   }
 
-  const response = await axiosInstance.get("/locations/countries");
-  countriesCache = unwrapResponse(response);
-  return countriesCache;
+  return dedupeRequest("locations:countries", async () => {
+    const response = await axiosInstance.get("/locations/countries");
+    countriesCache = unwrapResponse(response);
+    return countriesCache;
+  });
 };
 
 export const getProvinces = async (idPais, { force = false } = {}) => {
@@ -21,10 +24,12 @@ export const getProvinces = async (idPais, { force = false } = {}) => {
     return provincesCache.get(idPais);
   }
 
-  const response = await axiosInstance.get("/locations/provinces", { params: { idPais } });
-  const data = unwrapResponse(response);
-  provincesCache.set(idPais, data);
-  return data;
+  return dedupeRequest(`locations:provinces:${idPais}`, async () => {
+    const response = await axiosInstance.get("/locations/provinces", { params: { idPais } });
+    const data = unwrapResponse(response);
+    provincesCache.set(idPais, data);
+    return data;
+  });
 };
 
 export const getCantons = async (idProvincia, { force = false } = {}) => {
@@ -32,10 +37,12 @@ export const getCantons = async (idProvincia, { force = false } = {}) => {
     return cantonsCache.get(idProvincia);
   }
 
-  const response = await axiosInstance.get("/locations/cantons", { params: { idProvincia } });
-  const data = unwrapResponse(response);
-  cantonsCache.set(idProvincia, data);
-  return data;
+  return dedupeRequest(`locations:cantons:${idProvincia}`, async () => {
+    const response = await axiosInstance.get("/locations/cantons", { params: { idProvincia } });
+    const data = unwrapResponse(response);
+    cantonsCache.set(idProvincia, data);
+    return data;
+  });
 };
 
 export const getDistricts = async (idCanton, { force = false } = {}) => {
@@ -43,8 +50,10 @@ export const getDistricts = async (idCanton, { force = false } = {}) => {
     return districtsCache.get(idCanton);
   }
 
-  const response = await axiosInstance.get("/locations/districts", { params: { idCanton } });
-  const data = unwrapResponse(response);
-  districtsCache.set(idCanton, data);
-  return data;
+  return dedupeRequest(`locations:districts:${idCanton}`, async () => {
+    const response = await axiosInstance.get("/locations/districts", { params: { idCanton } });
+    const data = unwrapResponse(response);
+    districtsCache.set(idCanton, data);
+    return data;
+  });
 };

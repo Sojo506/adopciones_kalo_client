@@ -1,4 +1,5 @@
 import axiosInstance from "./axiosConfig";
+import { dedupeRequest } from "./requestCache";
 
 const unwrapResponse = (response) => response.data?.data ?? response.data ?? [];
 let userTypesCache = null;
@@ -9,9 +10,11 @@ export const getUserTypes = async ({ force = false } = {}) => {
     return userTypesCache;
   }
 
-  const response = await axiosInstance.get("/catalogs/user-types");
-  userTypesCache = unwrapResponse(response);
-  return userTypesCache;
+  return dedupeRequest("catalogs:user-types", async () => {
+    const response = await axiosInstance.get("/catalogs/user-types");
+    userTypesCache = unwrapResponse(response);
+    return userTypesCache;
+  });
 };
 
 export const getStates = async ({ force = false } = {}) => {
@@ -19,7 +22,9 @@ export const getStates = async ({ force = false } = {}) => {
     return statesCache;
   }
 
-  const response = await axiosInstance.get("/catalogs/states");
-  statesCache = unwrapResponse(response);
-  return statesCache;
+  return dedupeRequest("catalogs:states", async () => {
+    const response = await axiosInstance.get("/catalogs/states");
+    statesCache = unwrapResponse(response);
+    return statesCache;
+  });
 };

@@ -78,11 +78,13 @@ const UserFormPage = () => {
   const [provinces, setProvinces] = useState([]);
   const [cantons, setCantons] = useState([]);
   const [districts, setDistricts] = useState([]);
+  const [requiresAccountCreation, setRequiresAccountCreation] = useState(false);
 
   const isEditing = Boolean(identificacion);
+  const hasRequiredCatalogs = userTypes.length > 0 && states.length > 0 && countries.length > 0;
   const isProtectedUser =
     isAdmin && isEditing && Number(identificacion) === Number(user?.identificacion);
-  const formDisabled = catalogsLoading || detailLoading || saving || isProtectedUser;
+  const formDisabled = catalogsLoading || detailLoading || saving || isProtectedUser || !hasRequiredCatalogs;
 
   const {
     register,
@@ -145,7 +147,24 @@ const UserFormPage = () => {
       try {
         setDetailLoading(true);
         const detail = await usersApi.getUserByIdentification(identificacion);
-        reset(mapUserToForm(detail));
+        const mappedDetail = mapUserToForm(detail);
+        const locationIds = {
+          idPais: Number(detail?.direccion?.idPais),
+          idProvincia: Number(detail?.direccion?.idProvincia),
+          idCanton: Number(detail?.direccion?.idCanton),
+        };
+
+        const [provincesData, cantonsData, districtsData] = await Promise.all([
+          locationIds.idPais ? locationsApi.getProvinces(locationIds.idPais) : Promise.resolve([]),
+          locationIds.idProvincia ? locationsApi.getCantons(locationIds.idProvincia) : Promise.resolve([]),
+          locationIds.idCanton ? locationsApi.getDistricts(locationIds.idCanton) : Promise.resolve([]),
+        ]);
+
+        setProvinces(Array.isArray(provincesData) ? provincesData : []);
+        setCantons(Array.isArray(cantonsData) ? cantonsData : []);
+        setDistricts(Array.isArray(districtsData) ? districtsData : []);
+        setRequiresAccountCreation(!detail?.cuenta);
+        reset(mappedDetail);
       } catch (error) {
         Swal.fire({
           icon: "error",
@@ -225,7 +244,7 @@ const UserFormPage = () => {
   };
 
   const onSubmit = async (values) => {
-    if (isProtectedUser) {
+    if (isProtectedUser || !isAdmin || !hasRequiredCatalogs) {
       return;
     }
 
@@ -259,7 +278,7 @@ const UserFormPage = () => {
 
   return (
     <div className="dashboard-page">
-      <div className="dashboard-page__header">
+      <div className="dashboard-page__header mt-4">
         <div>
           <p className="dashboard-page__eyebrow">{isEditing ? "Editar usuario" : "Nuevo usuario"}</p>
           <h1>{isEditing ? "Actualizar usuario" : "Crear usuario"}</h1>
@@ -275,14 +294,29 @@ const UserFormPage = () => {
       </div>
 
       <section className="dashboard-card">
-        {catalogsLoading || detailLoading ? (
+        {!isAdmin ? (
+          <div className="dashboard-empty-state">
+            Solo un administrador puede crear o actualizar usuarios.
+          </div>
+        ) : catalogsLoading || detailLoading ? (
           <div className="dashboard-empty-state">Cargando formulario...</div>
+        ) : !hasRequiredCatalogs ? (
+          <div className="dashboard-empty-state">
+            No hay catalogos ni ubicaciones cargados en la base de datos. Inicializa los datos
+            semilla para habilitar la gestion de usuarios.
+          </div>
         ) : (
           <form className="dashboard-form" onSubmit={handleSubmit(onSubmit)}>
             {isProtectedUser ? (
               <div className="dashboard-alert">
                 Este admin en sesion esta protegido. Puedes revisar su informacion, pero no
                 modificarla desde aqui.
+              </div>
+            ) : null}
+            {isEditing && requiresAccountCreation ? (
+              <div className="dashboard-alert">
+                Este usuario todavia no tiene cuenta de acceso. Completa correo y password para
+                crearla al guardar.
               </div>
             ) : null}
 
@@ -334,14 +368,18 @@ const UserFormPage = () => {
                 </label>
 
                 <label className="dashboard-input">
-                  <span>{isEditing ? "Nueva password" : "Password"}</span>
+                  <span>{isEditing && !requiresAccountCreation ? "Nueva password" : "Password"}</span>
                   <input
                     className="form-control"
-                    placeholder={isEditing ? "Opcional para conservar la actual" : ""}
+                    placeholder={
+                      isEditing && !requiresAccountCreation
+                        ? "Opcional para conservar la actual"
+                        : ""
+                    }
                     type="password"
                     {...register("password", {
                       validate: (value) =>
-                        isEditing || value.trim().length >= 6
+                        (isEditing && !requiresAccountCreation) || value.trim().length >= 6
                           ? true
                           : "La password debe tener al menos 6 caracteres",
                     })}
@@ -444,7 +482,7 @@ const UserFormPage = () => {
                 </label>
               </div>
 
-              <div className="dashboard-form__actions">
+              <div className="dashboard-form__actions mt-3">
                 <button
                   className="dashboard-btn dashboard-btn--primary"
                   disabled={formDisabled}
