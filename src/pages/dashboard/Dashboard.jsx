@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import Sidebar from "../../components/layout/Sidebar";
 import DashboardHome from "./DashboardHome";
@@ -7,23 +7,25 @@ import UsersDashboard from "./UsersDashboard";
 import UserFormPage from "./UserFormPage";
 
 const Dashboard = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpenPath, setMenuOpenPath] = useState(null);
   const location = useLocation();
+  const menuOpen = menuOpenPath === location.pathname;
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [location.pathname]);
+  const closeMenu = () => setMenuOpenPath(null);
+  const toggleMenu = () => {
+    setMenuOpenPath((currentPath) => (currentPath === location.pathname ? null : location.pathname));
+  };
 
   return (
     <main className="dashboard-layout">
-      <Sidebar isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+      <Sidebar isOpen={menuOpen} onClose={closeMenu} />
 
       <section className="dashboard-layout__content">
         <header className="dashboard-topbar">
           <button
             aria-expanded={menuOpen}
             className="dashboard-topbar__toggle"
-            onClick={() => setMenuOpen((current) => !current)}
+            onClick={toggleMenu}
             type="button"
           >
             {menuOpen ? "Ocultar menu" : "Mostrar menu"}

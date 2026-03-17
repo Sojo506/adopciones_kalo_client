@@ -1,40 +1,258 @@
+const createDashboardItem = (slug, label, table, description, hint = "") => ({
+  to: slug ? `/dashboard/${slug}` : "/dashboard",
+  label,
+  table,
+  description,
+  hint,
+});
+
 export const dashboardNavigationSections = [
   {
     title: "Resumen",
-    items: [{ to: "/dashboard", label: "Resumen general", hint: "Mapa del sistema" }],
-  },
-  {
-    title: "Adopciones",
     items: [
-      { to: "/dashboard/usuarios", label: "Usuarios", hint: "Perfiles, cuentas y contactos" },
-      { to: "/dashboard/perritos", label: "Perritos", hint: "Ficha, raza, sexo e imagenes" },
-      { to: "/dashboard/solicitudes", label: "Solicitudes", hint: "Postulaciones y respuestas" },
-      { to: "/dashboard/adopciones", label: "Adopciones", hint: "Procesos aprobados y casas cuna" },
-      { to: "/dashboard/seguimiento", label: "Seguimiento", hint: "Responsabilidad y evidencias" },
+      createDashboardItem(
+        "",
+        "Resumen general",
+        null,
+        "Vista consolidada del panel administrativo con accesos a todas las tablas del esquema.",
+        "Vista principal"
+      ),
     ],
   },
   {
-    title: "Comercial",
+    title: "Usuarios y acceso",
     items: [
-      { to: "/dashboard/productos", label: "Productos", hint: "Catalogo, precio y categoria" },
-      { to: "/dashboard/categorias", label: "Categorias", hint: "Clasificacion comercial" },
-      { to: "/dashboard/inventario", label: "Inventario", hint: "Existencias por producto" },
-      { to: "/dashboard/movimientos", label: "Mov. inventario", hint: "Entradas, salidas y ajustes" },
-      { to: "/dashboard/ventas", label: "Ventas", hint: "Ventas y detalle por producto" },
-      { to: "/dashboard/facturas", label: "Facturas", hint: "Facturacion y enlaces de venta" },
+      createDashboardItem("usuarios", "Usuarios", "FIDE_USUARIO_TB", "CRUD principal de perfiles y datos base de cada usuario."),
+      createDashboardItem(
+        "tipos-usuario",
+        "Tipos de usuario",
+        "FIDE_TIPO_USUARIO_TB",
+        "Configura los roles y clasificaciones que definen el tipo de cuenta dentro del sistema."
+      ),
+      createDashboardItem("correos", "Correos", "FIDE_CORREO_TB", "Administra los correos asociados a cada usuario registrado."),
+      createDashboardItem("telefonos", "Telefonos", "FIDE_TELEFONO_TB", "Gestiona los telefonos vinculados a cada perfil."),
+      createDashboardItem("cuentas", "Cuentas", "FIDE_CUENTA_TB", "Controla usuarios de acceso, hashes y estado general de las cuentas."),
+      createDashboardItem(
+        "codigos-otp",
+        "Codigos OTP",
+        "FIDE_CODIGO_OTP_TB",
+        "Permite revisar y administrar los codigos temporales emitidos para autenticacion o verificacion."
+      ),
+      createDashboardItem(
+        "refresh-tokens",
+        "Refresh tokens",
+        "FIDE_REFRESH_TOKEN_TB",
+        "Centraliza las sesiones persistentes, revocaciones y trazabilidad de tokens activos."
+      ),
     ],
   },
   {
-    title: "Finanzas y control",
+    title: "Catalogos y ubicaciones",
     items: [
-      { to: "/dashboard/donaciones", label: "Donaciones", hint: "Campanas, aportes y facturas" },
-      { to: "/dashboard/reportes", label: "Reportes", hint: "Indicadores operativos y financieros" },
-      { to: "/dashboard/auditoria", label: "Auditoria", hint: "Trazabilidad de cambios" },
-      { to: "/dashboard/catalogos", label: "Catalogos base", hint: "Estados, tipos y tablas maestras" },
-      { to: "/dashboard/ubicaciones", label: "Ubicaciones", hint: "Paises, provincias y direcciones" },
+      createDashboardItem("estados", "Estados", "FIDE_ESTADO_TB", "Administra los estados reutilizables que afectan el ciclo de vida de todo el esquema."),
+      createDashboardItem("paises", "Paises", "FIDE_PAIS_TB", "Mantiene el catalogo de paises para direcciones y jerarquias de ubicacion."),
+      createDashboardItem("provincias", "Provincias", "FIDE_PROVINCIA_TB", "Gestiona provincias enlazadas a cada pais disponible."),
+      createDashboardItem("cantones", "Cantones", "FIDE_CANTON_TB", "Controla los cantones registrados dentro de cada provincia."),
+      createDashboardItem("distritos", "Distritos", "FIDE_DISTRITO_TB", "Mantiene los distritos para completar la jerarquia geografica del sistema."),
+      createDashboardItem("direcciones", "Direcciones", "FIDE_DIRECCION_TB", "CRUD de direcciones detalladas usadas por usuarios y casas cuna."),
+      createDashboardItem(
+        "tipos-otp",
+        "Tipos de OTP",
+        "FIDE_TIPO_OTP_TB",
+        "Define las categorias de codigos temporales que se pueden emitir en autenticacion."
+      ),
+      createDashboardItem(
+        "categorias",
+        "Categorias",
+        "FIDE_CATEGORIA_TB",
+        "Organiza las categorias comerciales asociadas al catalogo de productos."
+      ),
+      createDashboardItem("marcas", "Marcas", "FIDE_MARCA_TB", "Centraliza las marcas usadas en los productos de la tienda solidaria."),
+      createDashboardItem("monedas", "Monedas", "FIDE_MONEDA_TB", "Mantiene las monedas admitidas para facturacion y donaciones."),
+      createDashboardItem("razas", "Razas", "FIDE_RAZA_TB", "Gestiona las razas disponibles para clasificar perritos."),
+      createDashboardItem("sexos", "Sexos", "FIDE_SEXO_TB", "Controla las opciones de sexo asociadas a cada perrito."),
+      createDashboardItem(
+        "tipos-solicitud",
+        "Tipos de solicitud",
+        "FIDE_TIPO_SOLICITUD_TB",
+        "Configura las clases de solicitud disponibles dentro del flujo de adopcion."
+      ),
+      createDashboardItem(
+        "tipos-respuesta",
+        "Tipos de respuesta",
+        "FIDE_TIPO_RESPUESTA_TB",
+        "Define el tipo esperado para responder preguntas de formularios o procesos."
+      ),
+      createDashboardItem(
+        "tipos-seguimiento",
+        "Tipos de seguimiento",
+        "FIDE_TIPO_SEGUIMIENTO",
+        "Administra las categorias de seguimiento aplicables a adopciones activas."
+      ),
+      createDashboardItem(
+        "tipos-evento",
+        "Tipos de evento",
+        "FIDE_TIPO_EVENTO_TB",
+        "Mantiene los tipos de evento para registrar historial medico y operativo de perritos."
+      ),
+      createDashboardItem(
+        "preguntas",
+        "Preguntas",
+        "FIDE_PREGUNTA_TB",
+        "CRUD del banco de preguntas utilizado en solicitudes y formularios del sistema."
+      ),
+    ],
+  },
+  {
+    title: "Productos y ventas",
+    items: [
+      createDashboardItem("productos", "Productos", "FIDE_PRODUCTO_TB", "Gestiona el catalogo principal de productos, precios y relaciones comerciales."),
+      createDashboardItem(
+        "inventario",
+        "Inventario",
+        "FIDE_INVENTARIO_TB",
+        "Controla la existencia actual por producto dentro de la operacion comercial."
+      ),
+      createDashboardItem(
+        "movimientos-inventario",
+        "Movimientos de inventario",
+        "FIDE_MOVIMIENTO_INVENTARIO_TB",
+        "Registra entradas, salidas y ajustes que impactan existencias."
+      ),
+      createDashboardItem(
+        "tipos-movimiento",
+        "Tipos de movimiento",
+        "FIDE_TIPO_MOVIMIENTO_TB",
+        "Define las clases de movimiento que luego utiliza el inventario y las ventas."
+      ),
+      createDashboardItem("ventas", "Ventas", "FIDE_VENTA_TB", "Administra ventas registradas por usuario y total de transaccion."),
+      createDashboardItem(
+        "ventas-producto",
+        "Detalle venta-producto",
+        "FIDE_VENTA_PRODUCTO_TB",
+        "CRUD de lineas de detalle que conectan productos vendidos con una venta."
+      ),
+      createDashboardItem("facturas", "Facturas", "FIDE_FACTURA_TB", "Gestiona facturas, impuestos, subtotales y totales del sistema."),
+      createDashboardItem(
+        "ventas-factura",
+        "Ventas-factura",
+        "FIDE_VENTA_FACTURA_TB",
+        "Relaciona cada factura con la venta correspondiente para cierre comercial."
+      ),
+      createDashboardItem(
+        "pagos-paypal",
+        "Pagos PayPal",
+        "FIDE_PAGO_PAYPAL_TB",
+        "Administra las capturas y referencias de pago asociadas a una factura."
+      ),
+    ],
+  },
+  {
+    title: "Perritos y adopciones",
+    items: [
+      createDashboardItem("perritos", "Perritos", "FIDE_PERRITO_TB", "CRUD principal de perritos con datos fisicos, raza, sexo y estado."),
+      createDashboardItem(
+        "imagenes-perrito",
+        "Imagenes de perrito",
+        "FIDE_PERRITO_IMAGE_TB",
+        "Gestiona las imagenes y recursos visuales asociados a cada perrito."
+      ),
+      createDashboardItem(
+        "eventos-perrito",
+        "Eventos de perrito",
+        "FIDE_EVENTO_PERRITO_TB",
+        "Registra eventos medicos u operativos asociados a cada perrito."
+      ),
+      createDashboardItem(
+        "detalle-evento",
+        "Detalle de evento",
+        "FIDE_DETALLE_EVENTO_TB",
+        "Controla comprobantes, montos y desglose financiero por evento del perrito."
+      ),
+      createDashboardItem(
+        "solicitudes",
+        "Solicitudes",
+        "FIDE_SOLICITUD_TB",
+        "Administra solicitudes de adopcion y su relacion con usuarios y perritos."
+      ),
+      createDashboardItem(
+        "respuestas",
+        "Respuestas",
+        "FIDE_RESPUESTA_TB",
+        "CRUD de respuestas ligadas a solicitudes y preguntas del formulario."
+      ),
+      createDashboardItem(
+        "casas-cuna",
+        "Casas cuna",
+        "FIDE_CASA_CUNA_TB",
+        "Gestiona hogares temporales, responsable asignado y solicitud asociada."
+      ),
+      createDashboardItem(
+        "casas-perrito",
+        "Casa-perrito",
+        "FIDE_CASA_PERRITO_TB",
+        "Administra la asignacion de perritos a cada casa cuna disponible."
+      ),
+      createDashboardItem("adopciones", "Adopciones", "FIDE_ADOPCION_TB", "Controla las adopciones aprobadas y su fecha oficial de cierre."),
+      createDashboardItem(
+        "seguimientos",
+        "Seguimientos",
+        "FIDE_SEGUIMIENTO_TB",
+        "Gestiona el seguimiento posterior a la adopcion con fechas y comentarios."
+      ),
+      createDashboardItem(
+        "evidencias",
+        "Evidencias",
+        "FIDE_EVIDENCIA_TB",
+        "CRUD de evidencias, imagenes y observaciones asociadas a un seguimiento."
+      ),
+    ],
+  },
+  {
+    title: "Donaciones",
+    items: [
+      createDashboardItem(
+        "campanias",
+        "Campanias",
+        "FIDE_CAMPANIA_TB",
+        "Gestiona campanias activas, descripcion y vigencia para procesos de recaudacion."
+      ),
+      createDashboardItem(
+        "donaciones",
+        "Donaciones",
+        "FIDE_DONACION_TB",
+        "Administra aportes economicos por usuario y campania."
+      ),
+      createDashboardItem(
+        "donaciones-factura",
+        "Donaciones-factura",
+        "FIDE_DONACION_FACTURA_TB",
+        "Relaciona cada donacion con su factura correspondiente."
+      ),
     ],
   },
 ];
+
+export const dashboardNavigationItems = dashboardNavigationSections.flatMap((section) =>
+  section.items.map((item) => ({ ...item, sectionTitle: section.title }))
+);
+
+export const dashboardNavigationCount = dashboardNavigationItems.length;
+
+export const findDashboardNavigationItem = (pathname) => {
+  const normalizedPath =
+    pathname.length > 1 && pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+
+  return (
+    dashboardNavigationItems.find((item) => {
+      if (item.to === "/dashboard") {
+        return normalizedPath === item.to;
+      }
+
+      return normalizedPath === item.to || normalizedPath.startsWith(`${item.to}/`);
+    }) || null
+  );
+};
 
 export const dashboardModuleGroups = [
   {

@@ -1542,6 +1542,10 @@ a {
   background: #ffffff;
   border-right: 1px solid rgba(17, 37, 61, 0.08);
   padding: 1.2rem;
+  position: sticky;
+  top: 88px;
+  max-height: calc(100vh - 88px);
+  overflow-y: auto;
 }
 
 .dashboard-sidebar-minimal__header {

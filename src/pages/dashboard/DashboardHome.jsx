@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { dashboardNavigationSections } from "../../data/dashboardModules";
+import { dashboardNavigationCount } from "../../data/dashboardModules";
 import { useAuth } from "../../hooks/useAuth";
 
 const DashboardHome = () => {
@@ -34,9 +34,9 @@ const DashboardHome = () => {
 
         <article className="dashboard-card">
           <p className="dashboard-page__eyebrow">Navegacion</p>
-          <h2>{dashboardNavigationSections.reduce((total, section) => total + section.items.length, 0)} accesos</h2>
+          <h2>{dashboardNavigationCount} accesos</h2>
           <p className="dashboard-muted">
-            Usuarios, adopciones, comercial, reportes y catalogos base organizados en una sola barra lateral.
+            Todas las tablas del esquema ya aparecen organizadas en la barra lateral para entrar a su CRUD.
           </p>
         </article>
       </section>

@@ -36,9 +36,10 @@ const Sidebar = ({ isOpen, onClose }) => {
                   end={item.to === "/dashboard"}
                   onClick={onClose}
                   to={item.to}
+                  title={item.table ? `${item.label} (${item.table})` : item.label}
                 >
                   <strong>{item.label}</strong>
-                  <span>{item.hint}</span>
+                  {item.hint ? <span>{item.hint}</span> : null}
                 </NavLink>
               ))}
             </nav>
