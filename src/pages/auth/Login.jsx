@@ -6,7 +6,7 @@ import { useAuth } from "../../hooks/useAuth";
 const Login = () => {
   const { register, handleSubmit, formState } = useForm({
     defaultValues: {
-      correo: "",
+      usuario: "",
       password: "",
     },
   });
@@ -31,20 +31,16 @@ const Login = () => {
               <h2 className="card-title mb-4">Iniciar sesión</h2>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-3">
-                  <label className="form-label">Correo electrónico</label>
+                  <label className="form-label">Usuario o correo</label>
                   <input
-                    {...register("correo", {
-                      required: "El correo es obligatorio",
-                      pattern: {
-                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                        message: "Ingrese un correo válido",
-                      },
+                    {...register("usuario", {
+                      required: "El usuario es obligatorio",
                     })}
-                    className={`form-control ${errors.correo ? "is-invalid" : ""}`}
-                    type="email"
-                    autoComplete="email"
+                    className={`form-control ${errors.usuario ? "is-invalid" : ""}`}
+                    type="text"
+                    autoComplete="username"
                   />
-                  {errors.correo && <div className="invalid-feedback">{errors.correo.message}</div>}
+                  {errors.usuario && <div className="invalid-feedback">{errors.usuario.message}</div>}
                 </div>
 
                 <div className="mb-4">

@@ -9,6 +9,7 @@ import { useAuth } from "../../hooks/useAuth";
 
 const EMPTY_FORM = {
   identificacion: "",
+  usuario: "",
   nombre: "",
   apellidoPaterno: "",
   apellidoMaterno: "",
@@ -26,6 +27,7 @@ const EMPTY_FORM = {
 
 const mapUserToForm = (user) => ({
   identificacion: String(user.identificacion ?? ""),
+  usuario: user.cuenta?.usuario ?? "",
   nombre: user.nombre ?? "",
   apellidoPaterno: user.apellidoPaterno ?? "",
   apellidoMaterno: user.apellidoMaterno ?? "",
@@ -44,6 +46,7 @@ const mapUserToForm = (user) => ({
 const buildPayload = (values, isEditing) => {
   const payload = {
     identificacion: Number(values.identificacion),
+    usuario: values.usuario.trim(),
     nombre: values.nombre.trim(),
     apellidoPaterno: values.apellidoPaterno.trim(),
     apellidoMaterno: values.apellidoMaterno.trim(),
@@ -79,6 +82,7 @@ const UserFormPage = () => {
   const [cantons, setCantons] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [requiresAccountCreation, setRequiresAccountCreation] = useState(false);
+  const [requiresEmailCreation, setRequiresEmailCreation] = useState(false);
 
   const isEditing = Boolean(identificacion);
   const hasRequiredCatalogs = userTypes.length > 0 && states.length > 0 && countries.length > 0;
@@ -118,6 +122,8 @@ const UserFormPage = () => {
         setCountries(Array.isArray(countriesData) ? countriesData : []);
 
         if (!isEditing) {
+          setRequiresAccountCreation(false);
+          setRequiresEmailCreation(false);
           reset({
             ...EMPTY_FORM,
             idTipoUsuario: String(userTypesData?.[0]?.idTipoUsuario ?? ""),
@@ -163,7 +169,8 @@ const UserFormPage = () => {
         setProvinces(Array.isArray(provincesData) ? provincesData : []);
         setCantons(Array.isArray(cantonsData) ? cantonsData : []);
         setDistricts(Array.isArray(districtsData) ? districtsData : []);
-        setRequiresAccountCreation(!detail?.cuenta);
+        setRequiresAccountCreation(!detail?.cuenta?.idCuenta);
+        setRequiresEmailCreation(!detail?.cuenta?.correo);
         reset(mappedDetail);
       } catch (error) {
         Swal.fire({
@@ -284,8 +291,8 @@ const UserFormPage = () => {
           <h1>{isEditing ? "Actualizar usuario" : "Crear usuario"}</h1>
           <p className="dashboard-page__lede">
             {isEditing
-              ? "Modifica perfil, cuenta y direccion desde una sola pantalla."
-              : "Completa la informacion del perfil, la cuenta y la ubicacion del nuevo usuario."}
+              ? "Modifica perfil, cuenta de acceso y direccion desde una sola pantalla."
+              : "Completa la informacion del perfil, el usuario de acceso y la ubicacion del nuevo usuario."}
           </p>
         </div>
         <Link className="dashboard-btn dashboard-btn--ghost" to="/dashboard/usuarios">
@@ -315,8 +322,14 @@ const UserFormPage = () => {
             ) : null}
             {isEditing && requiresAccountCreation ? (
               <div className="dashboard-alert">
-                Este usuario todavia no tiene cuenta de acceso. Completa correo y password para
-                crearla al guardar.
+                Este usuario todavia no tiene cuenta de acceso. Completa nombre de usuario,
+                correo y password para crearla al guardar.
+              </div>
+            ) : null}
+            {isEditing && !requiresAccountCreation && requiresEmailCreation ? (
+              <div className="dashboard-alert">
+                Este usuario ya tiene cuenta, pero todavia no tiene un correo asociado. Completa
+                uno para crearlo al guardar.
               </div>
             ) : null}
 
@@ -334,13 +347,28 @@ const UserFormPage = () => {
                 </label>
 
                 <label className="dashboard-input">
+                  <span>Nombre de usuario</span>
+                  <input
+                    className="form-control"
+                    autoComplete="username"
+                    {...register("usuario", { required: "El nombre de usuario es obligatorio" })}
+                  />
+                  {errors.usuario ? <small>{errors.usuario.message}</small> : null}
+                </label>
+
+                <label className="dashboard-input">
                   <span>Correo</span>
                   <input
                     className="form-control"
+                    readOnly={isEditing && !requiresEmailCreation}
                     type="email"
                     {...register("correo", { required: "El correo es obligatorio" })}
                   />
-                  {errors.correo ? <small>{errors.correo.message}</small> : null}
+                  {errors.correo ? (
+                    <small>{errors.correo.message}</small>
+                  ) : isEditing && !requiresEmailCreation ? (
+                    <small>Para agregar o cambiar correos usa el modulo Correos.</small>
+                  ) : null}
                 </label>
 
                 <label className="dashboard-input">

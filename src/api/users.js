@@ -10,7 +10,14 @@ const clearUserCaches = (identificacion) => {
 
   if (identificacion !== undefined && identificacion !== null) {
     userDetailCache.delete(String(identificacion));
+    return;
   }
+
+  userDetailCache.clear();
+};
+
+export const invalidateUsersCache = (identificacion) => {
+  clearUserCaches(identificacion);
 };
 
 export const getUsers = async ({ force = false } = {}) => {

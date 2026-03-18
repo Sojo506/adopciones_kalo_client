@@ -2,9 +2,9 @@ import axiosInstance from "./axiosConfig";
 
 const unwrapResponse = (response) => response.data?.data ?? response.data;
 
-export const signIn = async ({ correo, usuario, password }) => {
-  const identifier = correo || usuario;
-  const response = await axiosInstance.post("/auth/login", { correo: identifier, password });
+export const signIn = async ({ correo, usuario, identificador, password }) => {
+  const identifier = usuario || identificador || correo;
+  const response = await axiosInstance.post("/auth/login", { usuario: identifier, password });
   return unwrapResponse(response);
 };
 
