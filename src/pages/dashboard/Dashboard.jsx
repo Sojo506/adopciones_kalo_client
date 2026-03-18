@@ -31,6 +31,8 @@ import OtpTypesDashboard from "./OtpTypesDashboard";
 import OtpsDashboard from "./OtpsDashboard";
 import PhoneFormPage from "./PhoneFormPage";
 import PhonesDashboard from "./PhonesDashboard";
+import ProductFormPage from "./ProductFormPage";
+import ProductsDashboard from "./ProductsDashboard";
 import ProvinceFormPage from "./ProvinceFormPage";
 import ProvincesDashboard from "./ProvincesDashboard";
 import QuestionFormPage from "./QuestionFormPage";
@@ -110,6 +112,9 @@ const Dashboard = () => {
             <Route path="marcas" element={<BrandsDashboard />} />
             <Route path="marcas/nuevo" element={<BrandFormPage />} />
             <Route path="marcas/:idMarca/editar" element={<BrandFormPage />} />
+            <Route path="productos" element={<ProductsDashboard />} />
+            <Route path="productos/nuevo" element={<ProductFormPage />} />
+            <Route path="productos/:idProducto/editar" element={<ProductFormPage />} />
             <Route path="razas" element={<BreedsDashboard />} />
             <Route path="razas/nuevo" element={<BreedFormPage />} />
             <Route path="razas/:idRaza/editar" element={<BreedFormPage />} />
