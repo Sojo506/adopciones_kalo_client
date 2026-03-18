@@ -13,6 +13,7 @@ let sexesCache = null;
 let requestTypesCache = null;
 let responseTypesCache = null;
 let trackingTypesCache = null;
+let eventTypesCache = null;
 
 export const clearUserTypesCache = () => {
   userTypesCache = null;
@@ -56,6 +57,10 @@ export const clearResponseTypesCache = () => {
 
 export const clearTrackingTypesCache = () => {
   trackingTypesCache = null;
+};
+
+export const clearEventTypesCache = () => {
+  eventTypesCache = null;
 };
 
 export const getUserTypes = async ({ force = false } = {}) => {
@@ -187,5 +192,17 @@ export const getTrackingTypes = async ({ force = false } = {}) => {
     const response = await axiosInstance.get("/catalogs/tracking-types");
     trackingTypesCache = unwrapResponse(response);
     return trackingTypesCache;
+  });
+};
+
+export const getEventTypes = async ({ force = false } = {}) => {
+  if (!force && eventTypesCache) {
+    return eventTypesCache;
+  }
+
+  return dedupeRequest("catalogs:event-types", async () => {
+    const response = await axiosInstance.get("/catalogs/event-types");
+    eventTypesCache = unwrapResponse(response);
+    return eventTypesCache;
   });
 };
