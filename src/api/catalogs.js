@@ -5,6 +5,7 @@ const unwrapResponse = (response) => response.data?.data ?? response.data ?? [];
 let userTypesCache = null;
 let statesCache = null;
 let otpTypesCache = null;
+let categoriesCache = null;
 
 export const clearUserTypesCache = () => {
   userTypesCache = null;
@@ -16,6 +17,10 @@ export const clearStatesCache = () => {
 
 export const clearOtpTypesCache = () => {
   otpTypesCache = null;
+};
+
+export const clearCategoriesCache = () => {
+  categoriesCache = null;
 };
 
 export const getUserTypes = async ({ force = false } = {}) => {
@@ -51,5 +56,17 @@ export const getOtpTypes = async ({ force = false } = {}) => {
     const response = await axiosInstance.get("/catalogs/otp-types");
     otpTypesCache = unwrapResponse(response);
     return otpTypesCache;
+  });
+};
+
+export const getCategories = async ({ force = false } = {}) => {
+  if (!force && categoriesCache) {
+    return categoriesCache;
+  }
+
+  return dedupeRequest("catalogs:categories", async () => {
+    const response = await axiosInstance.get("/catalogs/categories");
+    categoriesCache = unwrapResponse(response);
+    return categoriesCache;
   });
 };
