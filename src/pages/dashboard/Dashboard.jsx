@@ -23,6 +23,8 @@ import DistrictFormPage from "./DistrictFormPage";
 import DistrictsDashboard from "./DistrictsDashboard";
 import EmailFormPage from "./EmailFormPage";
 import EmailsDashboard from "./EmailsDashboard";
+import EventTypeFormPage from "./EventTypeFormPage";
+import EventTypesDashboard from "./EventTypesDashboard";
 import OtpFormPage from "./OtpFormPage";
 import OtpTypeFormPage from "./OtpTypeFormPage";
 import OtpTypesDashboard from "./OtpTypesDashboard";
@@ -139,6 +141,12 @@ const Dashboard = () => {
             <Route
               path="tipos-seguimiento/:idTipoSeguimiento/editar"
               element={<TrackingTypeFormPage />}
+            />
+            <Route path="tipos-evento" element={<EventTypesDashboard />} />
+            <Route path="tipos-evento/nuevo" element={<EventTypeFormPage />} />
+            <Route
+              path="tipos-evento/:idTipoEvento/editar"
+              element={<EventTypeFormPage />}
             />
             <Route path="correos" element={<EmailsDashboard />} />
             <Route path="correos/nuevo" element={<EmailFormPage />} />
