@@ -4,6 +4,8 @@ import AccountsDashboard from "./AccountsDashboard";
 import AccountFormPage from "./AccountFormPage";
 import AddressFormPage from "./AddressFormPage";
 import AddressesDashboard from "./AddressesDashboard";
+import BrandFormPage from "./BrandFormPage";
+import BrandsDashboard from "./BrandsDashboard";
 import CategoriesDashboard from "./CategoriesDashboard";
 import CantonsDashboard from "./CantonsDashboard";
 import CantonFormPage from "./CantonFormPage";
@@ -90,6 +92,9 @@ const Dashboard = () => {
             <Route path="categorias" element={<CategoriesDashboard />} />
             <Route path="categorias/nuevo" element={<CategoryFormPage />} />
             <Route path="categorias/:idCategoria/editar" element={<CategoryFormPage />} />
+            <Route path="marcas" element={<BrandsDashboard />} />
+            <Route path="marcas/nuevo" element={<BrandFormPage />} />
+            <Route path="marcas/:idMarca/editar" element={<BrandFormPage />} />
             <Route path="tipos-otp" element={<OtpTypesDashboard />} />
             <Route path="tipos-otp/nuevo" element={<OtpTypeFormPage />} />
             <Route path="tipos-otp/:idTipoOtp/editar" element={<OtpTypeFormPage />} />
