@@ -12,6 +12,7 @@ let breedsCache = null;
 let sexesCache = null;
 let requestTypesCache = null;
 let responseTypesCache = null;
+let trackingTypesCache = null;
 
 export const clearUserTypesCache = () => {
   userTypesCache = null;
@@ -51,6 +52,10 @@ export const clearRequestTypesCache = () => {
 
 export const clearResponseTypesCache = () => {
   responseTypesCache = null;
+};
+
+export const clearTrackingTypesCache = () => {
+  trackingTypesCache = null;
 };
 
 export const getUserTypes = async ({ force = false } = {}) => {
@@ -170,5 +175,17 @@ export const getResponseTypes = async ({ force = false } = {}) => {
     const response = await axiosInstance.get("/catalogs/response-types");
     responseTypesCache = unwrapResponse(response);
     return responseTypesCache;
+  });
+};
+
+export const getTrackingTypes = async ({ force = false } = {}) => {
+  if (!force && trackingTypesCache) {
+    return trackingTypesCache;
+  }
+
+  return dedupeRequest("catalogs:tracking-types", async () => {
+    const response = await axiosInstance.get("/catalogs/tracking-types");
+    trackingTypesCache = unwrapResponse(response);
+    return trackingTypesCache;
   });
 };
