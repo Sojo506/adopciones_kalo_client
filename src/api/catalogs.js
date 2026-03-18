@@ -7,6 +7,7 @@ let statesCache = null;
 let otpTypesCache = null;
 let categoriesCache = null;
 let brandsCache = null;
+let productsCache = null;
 let currenciesCache = null;
 let breedsCache = null;
 let sexesCache = null;
@@ -34,6 +35,10 @@ export const clearCategoriesCache = () => {
 
 export const clearBrandsCache = () => {
   brandsCache = null;
+};
+
+export const clearProductsCache = () => {
+  productsCache = null;
 };
 
 export const clearCurrenciesCache = () => {
@@ -125,6 +130,18 @@ export const getBrands = async ({ force = false } = {}) => {
     const response = await axiosInstance.get("/catalogs/brands");
     brandsCache = unwrapResponse(response);
     return brandsCache;
+  });
+};
+
+export const getProducts = async ({ force = false } = {}) => {
+  if (!force && productsCache) {
+    return productsCache;
+  }
+
+  return dedupeRequest("catalogs:products", async () => {
+    const response = await axiosInstance.get("/catalogs/products");
+    productsCache = unwrapResponse(response);
+    return productsCache;
   });
 };
 
