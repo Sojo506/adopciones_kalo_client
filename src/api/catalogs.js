@@ -9,6 +9,7 @@ let categoriesCache = null;
 let brandsCache = null;
 let currenciesCache = null;
 let breedsCache = null;
+let sexesCache = null;
 
 export const clearUserTypesCache = () => {
   userTypesCache = null;
@@ -36,6 +37,10 @@ export const clearCurrenciesCache = () => {
 
 export const clearBreedsCache = () => {
   breedsCache = null;
+};
+
+export const clearSexesCache = () => {
+  sexesCache = null;
 };
 
 export const getUserTypes = async ({ force = false } = {}) => {
@@ -119,5 +124,17 @@ export const getBreeds = async ({ force = false } = {}) => {
     const response = await axiosInstance.get("/catalogs/breeds");
     breedsCache = unwrapResponse(response);
     return breedsCache;
+  });
+};
+
+export const getSexes = async ({ force = false } = {}) => {
+  if (!force && sexesCache) {
+    return sexesCache;
+  }
+
+  return dedupeRequest("catalogs:sexes", async () => {
+    const response = await axiosInstance.get("/catalogs/sexes");
+    sexesCache = unwrapResponse(response);
+    return sexesCache;
   });
 };
