@@ -5,6 +5,8 @@ import DashboardHome from "./DashboardHome";
 import DashboardPlaceholder from "./DashboardPlaceholder";
 import EmailFormPage from "./EmailFormPage";
 import EmailsDashboard from "./EmailsDashboard";
+import PhoneFormPage from "./PhoneFormPage";
+import PhonesDashboard from "./PhonesDashboard";
 import UserTypeFormPage from "./UserTypeFormPage";
 import UserTypesDashboard from "./UserTypesDashboard";
 import UsersDashboard from "./UsersDashboard";
@@ -51,6 +53,9 @@ const Dashboard = () => {
             <Route path="correos" element={<EmailsDashboard />} />
             <Route path="correos/nuevo" element={<EmailFormPage />} />
             <Route path="correos/:identificacion/:correo/editar" element={<EmailFormPage />} />
+            <Route path="telefonos" element={<PhonesDashboard />} />
+            <Route path="telefonos/nuevo" element={<PhoneFormPage />} />
+            <Route path="telefonos/:identificacion/:telefono/editar" element={<PhoneFormPage />} />
             <Route path="*" element={<DashboardPlaceholder />} />
           </Routes>
         </div>
