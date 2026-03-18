@@ -10,6 +10,10 @@ export const clearUserTypesCache = () => {
   userTypesCache = null;
 };
 
+export const clearStatesCache = () => {
+  statesCache = null;
+};
+
 export const clearOtpTypesCache = () => {
   otpTypesCache = null;
 };

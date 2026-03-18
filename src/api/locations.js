@@ -7,6 +7,37 @@ const provincesCache = new Map();
 const cantonsCache = new Map();
 const districtsCache = new Map();
 
+export const clearCountriesCache = () => {
+  countriesCache = null;
+};
+
+export const clearProvincesCache = (idPais) => {
+  if (idPais !== undefined && idPais !== null) {
+    provincesCache.delete(idPais);
+    return;
+  }
+
+  provincesCache.clear();
+};
+
+export const clearCantonsCache = (idProvincia) => {
+  if (idProvincia !== undefined && idProvincia !== null) {
+    cantonsCache.delete(idProvincia);
+    return;
+  }
+
+  cantonsCache.clear();
+};
+
+export const clearDistrictsCache = (idCanton) => {
+  if (idCanton !== undefined && idCanton !== null) {
+    districtsCache.delete(idCanton);
+    return;
+  }
+
+  districtsCache.clear();
+};
+
 export const getCountries = async ({ force = false } = {}) => {
   if (!force && countriesCache) {
     return countriesCache;
