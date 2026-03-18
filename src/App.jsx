@@ -4,13 +4,24 @@ import { BrowserRouter } from "react-router-dom";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import AppRouter from "./routes/AppRouter";
-import { initializeAuth } from "./store/authSlice";
+import { clearAuthState, initializeAuth } from "./store/authSlice";
 
 const AuthInitializer = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(initializeAuth());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      dispatch(clearAuthState());
+    };
+
+    window.addEventListener("auth:expired", handleSessionExpired);
+    return () => {
+      window.removeEventListener("auth:expired", handleSessionExpired);
+    };
   }, [dispatch]);
 
   return null;
