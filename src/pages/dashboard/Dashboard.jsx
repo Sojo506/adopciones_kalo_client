@@ -16,6 +16,8 @@ import DistrictsDashboard from "./DistrictsDashboard";
 import EmailFormPage from "./EmailFormPage";
 import EmailsDashboard from "./EmailsDashboard";
 import OtpFormPage from "./OtpFormPage";
+import OtpTypeFormPage from "./OtpTypeFormPage";
+import OtpTypesDashboard from "./OtpTypesDashboard";
 import OtpsDashboard from "./OtpsDashboard";
 import PhoneFormPage from "./PhoneFormPage";
 import PhonesDashboard from "./PhonesDashboard";
@@ -83,6 +85,9 @@ const Dashboard = () => {
             <Route path="estados" element={<StatesDashboard />} />
             <Route path="estados/nuevo" element={<StateFormPage />} />
             <Route path="estados/:idEstado/editar" element={<StateFormPage />} />
+            <Route path="tipos-otp" element={<OtpTypesDashboard />} />
+            <Route path="tipos-otp/nuevo" element={<OtpTypeFormPage />} />
+            <Route path="tipos-otp/:idTipoOtp/editar" element={<OtpTypeFormPage />} />
             <Route path="tipos-usuario" element={<UserTypesDashboard />} />
             <Route path="tipos-usuario/nuevo" element={<UserTypeFormPage />} />
             <Route path="tipos-usuario/:idTipoUsuario/editar" element={<UserTypeFormPage />} />
