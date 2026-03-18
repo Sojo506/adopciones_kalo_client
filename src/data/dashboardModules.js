@@ -86,7 +86,7 @@ export const dashboardNavigationSections = [
       createDashboardItem(
         "tipos-seguimiento",
         "Tipos de seguimiento",
-        "FIDE_TIPO_SEGUIMIENTO",
+        "FIDE_TIPO_SEGUIMIENTO_TB",
         "Administra las categorias de seguimiento aplicables a adopciones activas."
       ),
       createDashboardItem(
