@@ -18,6 +18,10 @@ const clearOtpCaches = (idCodigoOtp) => {
   otpDetailCache.clear();
 };
 
+export const invalidateOtpCaches = (idCodigoOtp = null) => {
+  clearOtpCaches(idCodigoOtp);
+};
+
 export const getOtps = async ({ force = false } = {}) => {
   if (!force && otpsCache) {
     return otpsCache;
@@ -48,20 +52,20 @@ export const getOtpById = async (idCodigoOtp, { force = false } = {}) => {
 export const createOtp = async (payload) => {
   const response = await axiosInstance.post("/otp-codes", payload);
   const data = unwrapResponse(response);
-  clearOtpCaches(data?.idCodigoOtp);
+  invalidateOtpCaches(data?.idCodigoOtp);
   return data;
 };
 
 export const updateOtp = async (idCodigoOtp, payload) => {
   const response = await axiosInstance.put(buildOtpPath(idCodigoOtp), payload);
   const data = unwrapResponse(response);
-  clearOtpCaches(idCodigoOtp);
+  invalidateOtpCaches(idCodigoOtp);
   otpDetailCache.set(String(idCodigoOtp), data);
   return data;
 };
 
 export const deleteOtp = async (idCodigoOtp) => {
   const response = await axiosInstance.delete(buildOtpPath(idCodigoOtp));
-  clearOtpCaches(idCodigoOtp);
+  invalidateOtpCaches(idCodigoOtp);
   return unwrapResponse(response);
 };
