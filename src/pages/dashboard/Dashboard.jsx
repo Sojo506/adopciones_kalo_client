@@ -4,8 +4,10 @@ import AccountsDashboard from "./AccountsDashboard";
 import AccountFormPage from "./AccountFormPage";
 import AddressFormPage from "./AddressFormPage";
 import AddressesDashboard from "./AddressesDashboard";
+import CategoriesDashboard from "./CategoriesDashboard";
 import CantonsDashboard from "./CantonsDashboard";
 import CantonFormPage from "./CantonFormPage";
+import CategoryFormPage from "./CategoryFormPage";
 import Sidebar from "../../components/layout/Sidebar";
 import CountriesDashboard from "./CountriesDashboard";
 import CountryFormPage from "./CountryFormPage";
@@ -85,6 +87,9 @@ const Dashboard = () => {
             <Route path="estados" element={<StatesDashboard />} />
             <Route path="estados/nuevo" element={<StateFormPage />} />
             <Route path="estados/:idEstado/editar" element={<StateFormPage />} />
+            <Route path="categorias" element={<CategoriesDashboard />} />
+            <Route path="categorias/nuevo" element={<CategoryFormPage />} />
+            <Route path="categorias/:idCategoria/editar" element={<CategoryFormPage />} />
             <Route path="tipos-otp" element={<OtpTypesDashboard />} />
             <Route path="tipos-otp/nuevo" element={<OtpTypeFormPage />} />
             <Route path="tipos-otp/:idTipoOtp/editar" element={<OtpTypeFormPage />} />
