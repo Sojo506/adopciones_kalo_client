@@ -206,6 +206,24 @@ const ProductFormPage = () => {
           Este formulario solo administra los datos base del producto.
         </div>
 
+        {isEditing ? (
+          <div className="dashboard-alert">
+            Puedes administrar las imagenes de este producto desde{" "}
+            <Link to={`/dashboard/imagenes-producto?producto=${encodeURIComponent(idProducto)}`}>
+              Imagenes de producto
+            </Link>
+            .
+          </div>
+        ) : null}
+
+        {isEditing ? (
+          <div className="dashboard-alert">
+            El inventario de este producto se administra desde{" "}
+            <Link to="/dashboard/inventario">Inventario</Link>, donde los ajustes de stock generan
+            movimientos automáticos de ingreso o egreso.
+          </div>
+        ) : null}
+
         {catalogsLoading || detailLoading ? (
           <div className="dashboard-empty-state">Cargando formulario...</div>
         ) : !hasDependencies ? (

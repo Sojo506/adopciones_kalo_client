@@ -25,12 +25,18 @@ import EmailFormPage from "./EmailFormPage";
 import EmailsDashboard from "./EmailsDashboard";
 import EventTypeFormPage from "./EventTypeFormPage";
 import EventTypesDashboard from "./EventTypesDashboard";
+import InventoriesDashboard from "./InventoriesDashboard";
+import InventoryFormPage from "./InventoryFormPage";
+import InventoryMovementFormPage from "./InventoryMovementFormPage";
+import InventoryMovementsDashboard from "./InventoryMovementsDashboard";
 import OtpFormPage from "./OtpFormPage";
 import OtpTypeFormPage from "./OtpTypeFormPage";
 import OtpTypesDashboard from "./OtpTypesDashboard";
 import OtpsDashboard from "./OtpsDashboard";
 import PhoneFormPage from "./PhoneFormPage";
 import PhonesDashboard from "./PhonesDashboard";
+import ProductImageFormPage from "./ProductImageFormPage";
+import ProductImagesDashboard from "./ProductImagesDashboard";
 import ProductFormPage from "./ProductFormPage";
 import ProductsDashboard from "./ProductsDashboard";
 import ProvinceFormPage from "./ProvinceFormPage";
@@ -115,6 +121,21 @@ const Dashboard = () => {
             <Route path="productos" element={<ProductsDashboard />} />
             <Route path="productos/nuevo" element={<ProductFormPage />} />
             <Route path="productos/:idProducto/editar" element={<ProductFormPage />} />
+            <Route path="imagenes-producto" element={<ProductImagesDashboard />} />
+            <Route path="imagenes-producto/nuevo" element={<ProductImageFormPage />} />
+            <Route path="imagenes-producto/:idImagen/editar" element={<ProductImageFormPage />} />
+            <Route path="inventario" element={<InventoriesDashboard />} />
+            <Route path="inventario/nuevo" element={<InventoryFormPage />} />
+            <Route path="inventario/:idInventario/editar" element={<InventoryFormPage />} />
+            <Route path="movimientos-inventario" element={<InventoryMovementsDashboard />} />
+            <Route
+              path="movimientos-inventario/nuevo"
+              element={<InventoryMovementFormPage />}
+            />
+            <Route
+              path="movimientos-inventario/:idMovimiento/editar"
+              element={<InventoryMovementFormPage />}
+            />
             <Route path="razas" element={<BreedsDashboard />} />
             <Route path="razas/nuevo" element={<BreedFormPage />} />
             <Route path="razas/:idRaza/editar" element={<BreedFormPage />} />

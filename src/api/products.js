@@ -6,7 +6,7 @@ const unwrapResponse = (response) => response.data?.data ?? response.data ?? [];
 let productsCache = null;
 const productDetailCache = new Map();
 
-const clearProductCaches = (idProducto) => {
+export const clearProductCaches = (idProducto) => {
   productsCache = null;
 
   if (idProducto !== undefined && idProducto !== null) {
@@ -17,7 +17,7 @@ const clearProductCaches = (idProducto) => {
   productDetailCache.clear();
 };
 
-const invalidateRelatedCaches = (idProducto) => {
+export const invalidateProductCaches = (idProducto) => {
   clearProductCaches(idProducto);
   clearProductsCache();
 };
@@ -52,20 +52,20 @@ export const getProductById = async (idProducto, { force = false } = {}) => {
 export const createProduct = async (payload) => {
   const response = await axiosInstance.post("/products", payload);
   const data = unwrapResponse(response);
-  invalidateRelatedCaches(data?.idProducto);
+  invalidateProductCaches(data?.idProducto);
   return data;
 };
 
 export const updateProduct = async (idProducto, payload) => {
   const response = await axiosInstance.put(`/products/${idProducto}`, payload);
   const data = unwrapResponse(response);
-  invalidateRelatedCaches(idProducto);
+  invalidateProductCaches(idProducto);
   productDetailCache.set(String(idProducto), data);
   return data;
 };
 
 export const deleteProduct = async (idProducto) => {
   const response = await axiosInstance.delete(`/products/${idProducto}`);
-  invalidateRelatedCaches(idProducto);
+  invalidateProductCaches(idProducto);
   return unwrapResponse(response);
 };

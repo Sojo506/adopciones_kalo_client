@@ -149,6 +149,11 @@ const ProductsDashboard = () => {
         </div>
 
         <div className="dashboard-alert">
+          El stock actual y sus ajustes se administran desde el CRUD de inventario, que registra
+          automaticamente ingresos y egresos en la tabla de movimientos.
+        </div>
+
+        <div className="dashboard-alert">
           No puedes eliminar un producto si todavia tiene stock disponible en inventario.
         </div>
 
@@ -224,6 +229,17 @@ const ProductsDashboard = () => {
                             to={`/dashboard/productos/${product.idProducto}/editar`}
                           >
                             Editar
+                          </Link>
+                          <Link
+                            className={`dashboard-btn dashboard-btn--ghost${deletingId !== null ? " is-disabled" : ""}`}
+                            onClick={(event) => {
+                              if (deletingId !== null) {
+                                event.preventDefault();
+                              }
+                            }}
+                            to={`/dashboard/imagenes-producto?producto=${encodeURIComponent(product.idProducto)}`}
+                          >
+                            Imagenes
                           </Link>
                           <button
                             className="dashboard-btn dashboard-btn--danger"
