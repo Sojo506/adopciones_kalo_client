@@ -2,8 +2,14 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import * as authApi from "../api/auth";
 
 const ADMIN_ROLE_NAME = "administrador";
+const ACTIVE_STATE_ID = 1;
 const AUTH_TOKEN_KEY = "authToken";
 const AUTH_USER_KEY = "authUser";
+
+const normalizeStateId = (value) => {
+  const parsedValue = Number(value);
+  return Number.isFinite(parsedValue) ? parsedValue : null;
+};
 
 export const normalizeUser = (rawUser) => {
   if (!rawUser) {
@@ -12,11 +18,22 @@ export const normalizeUser = (rawUser) => {
 
   const roleName = rawUser.tipoUsuario || rawUser.tipo || rawUser.rol || "";
   const roleId = Number(rawUser.idTipoUsuario || rawUser.tipoUsuarioId || rawUser.roleId || 0);
+  const accountStateId = normalizeStateId(rawUser.idEstadoCuenta ?? rawUser.accountStateId);
+  const emailStateId = normalizeStateId(rawUser.idEstadoCorreo ?? rawUser.emailStateId);
+  const isEmailVerified =
+    typeof rawUser.emailVerified === "boolean"
+      ? rawUser.emailVerified
+      : typeof rawUser.isEmailVerified === "boolean"
+        ? rawUser.isEmailVerified
+        : emailStateId === ACTIVE_STATE_ID;
 
   return {
     ...rawUser,
     roleName,
     roleId,
+    accountStateId,
+    emailStateId,
+    isEmailVerified,
   };
 };
 

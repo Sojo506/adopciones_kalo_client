@@ -51,7 +51,6 @@ import UserTypeFormPage from "./UserTypeFormPage";
 import UserTypesDashboard from "./UserTypesDashboard";
 import UsersDashboard from "./UsersDashboard";
 import UserFormPage from "./UserFormPage";
-
 const Dashboard = () => {
   const [menuOpenPath, setMenuOpenPath] = useState(null);
   const location = useLocation();
