@@ -7,6 +7,8 @@ import DashboardHome from "./DashboardHome";
 import DashboardPlaceholder from "./DashboardPlaceholder";
 import EmailFormPage from "./EmailFormPage";
 import EmailsDashboard from "./EmailsDashboard";
+import OtpFormPage from "./OtpFormPage";
+import OtpsDashboard from "./OtpsDashboard";
 import PhoneFormPage from "./PhoneFormPage";
 import PhonesDashboard from "./PhonesDashboard";
 import UserTypeFormPage from "./UserTypeFormPage";
@@ -61,6 +63,9 @@ const Dashboard = () => {
             <Route path="cuentas" element={<AccountsDashboard />} />
             <Route path="cuentas/nuevo" element={<AccountFormPage />} />
             <Route path="cuentas/:idCuenta/editar" element={<AccountFormPage />} />
+            <Route path="codigos-otp" element={<OtpsDashboard />} />
+            <Route path="codigos-otp/nuevo" element={<OtpFormPage />} />
+            <Route path="codigos-otp/:idCodigoOtp/editar" element={<OtpFormPage />} />
             <Route path="*" element={<DashboardPlaceholder />} />
           </Routes>
         </div>
