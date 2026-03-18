@@ -41,6 +41,8 @@ import StateFormPage from "./StateFormPage";
 import StatesDashboard from "./StatesDashboard";
 import SexFormPage from "./SexFormPage";
 import SexesDashboard from "./SexesDashboard";
+import TrackingTypeFormPage from "./TrackingTypeFormPage";
+import TrackingTypesDashboard from "./TrackingTypesDashboard";
 import UserTypeFormPage from "./UserTypeFormPage";
 import UserTypesDashboard from "./UserTypesDashboard";
 import UsersDashboard from "./UsersDashboard";
@@ -131,6 +133,12 @@ const Dashboard = () => {
             <Route
               path="tipos-respuesta/:idTipoRespuesta/editar"
               element={<ResponseTypeFormPage />}
+            />
+            <Route path="tipos-seguimiento" element={<TrackingTypesDashboard />} />
+            <Route path="tipos-seguimiento/nuevo" element={<TrackingTypeFormPage />} />
+            <Route
+              path="tipos-seguimiento/:idTipoSeguimiento/editar"
+              element={<TrackingTypeFormPage />}
             />
             <Route path="correos" element={<EmailsDashboard />} />
             <Route path="correos/nuevo" element={<EmailFormPage />} />
