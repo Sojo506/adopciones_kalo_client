@@ -108,6 +108,12 @@ export const dashboardNavigationSections = [
     items: [
       createDashboardItem("productos", "Productos", "FIDE_PRODUCTO_TB", "Gestiona el catalogo principal de productos, precios y relaciones comerciales."),
       createDashboardItem(
+        "imagenes-producto",
+        "Imagenes de producto",
+        "FIDE_PRODUCTO_IMAGEN_TB",
+        "Administra las imagenes y recursos visuales asociados a cada producto del catalogo."
+      ),
+      createDashboardItem(
         "inventario",
         "Inventario",
         "FIDE_INVENTARIO_TB",
@@ -283,9 +289,9 @@ export const dashboardModuleGroups = [
     title: "Productos e inventario",
     badge: "Operacion comercial",
     description:
-      "Organiza el catalogo de productos, las categorias, el inventario disponible y los movimientos que afectan existencias.",
-    tables: ["FIDE_PRODUCTO_TB", "FIDE_CATEGORIA_TB", "FIDE_INVENTARIO_TB", "FIDE_MOVIMIENTO_INVENTARIO_TB"],
-    modules: ["Productos", "Categorias", "Inventario", "Movimientos", "Tipos de movimiento"],
+      "Organiza el catalogo de productos, sus imagenes, las categorias, el inventario disponible y los movimientos que afectan existencias.",
+    tables: ["FIDE_PRODUCTO_TB", "FIDE_PRODUCTO_IMAGEN_TB", "FIDE_CATEGORIA_TB", "FIDE_INVENTARIO_TB"],
+    modules: ["Productos", "Imagenes de producto", "Categorias", "Inventario", "Movimientos", "Tipos de movimiento"],
   },
   {
     title: "Ventas y facturacion",
