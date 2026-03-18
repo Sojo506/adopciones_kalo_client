@@ -154,7 +154,7 @@ export const dashboardNavigationSections = [
       createDashboardItem(
         "imagenes-perrito",
         "Imagenes de perrito",
-        "FIDE_PERRITO_IMAGE_TB",
+        "FIDE_PERRITO_IMAGEN_TB",
         "Gestiona las imagenes y recursos visuales asociados a cada perrito."
       ),
       createDashboardItem(
@@ -268,7 +268,7 @@ export const dashboardModuleGroups = [
     badge: "Nucleo animal",
     description:
       "Agrupa la informacion de los perritos, sus imagenes, raza, sexo y el historial de eventos de salud o atencion.",
-    tables: ["FIDE_PERRITO_TB", "FIDE_PERRITO_IMAGE_TB", "FIDE_EVENTO_PERRITO_TB", "FIDE_DETALLE_EVENTO_TB"],
+    tables: ["FIDE_PERRITO_TB", "FIDE_PERRITO_IMAGEN_TB", "FIDE_EVENTO_PERRITO_TB", "FIDE_DETALLE_EVENTO_TB"],
     modules: ["Perritos", "Imagenes", "Eventos", "Detalle de gastos", "Razas y sexos"],
   },
   {
