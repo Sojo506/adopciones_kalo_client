@@ -5,6 +5,10 @@ const unwrapResponse = (response) => response.data?.data ?? response.data ?? [];
 let userTypesCache = null;
 let statesCache = null;
 
+export const clearUserTypesCache = () => {
+  userTypesCache = null;
+};
+
 export const getUserTypes = async ({ force = false } = {}) => {
   if (!force && userTypesCache) {
     return userTypesCache;

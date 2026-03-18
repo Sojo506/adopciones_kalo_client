@@ -3,6 +3,8 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import Sidebar from "../../components/layout/Sidebar";
 import DashboardHome from "./DashboardHome";
 import DashboardPlaceholder from "./DashboardPlaceholder";
+import UserTypeFormPage from "./UserTypeFormPage";
+import UserTypesDashboard from "./UserTypesDashboard";
 import UsersDashboard from "./UsersDashboard";
 import UserFormPage from "./UserFormPage";
 
@@ -41,6 +43,9 @@ const Dashboard = () => {
             <Route path="usuarios" element={<UsersDashboard />} />
             <Route path="usuarios/nuevo" element={<UserFormPage />} />
             <Route path="usuarios/:identificacion/editar" element={<UserFormPage />} />
+            <Route path="tipos-usuario" element={<UserTypesDashboard />} />
+            <Route path="tipos-usuario/nuevo" element={<UserTypeFormPage />} />
+            <Route path="tipos-usuario/:idTipoUsuario/editar" element={<UserTypeFormPage />} />
             <Route path="*" element={<DashboardPlaceholder />} />
           </Routes>
         </div>
