@@ -2,17 +2,29 @@ import { useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import AccountsDashboard from "./AccountsDashboard";
 import AccountFormPage from "./AccountFormPage";
+import AddressFormPage from "./AddressFormPage";
+import AddressesDashboard from "./AddressesDashboard";
+import CantonsDashboard from "./CantonsDashboard";
+import CantonFormPage from "./CantonFormPage";
 import Sidebar from "../../components/layout/Sidebar";
+import CountriesDashboard from "./CountriesDashboard";
+import CountryFormPage from "./CountryFormPage";
 import DashboardHome from "./DashboardHome";
 import DashboardPlaceholder from "./DashboardPlaceholder";
+import DistrictFormPage from "./DistrictFormPage";
+import DistrictsDashboard from "./DistrictsDashboard";
 import EmailFormPage from "./EmailFormPage";
 import EmailsDashboard from "./EmailsDashboard";
 import OtpFormPage from "./OtpFormPage";
 import OtpsDashboard from "./OtpsDashboard";
 import PhoneFormPage from "./PhoneFormPage";
 import PhonesDashboard from "./PhonesDashboard";
+import ProvinceFormPage from "./ProvinceFormPage";
+import ProvincesDashboard from "./ProvincesDashboard";
 import RefreshTokenFormPage from "./RefreshTokenFormPage";
 import RefreshTokensDashboard from "./RefreshTokensDashboard";
+import StateFormPage from "./StateFormPage";
+import StatesDashboard from "./StatesDashboard";
 import UserTypeFormPage from "./UserTypeFormPage";
 import UserTypesDashboard from "./UserTypesDashboard";
 import UsersDashboard from "./UsersDashboard";
@@ -53,6 +65,24 @@ const Dashboard = () => {
             <Route path="usuarios" element={<UsersDashboard />} />
             <Route path="usuarios/nuevo" element={<UserFormPage />} />
             <Route path="usuarios/:identificacion/editar" element={<UserFormPage />} />
+            <Route path="paises" element={<CountriesDashboard />} />
+            <Route path="paises/nuevo" element={<CountryFormPage />} />
+            <Route path="paises/:idPais/editar" element={<CountryFormPage />} />
+            <Route path="provincias" element={<ProvincesDashboard />} />
+            <Route path="provincias/nuevo" element={<ProvinceFormPage />} />
+            <Route path="provincias/:idProvincia/editar" element={<ProvinceFormPage />} />
+            <Route path="cantones" element={<CantonsDashboard />} />
+            <Route path="cantones/nuevo" element={<CantonFormPage />} />
+            <Route path="cantones/:idCanton/editar" element={<CantonFormPage />} />
+            <Route path="distritos" element={<DistrictsDashboard />} />
+            <Route path="distritos/nuevo" element={<DistrictFormPage />} />
+            <Route path="distritos/:idDistrito/editar" element={<DistrictFormPage />} />
+            <Route path="direcciones" element={<AddressesDashboard />} />
+            <Route path="direcciones/nuevo" element={<AddressFormPage />} />
+            <Route path="direcciones/:idDireccion/editar" element={<AddressFormPage />} />
+            <Route path="estados" element={<StatesDashboard />} />
+            <Route path="estados/nuevo" element={<StateFormPage />} />
+            <Route path="estados/:idEstado/editar" element={<StateFormPage />} />
             <Route path="tipos-usuario" element={<UserTypesDashboard />} />
             <Route path="tipos-usuario/nuevo" element={<UserTypeFormPage />} />
             <Route path="tipos-usuario/:idTipoUsuario/editar" element={<UserTypeFormPage />} />
