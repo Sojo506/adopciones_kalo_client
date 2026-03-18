@@ -11,6 +11,8 @@ import OtpFormPage from "./OtpFormPage";
 import OtpsDashboard from "./OtpsDashboard";
 import PhoneFormPage from "./PhoneFormPage";
 import PhonesDashboard from "./PhonesDashboard";
+import RefreshTokenFormPage from "./RefreshTokenFormPage";
+import RefreshTokensDashboard from "./RefreshTokensDashboard";
 import UserTypeFormPage from "./UserTypeFormPage";
 import UserTypesDashboard from "./UserTypesDashboard";
 import UsersDashboard from "./UsersDashboard";
@@ -66,6 +68,9 @@ const Dashboard = () => {
             <Route path="codigos-otp" element={<OtpsDashboard />} />
             <Route path="codigos-otp/nuevo" element={<OtpFormPage />} />
             <Route path="codigos-otp/:idCodigoOtp/editar" element={<OtpFormPage />} />
+            <Route path="refresh-tokens" element={<RefreshTokensDashboard />} />
+            <Route path="refresh-tokens/nuevo" element={<RefreshTokenFormPage />} />
+            <Route path="refresh-tokens/:idRefreshToken/editar" element={<RefreshTokenFormPage />} />
             <Route path="*" element={<DashboardPlaceholder />} />
           </Routes>
         </div>
