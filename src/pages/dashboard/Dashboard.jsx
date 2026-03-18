@@ -33,6 +33,8 @@ import ProvinceFormPage from "./ProvinceFormPage";
 import ProvincesDashboard from "./ProvincesDashboard";
 import RefreshTokenFormPage from "./RefreshTokenFormPage";
 import RefreshTokensDashboard from "./RefreshTokensDashboard";
+import ResponseTypeFormPage from "./ResponseTypeFormPage";
+import ResponseTypesDashboard from "./ResponseTypesDashboard";
 import RequestTypeFormPage from "./RequestTypeFormPage";
 import RequestTypesDashboard from "./RequestTypesDashboard";
 import StateFormPage from "./StateFormPage";
@@ -123,6 +125,12 @@ const Dashboard = () => {
             <Route
               path="tipos-solicitud/:idTipoSolicitud/editar"
               element={<RequestTypeFormPage />}
+            />
+            <Route path="tipos-respuesta" element={<ResponseTypesDashboard />} />
+            <Route path="tipos-respuesta/nuevo" element={<ResponseTypeFormPage />} />
+            <Route
+              path="tipos-respuesta/:idTipoRespuesta/editar"
+              element={<ResponseTypeFormPage />}
             />
             <Route path="correos" element={<EmailsDashboard />} />
             <Route path="correos/nuevo" element={<EmailFormPage />} />
