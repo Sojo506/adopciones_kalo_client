@@ -33,6 +33,8 @@ import PhoneFormPage from "./PhoneFormPage";
 import PhonesDashboard from "./PhonesDashboard";
 import ProvinceFormPage from "./ProvinceFormPage";
 import ProvincesDashboard from "./ProvincesDashboard";
+import QuestionFormPage from "./QuestionFormPage";
+import QuestionsDashboard from "./QuestionsDashboard";
 import RefreshTokenFormPage from "./RefreshTokenFormPage";
 import RefreshTokensDashboard from "./RefreshTokensDashboard";
 import ResponseTypeFormPage from "./ResponseTypeFormPage";
@@ -148,6 +150,9 @@ const Dashboard = () => {
               path="tipos-evento/:idTipoEvento/editar"
               element={<EventTypeFormPage />}
             />
+            <Route path="preguntas" element={<QuestionsDashboard />} />
+            <Route path="preguntas/nuevo" element={<QuestionFormPage />} />
+            <Route path="preguntas/:idPregunta/editar" element={<QuestionFormPage />} />
             <Route path="correos" element={<EmailsDashboard />} />
             <Route path="correos/nuevo" element={<EmailFormPage />} />
             <Route path="correos/:identificacion/:correo/editar" element={<EmailFormPage />} />
