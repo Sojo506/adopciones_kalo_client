@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
+import AccountsDashboard from "./AccountsDashboard";
+import AccountFormPage from "./AccountFormPage";
 import Sidebar from "../../components/layout/Sidebar";
 import DashboardHome from "./DashboardHome";
 import DashboardPlaceholder from "./DashboardPlaceholder";
@@ -56,6 +58,9 @@ const Dashboard = () => {
             <Route path="telefonos" element={<PhonesDashboard />} />
             <Route path="telefonos/nuevo" element={<PhoneFormPage />} />
             <Route path="telefonos/:identificacion/:telefono/editar" element={<PhoneFormPage />} />
+            <Route path="cuentas" element={<AccountsDashboard />} />
+            <Route path="cuentas/nuevo" element={<AccountFormPage />} />
+            <Route path="cuentas/:idCuenta/editar" element={<AccountFormPage />} />
             <Route path="*" element={<DashboardPlaceholder />} />
           </Routes>
         </div>
