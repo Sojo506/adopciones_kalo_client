@@ -6,6 +6,7 @@ let userTypesCache = null;
 let statesCache = null;
 let otpTypesCache = null;
 let categoriesCache = null;
+let brandsCache = null;
 
 export const clearUserTypesCache = () => {
   userTypesCache = null;
@@ -21,6 +22,10 @@ export const clearOtpTypesCache = () => {
 
 export const clearCategoriesCache = () => {
   categoriesCache = null;
+};
+
+export const clearBrandsCache = () => {
+  brandsCache = null;
 };
 
 export const getUserTypes = async ({ force = false } = {}) => {
@@ -68,5 +73,17 @@ export const getCategories = async ({ force = false } = {}) => {
     const response = await axiosInstance.get("/catalogs/categories");
     categoriesCache = unwrapResponse(response);
     return categoriesCache;
+  });
+};
+
+export const getBrands = async ({ force = false } = {}) => {
+  if (!force && brandsCache) {
+    return brandsCache;
+  }
+
+  return dedupeRequest("catalogs:brands", async () => {
+    const response = await axiosInstance.get("/catalogs/brands");
+    brandsCache = unwrapResponse(response);
+    return brandsCache;
   });
 };
