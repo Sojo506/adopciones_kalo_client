@@ -10,6 +10,8 @@ import CategoriesDashboard from "./CategoriesDashboard";
 import CantonsDashboard from "./CantonsDashboard";
 import CantonFormPage from "./CantonFormPage";
 import CategoryFormPage from "./CategoryFormPage";
+import CurrenciesDashboard from "./CurrenciesDashboard";
+import CurrencyFormPage from "./CurrencyFormPage";
 import Sidebar from "../../components/layout/Sidebar";
 import CountriesDashboard from "./CountriesDashboard";
 import CountryFormPage from "./CountryFormPage";
@@ -95,6 +97,9 @@ const Dashboard = () => {
             <Route path="marcas" element={<BrandsDashboard />} />
             <Route path="marcas/nuevo" element={<BrandFormPage />} />
             <Route path="marcas/:idMarca/editar" element={<BrandFormPage />} />
+            <Route path="monedas" element={<CurrenciesDashboard />} />
+            <Route path="monedas/nuevo" element={<CurrencyFormPage />} />
+            <Route path="monedas/:idMoneda/editar" element={<CurrencyFormPage />} />
             <Route path="tipos-otp" element={<OtpTypesDashboard />} />
             <Route path="tipos-otp/nuevo" element={<OtpTypeFormPage />} />
             <Route path="tipos-otp/:idTipoOtp/editar" element={<OtpTypeFormPage />} />
