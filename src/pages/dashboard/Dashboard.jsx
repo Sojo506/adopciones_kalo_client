@@ -35,6 +35,8 @@ import RefreshTokenFormPage from "./RefreshTokenFormPage";
 import RefreshTokensDashboard from "./RefreshTokensDashboard";
 import StateFormPage from "./StateFormPage";
 import StatesDashboard from "./StatesDashboard";
+import SexFormPage from "./SexFormPage";
+import SexesDashboard from "./SexesDashboard";
 import UserTypeFormPage from "./UserTypeFormPage";
 import UserTypesDashboard from "./UserTypesDashboard";
 import UsersDashboard from "./UsersDashboard";
@@ -102,6 +104,9 @@ const Dashboard = () => {
             <Route path="razas" element={<BreedsDashboard />} />
             <Route path="razas/nuevo" element={<BreedFormPage />} />
             <Route path="razas/:idRaza/editar" element={<BreedFormPage />} />
+            <Route path="sexos" element={<SexesDashboard />} />
+            <Route path="sexos/nuevo" element={<SexFormPage />} />
+            <Route path="sexos/:idSexo/editar" element={<SexFormPage />} />
             <Route path="monedas" element={<CurrenciesDashboard />} />
             <Route path="monedas/nuevo" element={<CurrencyFormPage />} />
             <Route path="monedas/:idMoneda/editar" element={<CurrencyFormPage />} />
