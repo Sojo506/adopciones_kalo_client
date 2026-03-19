@@ -35,6 +35,8 @@ import EventTypeFormPage from "./EventTypeFormPage";
 import EventTypesDashboard from "./EventTypesDashboard";
 import FosterHomeFormPage from "./FosterHomeFormPage";
 import FosterHomesDashboard from "./FosterHomesDashboard";
+import HouseDogFormPage from "./HouseDogFormPage";
+import HouseDogsDashboard from "./HouseDogsDashboard";
 import InventoriesDashboard from "./InventoriesDashboard";
 import InventoryFormPage from "./InventoryFormPage";
 import InventoryMovementFormPage from "./InventoryMovementFormPage";
@@ -209,6 +211,12 @@ const Dashboard = () => {
             <Route path="casas-cuna" element={<FosterHomesDashboard />} />
             <Route path="casas-cuna/nuevo" element={<FosterHomeFormPage />} />
             <Route path="casas-cuna/:idCasaCuna/editar" element={<FosterHomeFormPage />} />
+            <Route path="casas-perrito" element={<HouseDogsDashboard />} />
+            <Route path="casas-perrito/nuevo" element={<HouseDogFormPage />} />
+            <Route
+              path="casas-perrito/:idCasaCuna/:idPerrito/editar"
+              element={<HouseDogFormPage />}
+            />
             <Route path="imagenes-perrito" element={<DogImagesDashboard />} />
             <Route path="imagenes-perrito/nuevo" element={<DogImageFormPage />} />
             <Route path="imagenes-perrito/:idImagen/editar" element={<DogImageFormPage />} />
