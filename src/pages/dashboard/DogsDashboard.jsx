@@ -171,7 +171,7 @@ const DogsDashboard = () => {
 
       <section className="dashboard-card">
         <div className="dashboard-alert">
-          Los perritos nuevos siempre inician activos por trigger y no podras desactivarlos si
+          Los perritos no se pueden desactivar si
           todavia tienen imagenes, eventos, solicitudes o asignaciones de casa activas.
         </div>
 

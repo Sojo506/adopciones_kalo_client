@@ -426,7 +426,7 @@ const DogFormPage = () => {
                 ) : (
                   <label className="dashboard-input">
                     <span>Estado inicial</span>
-                    <input className="form-control" readOnly type="text" value="Activo (por trigger)" />
+                    <input className="form-control" readOnly type="text" value="Activo" />
                   </label>
                 )}
               </div>
