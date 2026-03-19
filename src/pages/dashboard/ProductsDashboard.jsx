@@ -4,7 +4,9 @@ import Swal from "sweetalert2";
 import * as productsApi from "../../api/products";
 import { useAuth } from "../../hooks/useAuth";
 
-const numberFormatter = new Intl.NumberFormat("es-CR", {
+const numberFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
