@@ -4,6 +4,7 @@ import { useAuth } from "../../hooks/useAuth";
 
 const PRIMARY_NAV_ITEMS = [
   { label: "Inicio", to: "/", end: true },
+  { label: "Adoptar", to: "/adopciones", end: false },
 ];
 
 const Header = () => {
