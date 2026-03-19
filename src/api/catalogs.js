@@ -7,6 +7,7 @@ let statesCache = null;
 let otpTypesCache = null;
 let categoriesCache = null;
 let brandsCache = null;
+let movementTypesCache = null;
 let productsCache = null;
 let currenciesCache = null;
 let breedsCache = null;
@@ -35,6 +36,10 @@ export const clearCategoriesCache = () => {
 
 export const clearBrandsCache = () => {
   brandsCache = null;
+};
+
+export const clearMovementTypesCache = () => {
+  movementTypesCache = null;
 };
 
 export const clearProductsCache = () => {
@@ -130,6 +135,18 @@ export const getBrands = async ({ force = false } = {}) => {
     const response = await axiosInstance.get("/catalogs/brands");
     brandsCache = unwrapResponse(response);
     return brandsCache;
+  });
+};
+
+export const getMovementTypes = async ({ force = false } = {}) => {
+  if (!force && movementTypesCache) {
+    return movementTypesCache;
+  }
+
+  return dedupeRequest("catalogs:movement-types", async () => {
+    const response = await axiosInstance.get("/catalogs/movement-types");
+    movementTypesCache = unwrapResponse(response);
+    return movementTypesCache;
   });
 };
 
