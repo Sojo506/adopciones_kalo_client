@@ -4,6 +4,8 @@ import AccountsDashboard from "./AccountsDashboard";
 import AccountFormPage from "./AccountFormPage";
 import AddressFormPage from "./AddressFormPage";
 import AddressesDashboard from "./AddressesDashboard";
+import AdoptionFormPage from "./AdoptionFormPage";
+import AdoptionsDashboard from "./AdoptionsDashboard";
 import BrandFormPage from "./BrandFormPage";
 import BrandsDashboard from "./BrandsDashboard";
 import BreedFormPage from "./BreedFormPage";
@@ -241,6 +243,9 @@ const Dashboard = () => {
             <Route path="solicitudes" element={<RequestsDashboard />} />
             <Route path="solicitudes/nuevo" element={<RequestFormPage />} />
             <Route path="solicitudes/:idSolicitud/editar" element={<RequestFormPage />} />
+            <Route path="adopciones" element={<AdoptionsDashboard />} />
+            <Route path="adopciones/nuevo" element={<AdoptionFormPage />} />
+            <Route path="adopciones/:idAdopcion/editar" element={<AdoptionFormPage />} />
             <Route path="solicitudes-pregunta" element={<RequestQuestionsDashboard />} />
             <Route
               path="solicitudes-pregunta/nuevo"
