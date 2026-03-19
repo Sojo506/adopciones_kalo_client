@@ -21,6 +21,8 @@ import DashboardHome from "./DashboardHome";
 import DashboardPlaceholder from "./DashboardPlaceholder";
 import DistrictFormPage from "./DistrictFormPage";
 import DistrictsDashboard from "./DistrictsDashboard";
+import DogFormPage from "./DogFormPage";
+import DogsDashboard from "./DogsDashboard";
 import EmailFormPage from "./EmailFormPage";
 import EmailsDashboard from "./EmailsDashboard";
 import EventTypeFormPage from "./EventTypeFormPage";
@@ -181,6 +183,9 @@ const Dashboard = () => {
             <Route path="sexos" element={<SexesDashboard />} />
             <Route path="sexos/nuevo" element={<SexFormPage />} />
             <Route path="sexos/:idSexo/editar" element={<SexFormPage />} />
+            <Route path="perritos" element={<DogsDashboard />} />
+            <Route path="perritos/nuevo" element={<DogFormPage />} />
+            <Route path="perritos/:idPerrito/editar" element={<DogFormPage />} />
             <Route path="monedas" element={<CurrenciesDashboard />} />
             <Route path="monedas/nuevo" element={<CurrencyFormPage />} />
             <Route path="monedas/:idMoneda/editar" element={<CurrencyFormPage />} />
