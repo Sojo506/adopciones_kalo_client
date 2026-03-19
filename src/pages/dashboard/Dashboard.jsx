@@ -60,6 +60,8 @@ import QuestionsDashboard from "./QuestionsDashboard";
 import RefreshTokenFormPage from "./RefreshTokenFormPage";
 import RefreshTokensDashboard from "./RefreshTokensDashboard";
 import RequestFormPage from "./RequestFormPage";
+import RequestQuestionFormPage from "./RequestQuestionFormPage";
+import RequestQuestionsDashboard from "./RequestQuestionsDashboard";
 import RequestsDashboard from "./RequestsDashboard";
 import ResponseTypeFormPage from "./ResponseTypeFormPage";
 import ResponseTypesDashboard from "./ResponseTypesDashboard";
@@ -224,6 +226,15 @@ const Dashboard = () => {
             <Route path="solicitudes" element={<RequestsDashboard />} />
             <Route path="solicitudes/nuevo" element={<RequestFormPage />} />
             <Route path="solicitudes/:idSolicitud/editar" element={<RequestFormPage />} />
+            <Route path="solicitudes-pregunta" element={<RequestQuestionsDashboard />} />
+            <Route
+              path="solicitudes-pregunta/nuevo"
+              element={<RequestQuestionFormPage />}
+            />
+            <Route
+              path="solicitudes-pregunta/:idSolicitud/:idPregunta/editar"
+              element={<RequestQuestionFormPage />}
+            />
             <Route path="tipos-respuesta" element={<ResponseTypesDashboard />} />
             <Route path="tipos-respuesta/nuevo" element={<ResponseTypeFormPage />} />
             <Route
