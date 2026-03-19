@@ -29,6 +29,8 @@ import InventoriesDashboard from "./InventoriesDashboard";
 import InventoryFormPage from "./InventoryFormPage";
 import InventoryMovementFormPage from "./InventoryMovementFormPage";
 import InventoryMovementsDashboard from "./InventoryMovementsDashboard";
+import MovementTypeFormPage from "./MovementTypeFormPage";
+import MovementTypesDashboard from "./MovementTypesDashboard";
 import OtpFormPage from "./OtpFormPage";
 import OtpTypeFormPage from "./OtpTypeFormPage";
 import OtpTypesDashboard from "./OtpTypesDashboard";
@@ -135,6 +137,12 @@ const Dashboard = () => {
             <Route
               path="movimientos-inventario/:idMovimiento/editar"
               element={<InventoryMovementFormPage />}
+            />
+            <Route path="tipos-movimiento" element={<MovementTypesDashboard />} />
+            <Route path="tipos-movimiento/nuevo" element={<MovementTypeFormPage />} />
+            <Route
+              path="tipos-movimiento/:idTipoMovimiento/editar"
+              element={<MovementTypeFormPage />}
             />
             <Route path="razas" element={<BreedsDashboard />} />
             <Route path="razas/nuevo" element={<BreedFormPage />} />
