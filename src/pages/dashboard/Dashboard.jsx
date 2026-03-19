@@ -55,6 +55,10 @@ import StateFormPage from "./StateFormPage";
 import StatesDashboard from "./StatesDashboard";
 import SexFormPage from "./SexFormPage";
 import SexesDashboard from "./SexesDashboard";
+import SaleFormPage from "./SaleFormPage";
+import SaleProductFormPage from "./SaleProductFormPage";
+import SaleProductsDashboard from "./SaleProductsDashboard";
+import SalesDashboard from "./SalesDashboard";
 import TrackingTypeFormPage from "./TrackingTypeFormPage";
 import TrackingTypesDashboard from "./TrackingTypesDashboard";
 import UserTypeFormPage from "./UserTypeFormPage";
@@ -143,6 +147,15 @@ const Dashboard = () => {
             <Route
               path="tipos-movimiento/:idTipoMovimiento/editar"
               element={<MovementTypeFormPage />}
+            />
+            <Route path="ventas" element={<SalesDashboard />} />
+            <Route path="ventas/nuevo" element={<SaleFormPage />} />
+            <Route path="ventas/:idVenta/editar" element={<SaleFormPage />} />
+            <Route path="ventas-producto" element={<SaleProductsDashboard />} />
+            <Route path="ventas-producto/nuevo" element={<SaleProductFormPage />} />
+            <Route
+              path="ventas-producto/:idVenta/:idProducto/editar"
+              element={<SaleProductFormPage />}
             />
             <Route path="razas" element={<BreedsDashboard />} />
             <Route path="razas/nuevo" element={<BreedFormPage />} />
