@@ -28,6 +28,7 @@ const UsersDashboard = () => {
         currentUser.apellidoPaterno,
         currentUser.apellidoMaterno,
         currentUser.tipoUsuario,
+        currentUser.cuenta?.usuario,
         currentUser.cuenta?.correo,
         currentUser.direccion?.pais,
         currentUser.direccion?.provincia,
@@ -138,7 +139,7 @@ const UsersDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por nombre, correo, rol o ubicacion"
+            placeholder="Buscar por nombre, usuario, correo, rol o ubicacion"
             value={search}
           />
           <span className="dashboard-muted">
@@ -157,6 +158,7 @@ const UsersDashboard = () => {
                 <tr>
                   <th>Identificacion</th>
                   <th>Nombre</th>
+                  <th>Usuario</th>
                   <th>Correo</th>
                   <th>Tipo usuario</th>
                   <th>Estado</th>
@@ -180,6 +182,7 @@ const UsersDashboard = () => {
                     <tr key={currentUser.identificacion}>
                       <td>{currentUser.identificacion}</td>
                       <td>{fullName}</td>
+                      <td>{currentUser.cuenta?.usuario || "-"}</td>
                       <td>{currentUser.cuenta?.correo || "-"}</td>
                       <td>{currentUser.tipoUsuario || "-"}</td>
                       <td>{currentUser.estado || currentUser.idEstado}</td>

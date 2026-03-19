@@ -21,6 +21,7 @@ const Signup = () => {
   const { register, handleSubmit, formState, reset, setValue } = useForm({
     defaultValues: {
       identificacion: "",
+      usuario: "",
       nombre: "",
       apellidoPaterno: "",
       apellidoMaterno: "",
@@ -42,6 +43,7 @@ const Signup = () => {
   const onSubmit = async (values) => {
     await signUp({
       identificacion: values.identificacion,
+      usuario: values.usuario.trim(),
       nombre: values.nombre,
       apellidoPaterno: values.apellidoPaterno,
       apellidoMaterno: values.apellidoMaterno,
@@ -188,6 +190,21 @@ const Signup = () => {
                     )}
                   </div>
                   <div className="col-md-6 mb-3">
+                    <label className="form-label">Nombre de usuario</label>
+                    <input
+                      {...register("usuario", {
+                        required: "El nombre de usuario es obligatorio",
+                      })}
+                      className={`form-control ${errors.usuario ? "is-invalid" : ""}`}
+                      type="text"
+                      autoComplete="username"
+                    />
+                    {errors.usuario && <div className="invalid-feedback">{errors.usuario.message}</div>}
+                  </div>
+                </div>
+
+                <div className="row">
+                  <div className="col-md-6 mb-3">
                     <label className="form-label">Correo electrónico</label>
                     <input
                       {...register("correo", {
@@ -203,9 +220,6 @@ const Signup = () => {
                     />
                     {errors.correo && <div className="invalid-feedback">{errors.correo.message}</div>}
                   </div>
-                </div>
-
-                <div className="row">
                   <div className="col-md-6 mb-3">
                     <label className="form-label">Nombre</label>
                     <input

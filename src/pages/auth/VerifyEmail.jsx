@@ -1,13 +1,18 @@
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import * as authApi from "../../api/auth";
+import { useAuth } from "../../hooks/useAuth";
+import { initializeAuth } from "../../store/authSlice";
 
 const VerifyEmail = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
   const [searchParams] = useSearchParams();
-  const emailFromQuery = searchParams.get("correo") || "";
+  const emailFromQuery = searchParams.get("correo") || user?.correo || "";
   const {
     register,
     handleSubmit,
@@ -34,8 +39,17 @@ const VerifyEmail = () => {
       Swal.fire({
         icon: "success",
         title: "Correo verificado",
-        text: "Tu cuenta ya esta verificada. Ahora puedes iniciar sesion.",
+        text: isAuthenticated
+          ? "Tu correo ya esta verificado. Te llevaremos al dashboard."
+          : "Tu cuenta ya esta verificada. Ahora puedes iniciar sesion.",
       });
+
+      if (isAuthenticated) {
+        await dispatch(initializeAuth());
+        navigate("/dashboard", { replace: true });
+        return;
+      }
+
       navigate("/login");
     } catch (error) {
       Swal.fire({
@@ -132,7 +146,9 @@ const VerifyEmail = () => {
               </button>
 
               <div className="text-center mt-4">
-                <Link to="/login">Volver a iniciar sesion</Link>
+                <Link to={isAuthenticated ? "/dashboard" : "/login"}>
+                  {isAuthenticated ? "Volver al dashboard" : "Volver a iniciar sesion"}
+                </Link>
               </div>
             </div>
           </div>

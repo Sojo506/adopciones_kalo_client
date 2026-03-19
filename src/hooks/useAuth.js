@@ -71,6 +71,7 @@ export const useAuth = () => {
     loading,
     isAuthenticated: Boolean(user),
     isAdmin: isAdminUser(user),
+    isEmailVerified: Boolean(user?.isEmailVerified),
     login,
     register,
     logout,

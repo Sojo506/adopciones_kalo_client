@@ -86,7 +86,7 @@ export const dashboardNavigationSections = [
       createDashboardItem(
         "tipos-seguimiento",
         "Tipos de seguimiento",
-        "FIDE_TIPO_SEGUIMIENTO",
+        "FIDE_TIPO_SEGUIMIENTO_TB",
         "Administra las categorias de seguimiento aplicables a adopciones activas."
       ),
       createDashboardItem(
@@ -107,6 +107,12 @@ export const dashboardNavigationSections = [
     title: "Productos y ventas",
     items: [
       createDashboardItem("productos", "Productos", "FIDE_PRODUCTO_TB", "Gestiona el catalogo principal de productos, precios y relaciones comerciales."),
+      createDashboardItem(
+        "imagenes-producto",
+        "Imagenes de producto",
+        "FIDE_PRODUCTO_IMAGEN_TB",
+        "Administra las imagenes y recursos visuales asociados a cada producto del catalogo."
+      ),
       createDashboardItem(
         "inventario",
         "Inventario",
@@ -154,7 +160,7 @@ export const dashboardNavigationSections = [
       createDashboardItem(
         "imagenes-perrito",
         "Imagenes de perrito",
-        "FIDE_PERRITO_IMAGE_TB",
+        "FIDE_PERRITO_IMAGEN_TB",
         "Gestiona las imagenes y recursos visuales asociados a cada perrito."
       ),
       createDashboardItem(
@@ -268,7 +274,7 @@ export const dashboardModuleGroups = [
     badge: "Nucleo animal",
     description:
       "Agrupa la informacion de los perritos, sus imagenes, raza, sexo y el historial de eventos de salud o atencion.",
-    tables: ["FIDE_PERRITO_TB", "FIDE_PERRITO_IMAGE_TB", "FIDE_EVENTO_PERRITO_TB", "FIDE_DETALLE_EVENTO_TB"],
+    tables: ["FIDE_PERRITO_TB", "FIDE_PERRITO_IMAGEN_TB", "FIDE_EVENTO_PERRITO_TB", "FIDE_DETALLE_EVENTO_TB"],
     modules: ["Perritos", "Imagenes", "Eventos", "Detalle de gastos", "Razas y sexos"],
   },
   {
@@ -283,9 +289,9 @@ export const dashboardModuleGroups = [
     title: "Productos e inventario",
     badge: "Operacion comercial",
     description:
-      "Organiza el catalogo de productos, las categorias, el inventario disponible y los movimientos que afectan existencias.",
-    tables: ["FIDE_PRODUCTO_TB", "FIDE_CATEGORIA_TB", "FIDE_INVENTARIO_TB", "FIDE_MOVIMIENTO_INVENTARIO_TB"],
-    modules: ["Productos", "Categorias", "Inventario", "Movimientos", "Tipos de movimiento"],
+      "Organiza el catalogo de productos, sus imagenes, las categorias, el inventario disponible y los movimientos que afectan existencias.",
+    tables: ["FIDE_PRODUCTO_TB", "FIDE_PRODUCTO_IMAGEN_TB", "FIDE_CATEGORIA_TB", "FIDE_INVENTARIO_TB"],
+    modules: ["Productos", "Imagenes de producto", "Categorias", "Inventario", "Movimientos", "Tipos de movimiento"],
   },
   {
     title: "Ventas y facturacion",
