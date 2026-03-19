@@ -112,7 +112,8 @@ const ResponseTypesDashboard = () => {
           <p className="dashboard-page__eyebrow">Gestion de catalogo</p>
           <h1>Tipos de respuesta</h1>
           <p className="dashboard-page__lede">
-            Administra los tipos de respuesta disponibles para las preguntas y formularios del sistema.
+            Administra los tipos de respuesta disponibles para el banco reutilizable de preguntas y
+            los formularios del sistema.
           </p>
         </div>
         <Link className="dashboard-btn dashboard-btn--primary" to="/dashboard/tipos-respuesta/nuevo">

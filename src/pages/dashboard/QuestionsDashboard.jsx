@@ -112,7 +112,8 @@ const QuestionsDashboard = () => {
           <p className="dashboard-page__eyebrow">Gestion de formularios</p>
           <h1>Preguntas</h1>
           <p className="dashboard-page__lede">
-            Administra el banco de preguntas utilizado en solicitudes y formularios del sistema.
+            Administra el banco reutilizable de preguntas que luego se asigna a cada solicitud
+            mediante la relacion solicitud-pregunta.
           </p>
         </div>
         <Link className="dashboard-btn dashboard-btn--primary" to="/dashboard/preguntas/nuevo">
@@ -122,7 +123,13 @@ const QuestionsDashboard = () => {
 
       <section className="dashboard-card">
         <div className="dashboard-alert">
-          No puedes eliminar una pregunta si todavia tiene respuestas activas asociadas.
+          Las preguntas no pertenecen a una sola solicitud. La composicion de cada formulario se
+          gestiona desde <Link to="/dashboard/solicitudes-pregunta">Solicitud-pregunta</Link>.
+        </div>
+
+        <div className="dashboard-alert">
+          No puedes eliminar o desactivar una pregunta si todavia tiene respuestas activas o sigue
+          asignada a solicitudes activas.
         </div>
 
         <div className="dashboard-toolbar dashboard-toolbar--between">

@@ -171,8 +171,13 @@ const DogsDashboard = () => {
 
       <section className="dashboard-card">
         <div className="dashboard-alert">
-          Los perritos no se pueden desactivar si
-          todavia tienen imagenes, eventos, solicitudes o asignaciones de casa activas.
+          Los perritos no se pueden desactivar si todavia tienen imagenes, eventos, adopciones o
+          asignaciones de casa activas.
+        </div>
+
+        <div className="dashboard-alert">
+          La relacion entre un caso aprobado y su perrito ahora se administra desde adopciones, no
+          desde solicitudes.
         </div>
 
         <div className="dashboard-alert">

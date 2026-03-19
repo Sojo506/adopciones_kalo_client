@@ -112,7 +112,8 @@ const RequestTypesDashboard = () => {
           <p className="dashboard-page__eyebrow">Gestion de catalogo</p>
           <h1>Tipos de solicitud</h1>
           <p className="dashboard-page__lede">
-            Administra los tipos de solicitud disponibles dentro de los flujos del sistema.
+            Administra los tipos de formulario o solicitud que luego utilizan los flujos de
+            adopcion del sistema.
           </p>
         </div>
         <Link className="dashboard-btn dashboard-btn--primary" to="/dashboard/tipos-solicitud/nuevo">

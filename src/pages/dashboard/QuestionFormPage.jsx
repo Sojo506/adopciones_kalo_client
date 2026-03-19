@@ -173,12 +173,11 @@ const QuestionFormPage = () => {
     <div className="dashboard-page">
       <div className="dashboard-page__header mt-4">
         <div>
-          <p className="dashboard-page__eyebrow">
-            {isEditing ? "Editar pregunta" : "Nueva pregunta"}
-          </p>
+          <p className="dashboard-page__eyebrow">Banco de preguntas</p>
           <h1>{isEditing ? "Actualizar pregunta" : "Crear pregunta"}</h1>
           <p className="dashboard-page__lede">
-            Define el texto de la pregunta, el tipo de respuesta esperado y el estado del registro.
+            Define una pregunta reutilizable, el tipo de respuesta esperado y el estado con que
+            quedara disponible para asignarse a formularios.
           </p>
         </div>
         <Link className="dashboard-btn dashboard-btn--ghost" to="/dashboard/preguntas">
@@ -187,6 +186,20 @@ const QuestionFormPage = () => {
       </div>
 
       <section className="dashboard-card">
+        {!catalogsLoading && !detailLoading ? (
+          <>
+            <div className="dashboard-alert">
+              Esta pantalla administra solo el banco de preguntas. La asignacion a formularios se
+              resuelve desde <Link to="/dashboard/solicitudes-pregunta">Solicitud-pregunta</Link>.
+            </div>
+
+            <div className="dashboard-alert">
+              Si una pregunta sigue asignada a solicitudes activas o ya tiene respuestas activas,
+              el backend no permitira desactivarla.
+            </div>
+          </>
+        ) : null}
+
         {catalogsLoading || detailLoading ? (
           <div className="dashboard-empty-state">Cargando formulario...</div>
         ) : !hasStates ? (

@@ -75,13 +75,13 @@ export const dashboardNavigationSections = [
         "tipos-solicitud",
         "Tipos de solicitud",
         "FIDE_TIPO_SOLICITUD_TB",
-        "Configura las clases de solicitud disponibles dentro del flujo de adopcion."
+        "Configura las clases de formulario o solicitud disponibles dentro del flujo de adopcion."
       ),
       createDashboardItem(
         "tipos-respuesta",
         "Tipos de respuesta",
         "FIDE_TIPO_RESPUESTA_TB",
-        "Define el tipo esperado para responder preguntas de formularios o procesos."
+        "Define el tipo esperado para responder las preguntas reutilizables de formularios y procesos."
       ),
       createDashboardItem(
         "tipos-seguimiento",
@@ -99,7 +99,8 @@ export const dashboardNavigationSections = [
         "preguntas",
         "Preguntas",
         "FIDE_PREGUNTA_TB",
-        "CRUD del banco de preguntas utilizado en solicitudes y formularios del sistema."
+        "CRUD del banco reutilizable de preguntas que luego se asigna a cada solicitud mediante una relacion N:N.",
+        "Banco reutilizable"
       ),
     ],
   },
@@ -179,13 +180,22 @@ export const dashboardNavigationSections = [
         "solicitudes",
         "Solicitudes",
         "FIDE_SOLICITUD_TB",
-        "Administra solicitudes de adopcion y su relacion con usuarios y perritos."
+        "Administra formularios de solicitud por usuario y tipo. Las preguntas se asignan aparte y el perrito se define en adopciones.",
+        "Formulario base"
+      ),
+      createDashboardItem(
+        "solicitudes-pregunta",
+        "Solicitud-pregunta",
+        "FIDE_SOLICITUD_PREGUNTA_TB",
+        "Relaciona cada solicitud con las preguntas activas que componen su formulario.",
+        "Relacion N:N"
       ),
       createDashboardItem(
         "respuestas",
         "Respuestas",
         "FIDE_RESPUESTA_TB",
-        "CRUD de respuestas ligadas a solicitudes y preguntas del formulario."
+        "CRUD de respuestas ligadas a solicitudes y a preguntas previamente asignadas al formulario.",
+        "Valida asignacion"
       ),
       createDashboardItem(
         "casas-cuna",
@@ -199,7 +209,13 @@ export const dashboardNavigationSections = [
         "FIDE_CASA_PERRITO_TB",
         "Administra la asignacion de perritos a cada casa cuna disponible."
       ),
-      createDashboardItem("adopciones", "Adopciones", "FIDE_ADOPCION_TB", "Controla las adopciones aprobadas y su fecha oficial de cierre."),
+      createDashboardItem(
+        "adopciones",
+        "Adopciones",
+        "FIDE_ADOPCION_TB",
+        "Controla las adopciones aprobadas, la solicitud asociada y el perrito seleccionado para el cierre.",
+        "Define perrito"
+      ),
       createDashboardItem(
         "seguimientos",
         "Seguimientos",
@@ -281,9 +297,22 @@ export const dashboardModuleGroups = [
     title: "Solicitudes, adopciones y seguimiento",
     badge: "Proceso de adopcion",
     description:
-      "Prepara el flujo de formularios, respuestas, adopciones aprobadas, seguimiento de responsabilidad y evidencias posteriores.",
-    tables: ["FIDE_SOLICITUD_TB", "FIDE_RESPUESTA_TB", "FIDE_ADOPCION_TB", "FIDE_SEGUIMIENTO_TB"],
-    modules: ["Solicitudes", "Preguntas", "Respuestas", "Adopciones", "Seguimiento y evidencia"],
+      "Prepara el flujo de formularios de solicitud, su composicion N:N con preguntas, las respuestas capturadas, las adopciones aprobadas y el seguimiento posterior.",
+    tables: [
+      "FIDE_SOLICITUD_TB",
+      "FIDE_SOLICITUD_PREGUNTA_TB",
+      "FIDE_RESPUESTA_TB",
+      "FIDE_ADOPCION_TB",
+      "FIDE_SEGUIMIENTO_TB",
+    ],
+    modules: [
+      "Solicitudes",
+      "Solicitud-pregunta",
+      "Preguntas",
+      "Respuestas",
+      "Adopciones",
+      "Seguimiento y evidencia",
+    ],
   },
   {
     title: "Productos e inventario",
@@ -315,7 +344,7 @@ export const dashboardReadinessItems = [
   {
     name: "Catalogos base",
     state: "Preparado",
-    note: "Estados, tipos de usuario, tipos de solicitud, tipos de respuesta, tipos de seguimiento y tipos de evento.",
+    note: "Estados, tipos de usuario, tipos de solicitud, tipos de respuesta, tipos de seguimiento, tipos de evento y banco de preguntas.",
   },
   {
     name: "Ubicaciones y direcciones",
@@ -325,7 +354,7 @@ export const dashboardReadinessItems = [
   {
     name: "Casas cuna",
     state: "Preparado",
-    note: "Relacion entre hogares temporales, solicitudes y perritos asignados.",
+    note: "Relacion entre hogares temporales, solicitudes y las asignaciones de perritos mediante casa-perrito.",
   },
   {
     name: "Auditoria",
