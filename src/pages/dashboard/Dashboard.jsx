@@ -33,6 +33,8 @@ import EventDetailFormPage from "./EventDetailFormPage";
 import EventDetailsDashboard from "./EventDetailsDashboard";
 import EventTypeFormPage from "./EventTypeFormPage";
 import EventTypesDashboard from "./EventTypesDashboard";
+import FosterHomeFormPage from "./FosterHomeFormPage";
+import FosterHomesDashboard from "./FosterHomesDashboard";
 import InventoriesDashboard from "./InventoriesDashboard";
 import InventoryFormPage from "./InventoryFormPage";
 import InventoryMovementFormPage from "./InventoryMovementFormPage";
@@ -204,6 +206,9 @@ const Dashboard = () => {
               path="detalle-evento/:idDetalleEvento/editar"
               element={<EventDetailFormPage />}
             />
+            <Route path="casas-cuna" element={<FosterHomesDashboard />} />
+            <Route path="casas-cuna/nuevo" element={<FosterHomeFormPage />} />
+            <Route path="casas-cuna/:idCasaCuna/editar" element={<FosterHomeFormPage />} />
             <Route path="imagenes-perrito" element={<DogImagesDashboard />} />
             <Route path="imagenes-perrito/nuevo" element={<DogImageFormPage />} />
             <Route path="imagenes-perrito/:idImagen/editar" element={<DogImageFormPage />} />
