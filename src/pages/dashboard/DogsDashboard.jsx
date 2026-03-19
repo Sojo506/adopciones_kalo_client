@@ -4,6 +4,14 @@ import Swal from "sweetalert2";
 import * as dogsApi from "../../api/dogs";
 import { useAuth } from "../../hooks/useAuth";
 
+const imageStyle = {
+  width: "56px",
+  height: "56px",
+  borderRadius: "16px",
+  objectFit: "cover",
+  display: "block",
+};
+
 const numberFormatter = new Intl.NumberFormat("es-CR", {
   minimumFractionDigits: 0,
   maximumFractionDigits: 2,
@@ -57,6 +65,7 @@ const DogsDashboard = () => {
         dog.estatura,
         dog.sexo,
         dog.raza,
+        dog.imageUrl,
         dog.estado,
       ]
         .filter((value) => value !== null && value !== undefined)
@@ -166,6 +175,11 @@ const DogsDashboard = () => {
           todavia tienen imagenes, eventos, solicitudes o asignaciones de casa activas.
         </div>
 
+        <div className="dashboard-alert">
+          La imagen principal de cada perrito se muestra aqui como referencia visual y se
+          administra desde el CRUD de imagenes de perrito.
+        </div>
+
         <div className="dashboard-toolbar dashboard-toolbar--between">
           <input
             className="form-control dashboard-search"
@@ -190,6 +204,7 @@ const DogsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
+                  <th>Imagen</th>
                   <th>ID</th>
                   <th>Nombre</th>
                   <th>Fecha ingreso</th>
@@ -208,6 +223,18 @@ const DogsDashboard = () => {
 
                   return (
                     <tr key={dog.idPerrito}>
+                      <td>
+                        {dog.imageUrl ? (
+                          <img
+                            alt={`Perrito ${dog.nombre}`}
+                            loading="lazy"
+                            src={dog.imageUrl}
+                            style={imageStyle}
+                          />
+                        ) : (
+                          <span className="dashboard-muted">Sin imagen</span>
+                        )}
+                      </td>
                       <td>{dog.idPerrito}</td>
                       <td>{dog.nombre}</td>
                       <td>{formatDate(dog.fechaIngreso)}</td>
@@ -229,6 +256,17 @@ const DogsDashboard = () => {
                             to={`/dashboard/perritos/${dog.idPerrito}/editar`}
                           >
                             Editar
+                          </Link>
+                          <Link
+                            className={`dashboard-btn dashboard-btn--ghost${deletingId !== null ? " is-disabled" : ""}`}
+                            onClick={(event) => {
+                              if (deletingId !== null) {
+                                event.preventDefault();
+                              }
+                            }}
+                            to={`/dashboard/imagenes-perrito?perrito=${encodeURIComponent(dog.idPerrito)}`}
+                          >
+                            Imagenes
                           </Link>
                           <button
                             className="dashboard-btn dashboard-btn--danger"

@@ -273,6 +273,16 @@ const DogFormPage = () => {
           </div>
         ) : null}
 
+        {isEditing ? (
+          <div className="dashboard-alert">
+            Puedes administrar las imagenes de este perrito desde{" "}
+            <Link to={`/dashboard/imagenes-perrito?perrito=${encodeURIComponent(idPerrito)}`}>
+              Imagenes de perrito
+            </Link>
+            .
+          </div>
+        ) : null}
+
         {catalogsLoading || detailLoading ? (
           <div className="dashboard-empty-state">Cargando formulario...</div>
         ) : !hasDependencies ? (

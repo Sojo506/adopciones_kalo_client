@@ -18,6 +18,10 @@ export const clearDogCaches = (idPerrito) => {
   dogDetailCache.clear();
 };
 
+export const invalidateDogCaches = (idPerrito) => {
+  clearDogCaches(idPerrito);
+};
+
 export const getDogs = async ({ force = false } = {}) => {
   if (!force && dogsCache) {
     return dogsCache;
