@@ -220,7 +220,8 @@ export const dashboardNavigationSections = [
         "seguimientos",
         "Seguimientos",
         "FIDE_SEGUIMIENTO_TB",
-        "Gestiona el seguimiento posterior a la adopcion con fechas y comentarios."
+        "Administra los seguimientos que el equipo programa para cada adopcion. Luego el usuario completa evidencias desde su perfil.",
+        "Activa evidencias"
       ),
       createDashboardItem(
         "evidencias",
@@ -297,7 +298,7 @@ export const dashboardModuleGroups = [
     title: "Solicitudes, adopciones y seguimiento",
     badge: "Proceso de adopcion",
     description:
-      "Prepara el flujo de formularios de solicitud, su composicion N:N con preguntas, las respuestas capturadas, las adopciones aprobadas y el seguimiento posterior.",
+      "Prepara el flujo de formularios de solicitud, su composicion N:N con preguntas, las respuestas capturadas, las adopciones aprobadas y los seguimientos que luego habilitan evidencias del usuario.",
     tables: [
       "FIDE_SOLICITUD_TB",
       "FIDE_SOLICITUD_PREGUNTA_TB",

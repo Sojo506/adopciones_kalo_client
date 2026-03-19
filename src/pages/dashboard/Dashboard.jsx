@@ -35,6 +35,8 @@ import EventDetailFormPage from "./EventDetailFormPage";
 import EventDetailsDashboard from "./EventDetailsDashboard";
 import EventTypeFormPage from "./EventTypeFormPage";
 import EventTypesDashboard from "./EventTypesDashboard";
+import FollowUpFormPage from "./FollowUpFormPage";
+import FollowUpsDashboard from "./FollowUpsDashboard";
 import FosterHomeFormPage from "./FosterHomeFormPage";
 import FosterHomesDashboard from "./FosterHomesDashboard";
 import HouseDogFormPage from "./HouseDogFormPage";
@@ -246,6 +248,12 @@ const Dashboard = () => {
             <Route path="adopciones" element={<AdoptionsDashboard />} />
             <Route path="adopciones/nuevo" element={<AdoptionFormPage />} />
             <Route path="adopciones/:idAdopcion/editar" element={<AdoptionFormPage />} />
+            <Route path="seguimientos" element={<FollowUpsDashboard />} />
+            <Route path="seguimientos/nuevo" element={<FollowUpFormPage />} />
+            <Route
+              path="seguimientos/:idSeguimiento/editar"
+              element={<FollowUpFormPage />}
+            />
             <Route path="solicitudes-pregunta" element={<RequestQuestionsDashboard />} />
             <Route
               path="solicitudes-pregunta/nuevo"
