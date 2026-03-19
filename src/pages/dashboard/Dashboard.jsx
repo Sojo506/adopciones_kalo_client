@@ -21,12 +21,16 @@ import DashboardHome from "./DashboardHome";
 import DashboardPlaceholder from "./DashboardPlaceholder";
 import DistrictFormPage from "./DistrictFormPage";
 import DistrictsDashboard from "./DistrictsDashboard";
+import DogEventFormPage from "./DogEventFormPage";
+import DogEventsDashboard from "./DogEventsDashboard";
 import DogImageFormPage from "./DogImageFormPage";
 import DogImagesDashboard from "./DogImagesDashboard";
 import DogFormPage from "./DogFormPage";
 import DogsDashboard from "./DogsDashboard";
 import EmailFormPage from "./EmailFormPage";
 import EmailsDashboard from "./EmailsDashboard";
+import EventDetailFormPage from "./EventDetailFormPage";
+import EventDetailsDashboard from "./EventDetailsDashboard";
 import EventTypeFormPage from "./EventTypeFormPage";
 import EventTypesDashboard from "./EventTypesDashboard";
 import InventoriesDashboard from "./InventoriesDashboard";
@@ -185,6 +189,15 @@ const Dashboard = () => {
             <Route path="sexos" element={<SexesDashboard />} />
             <Route path="sexos/nuevo" element={<SexFormPage />} />
             <Route path="sexos/:idSexo/editar" element={<SexFormPage />} />
+            <Route path="eventos-perrito" element={<DogEventsDashboard />} />
+            <Route path="eventos-perrito/nuevo" element={<DogEventFormPage />} />
+            <Route path="eventos-perrito/:idEvento/editar" element={<DogEventFormPage />} />
+            <Route path="detalle-evento" element={<EventDetailsDashboard />} />
+            <Route path="detalle-evento/nuevo" element={<EventDetailFormPage />} />
+            <Route
+              path="detalle-evento/:idDetalleEvento/editar"
+              element={<EventDetailFormPage />}
+            />
             <Route path="imagenes-perrito" element={<DogImagesDashboard />} />
             <Route path="imagenes-perrito/nuevo" element={<DogImageFormPage />} />
             <Route path="imagenes-perrito/:idImagen/editar" element={<DogImageFormPage />} />

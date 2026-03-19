@@ -264,6 +264,17 @@ const DogsDashboard = () => {
                                 event.preventDefault();
                               }
                             }}
+                            to={`/dashboard/eventos-perrito?perrito=${encodeURIComponent(dog.idPerrito)}`}
+                          >
+                            Eventos
+                          </Link>
+                          <Link
+                            className={`dashboard-btn dashboard-btn--ghost${deletingId !== null ? " is-disabled" : ""}`}
+                            onClick={(event) => {
+                              if (deletingId !== null) {
+                                event.preventDefault();
+                              }
+                            }}
                             to={`/dashboard/imagenes-perrito?perrito=${encodeURIComponent(dog.idPerrito)}`}
                           >
                             Imagenes
