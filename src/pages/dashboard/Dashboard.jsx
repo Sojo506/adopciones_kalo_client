@@ -29,12 +29,16 @@ import InventoriesDashboard from "./InventoriesDashboard";
 import InventoryFormPage from "./InventoryFormPage";
 import InventoryMovementFormPage from "./InventoryMovementFormPage";
 import InventoryMovementsDashboard from "./InventoryMovementsDashboard";
+import InvoiceFormPage from "./InvoiceFormPage";
+import InvoicesDashboard from "./InvoicesDashboard";
 import MovementTypeFormPage from "./MovementTypeFormPage";
 import MovementTypesDashboard from "./MovementTypesDashboard";
 import OtpFormPage from "./OtpFormPage";
 import OtpTypeFormPage from "./OtpTypeFormPage";
 import OtpTypesDashboard from "./OtpTypesDashboard";
 import OtpsDashboard from "./OtpsDashboard";
+import PayPalPaymentFormPage from "./PayPalPaymentFormPage";
+import PayPalPaymentsDashboard from "./PayPalPaymentsDashboard";
 import PhoneFormPage from "./PhoneFormPage";
 import PhonesDashboard from "./PhonesDashboard";
 import ProductImageFormPage from "./ProductImageFormPage";
@@ -56,6 +60,8 @@ import StatesDashboard from "./StatesDashboard";
 import SexFormPage from "./SexFormPage";
 import SexesDashboard from "./SexesDashboard";
 import SaleFormPage from "./SaleFormPage";
+import SaleInvoiceFormPage from "./SaleInvoiceFormPage";
+import SaleInvoicesDashboard from "./SaleInvoicesDashboard";
 import SaleProductFormPage from "./SaleProductFormPage";
 import SaleProductsDashboard from "./SaleProductsDashboard";
 import SalesDashboard from "./SalesDashboard";
@@ -151,6 +157,18 @@ const Dashboard = () => {
             <Route path="ventas" element={<SalesDashboard />} />
             <Route path="ventas/nuevo" element={<SaleFormPage />} />
             <Route path="ventas/:idVenta/editar" element={<SaleFormPage />} />
+            <Route path="facturas" element={<InvoicesDashboard />} />
+            <Route path="facturas/nuevo" element={<InvoiceFormPage />} />
+            <Route path="facturas/:idFactura/editar" element={<InvoiceFormPage />} />
+            <Route path="pagos-paypal" element={<PayPalPaymentsDashboard />} />
+            <Route path="pagos-paypal/nuevo" element={<PayPalPaymentFormPage />} />
+            <Route path="pagos-paypal/:idPago/editar" element={<PayPalPaymentFormPage />} />
+            <Route path="ventas-factura" element={<SaleInvoicesDashboard />} />
+            <Route path="ventas-factura/nuevo" element={<SaleInvoiceFormPage />} />
+            <Route
+              path="ventas-factura/:idVenta/:idFactura/editar"
+              element={<SaleInvoiceFormPage />}
+            />
             <Route path="ventas-producto" element={<SaleProductsDashboard />} />
             <Route path="ventas-producto/nuevo" element={<SaleProductFormPage />} />
             <Route
