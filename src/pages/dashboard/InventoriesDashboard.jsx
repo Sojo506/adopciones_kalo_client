@@ -130,8 +130,8 @@ const InventoriesDashboard = () => {
 
       <section className="dashboard-card">
         <div className="dashboard-alert">
-          Si una cantidad baja o sube desde este CRUD, el backend registra el movimiento
-          correspondiente en <code>FIDE_MOVIMIENTO_INVENTARIO_TB</code>.
+          Si una cantidad baja o sube desde este CRUD, el movimiento
+          correspondiente se registra en <code>Movimientos de inventario</code>.
         </div>
 
         <div className="dashboard-alert">

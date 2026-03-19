@@ -140,8 +140,7 @@ const InventoryMovementsDashboard = () => {
           <p className="dashboard-page__eyebrow">Productos e inventario</p>
           <h1>Movimientos de inventario</h1>
           <p className="dashboard-page__lede">
-            Administra entradas y salidas sobre <code>FIDE_MOVIMIENTO_INVENTARIO_TB</code>. Cada
-            movimiento activo recalcula el stock del inventario asociado.
+            Cada movimiento activo recalcula el stock del inventario asociado.
           </p>
         </div>
         <div className="dashboard-table__actions">
