@@ -227,7 +227,8 @@ export const dashboardNavigationSections = [
         "evidencias",
         "Evidencias",
         "FIDE_EVIDENCIA_TB",
-        "CRUD de evidencias, imagenes y observaciones asociadas a un seguimiento."
+        "Administra las evidencias que el usuario carga para cada seguimiento, con imagenes y observaciones del proceso.",
+        "Carga del usuario"
       ),
     ],
   },

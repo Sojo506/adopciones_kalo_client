@@ -29,6 +29,8 @@ import DogImageFormPage from "./DogImageFormPage";
 import DogImagesDashboard from "./DogImagesDashboard";
 import DogFormPage from "./DogFormPage";
 import DogsDashboard from "./DogsDashboard";
+import EvidenceFormPage from "./EvidenceFormPage";
+import EvidencesDashboard from "./EvidencesDashboard";
 import EmailFormPage from "./EmailFormPage";
 import EmailsDashboard from "./EmailsDashboard";
 import EventDetailFormPage from "./EventDetailFormPage";
@@ -254,6 +256,9 @@ const Dashboard = () => {
               path="seguimientos/:idSeguimiento/editar"
               element={<FollowUpFormPage />}
             />
+            <Route path="evidencias" element={<EvidencesDashboard />} />
+            <Route path="evidencias/nuevo" element={<EvidenceFormPage />} />
+            <Route path="evidencias/:idEvidencia/editar" element={<EvidenceFormPage />} />
             <Route path="solicitudes-pregunta" element={<RequestQuestionsDashboard />} />
             <Route
               path="solicitudes-pregunta/nuevo"
