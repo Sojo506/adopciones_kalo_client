@@ -78,9 +78,12 @@ const Home = () => {
             </p>
 
             <div className="home-hero__actions">
+              <Link className="home-btn home-btn--primary" to="/adopciones">
+                Quiero adoptar
+              </Link>
               {!isAuthenticated ? (
                 <>
-                  <Link className="home-btn home-btn--primary" to="/signup">
+                  <Link className="home-btn home-btn--secondary-light" to="/signup">
                     Crear mi cuenta
                   </Link>
                   <Link className="home-btn home-btn--secondary-light" to="/login">
@@ -194,9 +197,12 @@ const Home = () => {
             </div>
 
             <div className="home-cta__actions">
+              <Link className="home-btn home-btn--primary" to="/adopciones">
+                Ver formulario
+              </Link>
               {!isAuthenticated ? (
                 <>
-                  <Link className="home-btn home-btn--primary" to="/signup">
+                  <Link className="home-btn home-btn--secondary-light" to="/signup">
                     Registrarme
                   </Link>
                   <Link className="home-btn home-btn--secondary-light" to="/login">
