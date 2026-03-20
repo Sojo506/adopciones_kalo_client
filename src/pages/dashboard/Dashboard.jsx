@@ -25,6 +25,8 @@ import DashboardHome from "./DashboardHome";
 import DashboardPlaceholder from "./DashboardPlaceholder";
 import DistrictFormPage from "./DistrictFormPage";
 import DistrictsDashboard from "./DistrictsDashboard";
+import DonationFormPage from "./DonationFormPage";
+import DonationsDashboard from "./DonationsDashboard";
 import DogEventFormPage from "./DogEventFormPage";
 import DogEventsDashboard from "./DogEventsDashboard";
 import DogImageFormPage from "./DogImageFormPage";
@@ -159,6 +161,9 @@ const Dashboard = () => {
             <Route path="campanias" element={<CampaignsDashboard />} />
             <Route path="campanias/nuevo" element={<CampaignFormPage />} />
             <Route path="campanias/:idCampania/editar" element={<CampaignFormPage />} />
+            <Route path="donaciones" element={<DonationsDashboard />} />
+            <Route path="donaciones/nuevo" element={<DonationFormPage />} />
+            <Route path="donaciones/:idDonacion/editar" element={<DonationFormPage />} />
             <Route path="productos" element={<ProductsDashboard />} />
             <Route path="productos/nuevo" element={<ProductFormPage />} />
             <Route path="productos/:idProducto/editar" element={<ProductFormPage />} />
