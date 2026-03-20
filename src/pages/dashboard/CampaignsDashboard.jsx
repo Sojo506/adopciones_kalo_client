@@ -4,6 +4,14 @@ import Swal from "sweetalert2";
 import * as campaignsApi from "../../api/campaigns";
 import { useAuth } from "../../hooks/useAuth";
 
+const imageStyle = {
+  width: "56px",
+  height: "56px",
+  borderRadius: "16px",
+  objectFit: "cover",
+  display: "block",
+};
+
 const formatDate = (value) => {
   if (!value) {
     return "Sin fecha";
@@ -47,6 +55,7 @@ const CampaignsDashboard = () => {
         campaign.idCampania,
         campaign.nombre,
         campaign.descripcion,
+        campaign.imageUrl,
         campaign.estado,
         campaign.fechaInicio,
         campaign.fechaFin,
@@ -66,7 +75,7 @@ const CampaignsDashboard = () => {
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "No pudimos cargar las campanias",
+        title: "No pudimos cargar las campañas",
         text: error?.response?.data?.message || "Intenta nuevamente en un momento.",
       });
     } finally {
@@ -75,7 +84,7 @@ const CampaignsDashboard = () => {
   };
 
   useEffect(() => {
-    document.title = "Campanias | Dashboard Kalö";
+    document.title = "Campañas | Dashboard Kalö";
   }, []);
 
   useEffect(() => {
@@ -90,8 +99,8 @@ const CampaignsDashboard = () => {
   const onDelete = async (campaign) => {
     const result = await Swal.fire({
       icon: "warning",
-      title: "Eliminar campania",
-      text: `Se desactivara la campania "${campaign.nombre}".`,
+      title: "Eliminar campaña",
+      text: `Se desactivara la campaña "${campaign.nombre}".`,
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -108,8 +117,8 @@ const CampaignsDashboard = () => {
 
       Swal.fire({
         icon: "success",
-        title: "Campania eliminada",
-        text: "La campania fue desactivada correctamente.",
+        title: "Campaña eliminada",
+        text: "La campaña fue desactivada correctamente.",
       });
     } catch (error) {
       Swal.fire({
@@ -127,7 +136,7 @@ const CampaignsDashboard = () => {
       <div className="dashboard-page">
         <section className="dashboard-card">
           <p className="dashboard-page__eyebrow">Acceso restringido</p>
-          <h1>Campanias</h1>
+          <h1>Campañas</h1>
           <p className="dashboard-page__lede">
             Solo un administrador puede gestionar esta tabla desde el dashboard.
           </p>
@@ -141,20 +150,20 @@ const CampaignsDashboard = () => {
       <div className="dashboard-page__header mt-4">
         <div>
           <p className="dashboard-page__eyebrow">Gestion de donaciones</p>
-          <h1>Campanias</h1>
+          <h1>Campañas</h1>
           <p className="dashboard-page__lede">
-            Administra el nombre, descripcion, vigencia y estado de las campanias que apoyan la
-            recaudacion del proyecto.
+            Administra la imagen principal, el nombre, la descripcion, la vigencia y el estado de
+            las campañas que apoyan la recaudacion del proyecto.
           </p>
         </div>
         <Link className="dashboard-btn dashboard-btn--primary" to="/dashboard/campanias/nuevo">
-          Crear campania
+          Crear campaña
         </Link>
       </div>
 
       <section className="dashboard-card">
         <div className="dashboard-alert">
-          No puedes eliminar una campania si todavia tiene donaciones activas asociadas.
+          No puedes eliminar una campaña si todavia tiene donaciones activas asociadas.
         </div>
 
         <div className="dashboard-toolbar dashboard-toolbar--between">
@@ -166,21 +175,22 @@ const CampaignsDashboard = () => {
             value={search}
           />
           <span className="dashboard-muted">
-            {filteredCampaigns.length} de {campaigns.length} campanias
+            {filteredCampaigns.length} de {campaigns.length} campañas
           </span>
         </div>
 
         {loading ? (
-          <div className="dashboard-empty-state">Cargando campanias...</div>
+          <div className="dashboard-empty-state">Cargando campañas...</div>
         ) : filteredCampaigns.length === 0 ? (
           <div className="dashboard-empty-state">
-            No hay campanias que coincidan con tu busqueda.
+            No hay campañas que coincidan con tu busqueda.
           </div>
         ) : (
           <div className="dashboard-table-wrap">
             <table className="dashboard-table">
               <thead>
                 <tr>
+                  <th>Imagen</th>
                   <th>ID</th>
                   <th>Nombre</th>
                   <th>Descripcion</th>
@@ -195,6 +205,20 @@ const CampaignsDashboard = () => {
 
                   return (
                     <tr key={campaign.idCampania}>
+                      <td>
+                        {campaign.imageUrl ? (
+                          <a href={campaign.imageUrl} rel="noreferrer" target="_blank">
+                            <img
+                              alt={`Campania ${campaign.nombre}`}
+                              loading="lazy"
+                              src={campaign.imageUrl}
+                              style={imageStyle}
+                            />
+                          </a>
+                        ) : (
+                          <span className="dashboard-muted">Sin imagen</span>
+                        )}
+                      </td>
                       <td>{campaign.idCampania}</td>
                       <td>{campaign.nombre}</td>
                       <td>{campaign.descripcion || "Sin descripcion"}</td>
@@ -236,4 +260,3 @@ const CampaignsDashboard = () => {
 };
 
 export default CampaignsDashboard;
-

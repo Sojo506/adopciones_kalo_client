@@ -5,6 +5,18 @@ const unwrapResponse = (response) => response.data?.data ?? response.data ?? [];
 let campaignsCache = null;
 const campaignDetailCache = new Map();
 
+const buildMultipartConfig = (payload) => {
+  if (typeof FormData !== "undefined" && payload instanceof FormData) {
+    return {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+  }
+
+  return undefined;
+};
+
 const clearCampaignCaches = (idCampania) => {
   campaignsCache = null;
 
@@ -44,14 +56,18 @@ export const getCampaignById = async (idCampania, { force = false } = {}) => {
 };
 
 export const createCampaign = async (payload) => {
-  const response = await axiosInstance.post("/campaigns", payload);
+  const response = await axiosInstance.post("/campaigns", payload, buildMultipartConfig(payload));
   const data = unwrapResponse(response);
   clearCampaignCaches(data?.idCampania);
   return data;
 };
 
 export const updateCampaign = async (idCampania, payload) => {
-  const response = await axiosInstance.put(`/campaigns/${idCampania}`, payload);
+  const response = await axiosInstance.put(
+    `/campaigns/${idCampania}`,
+    payload,
+    buildMultipartConfig(payload),
+  );
   const data = unwrapResponse(response);
   clearCampaignCaches(idCampania);
   campaignDetailCache.set(String(idCampania), data);
@@ -63,4 +79,3 @@ export const deleteCampaign = async (idCampania) => {
   clearCampaignCaches(idCampania);
   return unwrapResponse(response);
 };
-

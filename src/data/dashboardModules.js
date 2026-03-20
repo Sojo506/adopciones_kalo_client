@@ -239,7 +239,7 @@ export const dashboardNavigationSections = [
         "campanias",
         "Campanias",
         "FIDE_CAMPANIA_TB",
-        "Gestiona nombre, descripcion, vigencia y estado de las campanias usadas en el proceso de recaudacion."
+        "Gestiona imagen principal, nombre, descripcion, vigencia y estado de las campanias usadas en el proceso de recaudacion."
       ),
       createDashboardItem(
         "donaciones",

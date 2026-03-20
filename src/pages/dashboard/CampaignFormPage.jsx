@@ -6,6 +6,14 @@ import * as campaignsApi from "../../api/campaigns";
 import * as catalogsApi from "../../api/catalogs";
 import { useAuth } from "../../hooks/useAuth";
 
+const previewStyle = {
+  width: "180px",
+  height: "180px",
+  borderRadius: "28px",
+  objectFit: "cover",
+  display: "block",
+};
+
 const EMPTY_FORM = {
   nombre: "",
   descripcion: "",
@@ -37,30 +45,17 @@ const mapCampaignToForm = (campaign) => ({
   idEstado: String(campaign?.idEstado ?? "1"),
 });
 
-const buildCreatePayload = (values) => ({
-  nombre: values.nombre.trim(),
-  descripcion: values.descripcion.trim(),
-  fechaInicio: values.fechaInicio,
-  fechaFin: values.fechaFin,
-  idEstado: 1,
-});
-
-const buildUpdatePayload = (values) => ({
-  nombre: values.nombre.trim(),
-  descripcion: values.descripcion.trim(),
-  fechaInicio: values.fechaInicio,
-  fechaFin: values.fechaFin,
-  idEstado: Number(values.idEstado),
-});
-
 const CampaignFormPage = () => {
   const { idCampania } = useParams();
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
   const [states, setStates] = useState([]);
+  const [currentCampaign, setCurrentCampaign] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [catalogsLoading, setCatalogsLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [fileError, setFileError] = useState("");
 
   const isEditing = Boolean(idCampania);
 
@@ -79,9 +74,26 @@ const CampaignFormPage = () => {
   } = useForm({ defaultValues: EMPTY_FORM });
 
   const watchedStartDate = watch("fechaInicio");
+  const watchedName = watch("nombre");
+
+  const previewUrl = useMemo(() => {
+    if (selectedFile) {
+      return URL.createObjectURL(selectedFile);
+    }
+
+    return currentCampaign?.imageUrl || null;
+  }, [currentCampaign?.imageUrl, selectedFile]);
 
   useEffect(() => {
-    document.title = isEditing ? "Editar campania | Dashboard Kalö" : "Nueva campania | Dashboard Kalö";
+    return () => {
+      if (selectedFile && previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl, selectedFile]);
+
+  useEffect(() => {
+    document.title = isEditing ? "Editar campaña | Dashboard Kalö" : "Nueva campaña | Dashboard Kalö";
   }, [isEditing]);
 
   useEffect(() => {
@@ -123,11 +135,12 @@ const CampaignFormPage = () => {
       try {
         setDetailLoading(true);
         const detail = await campaignsApi.getCampaignById(idCampania, { force: true });
+        setCurrentCampaign(detail);
         reset(mapCampaignToForm(detail));
       } catch (error) {
         Swal.fire({
           icon: "error",
-          title: "No pudimos cargar la campania",
+          title: "No pudimos cargar la campaña",
           text: error?.response?.data?.message || "Volvamos al listado para evitar inconsistencias.",
         });
         navigate("/dashboard/campanias");
@@ -139,27 +152,54 @@ const CampaignFormPage = () => {
     loadCampaign();
   }, [idCampania, isEditing, navigate, reset]);
 
+  const onFileChange = (event) => {
+    const nextFile = event.target.files?.[0] || null;
+    setSelectedFile(nextFile);
+    setFileError("");
+  };
+
   const onSubmit = async (values) => {
     if (!isAdmin) {
       return;
     }
 
+    if (!isEditing && !selectedFile) {
+      setFileError("La imagen es obligatoria.");
+      return;
+    }
+
+    if (isEditing && !selectedFile && !currentCampaign?.imageUrl) {
+      setFileError("La imagen es obligatoria.");
+      return;
+    }
+
     try {
       setSaving(true);
-      const payload = isEditing ? buildUpdatePayload(values) : buildCreatePayload(values);
+      setFileError("");
+
+      const formData = new FormData();
+      formData.append("nombre", values.nombre.trim());
+      formData.append("descripcion", values.descripcion.trim());
+      formData.append("fechaInicio", values.fechaInicio);
+      formData.append("fechaFin", values.fechaFin);
+      formData.append("idEstado", isEditing ? String(Number(values.idEstado)) : "1");
+
+      if (selectedFile) {
+        formData.append("image", selectedFile);
+      }
 
       if (isEditing) {
-        await campaignsApi.updateCampaign(idCampania, payload);
+        await campaignsApi.updateCampaign(idCampania, formData);
       } else {
-        await campaignsApi.createCampaign(payload);
+        await campaignsApi.createCampaign(formData);
       }
 
       Swal.fire({
         icon: "success",
-        title: isEditing ? "Campania actualizada" : "Campania creada",
+        title: isEditing ? "Campaña actualizada" : "Campaña creada",
         text: isEditing
           ? "Los cambios quedaron guardados correctamente."
-          : "La campania fue creada correctamente.",
+          : "La campaña fue creada correctamente.",
       });
 
       navigate("/dashboard/campanias");
@@ -179,7 +219,7 @@ const CampaignFormPage = () => {
       <div className="dashboard-page">
         <section className="dashboard-card">
           <p className="dashboard-page__eyebrow">Acceso restringido</p>
-          <h1>Campanias</h1>
+          <h1>Campañas</h1>
           <p className="dashboard-page__lede">
             Solo un administrador puede crear o actualizar esta informacion.
           </p>
@@ -192,10 +232,11 @@ const CampaignFormPage = () => {
     <div className="dashboard-page">
       <div className="dashboard-page__header mt-4">
         <div>
-          <p className="dashboard-page__eyebrow">{isEditing ? "Editar campania" : "Nueva campania"}</p>
-          <h1>{isEditing ? "Actualizar campania" : "Crear campania"}</h1>
+          <p className="dashboard-page__eyebrow">{isEditing ? "Editar campaña" : "Nueva campaña"}</p>
+          <h1>{isEditing ? "Actualizar campaña" : "Crear campaña"}</h1>
           <p className="dashboard-page__lede">
-            Define el nombre, descripcion y rango de fechas con el que la campania quedara disponible.
+            Define el nombre, la imagen, la descripcion y el rango de fechas con el que la campaña
+            quedara disponible.
           </p>
         </div>
         <Link className="dashboard-btn dashboard-btn--ghost" to="/dashboard/campanias">
@@ -204,6 +245,12 @@ const CampaignFormPage = () => {
       </div>
 
       <section className="dashboard-card">
+        <div className="dashboard-alert">
+          {isEditing
+            ? "Si subes una imagen nueva, la enviaremos a Cloudinary y reemplazaremos la URL actual de la campaña."
+            : "La imagen se subira a Cloudinary y luego guardaremos la URL resultante en la BD."}
+        </div>
+
         {catalogsLoading || detailLoading ? (
           <div className="dashboard-empty-state">Cargando formulario...</div>
         ) : isEditing && states.length === 0 ? (
@@ -213,6 +260,20 @@ const CampaignFormPage = () => {
         ) : (
           <form className="dashboard-form" onSubmit={handleSubmit(onSubmit)}>
             <fieldset className="dashboard-form__fieldset" disabled={formDisabled}>
+              {previewUrl ? (
+                <div className="dashboard-alert">
+                  <strong>Vista previa:</strong>
+                  <div style={{ marginTop: "0.75rem" }}>
+                    <img
+                      alt={watchedName ? `Campaña ${watchedName}` : "Vista previa de campaña"}
+                      loading="lazy"
+                      src={previewUrl}
+                      style={previewStyle}
+                    />
+                  </div>
+                </div>
+              ) : null}
+
               <div className="dashboard-form-grid">
                 <label className="dashboard-input">
                   <span>Nombre</span>
@@ -249,7 +310,7 @@ const CampaignFormPage = () => {
                   <label className="dashboard-input">
                     <span>Estado inicial</span>
                     <input className="form-control" disabled readOnly value={activeStateLabel} />
-                    <small>Las campanias nuevas siempre se crean activas.</small>
+                    <small>Las campañas nuevas siempre se crean activas.</small>
                   </label>
                 )}
 
@@ -287,6 +348,22 @@ const CampaignFormPage = () => {
               </div>
 
               <label className="dashboard-input">
+                <span>{isEditing ? "Nueva imagen (opcional)" : "Imagen"}</span>
+                <input
+                  accept="image/png,image/jpeg,image/webp,image/avif,image/gif"
+                  className="form-control"
+                  onChange={onFileChange}
+                  type="file"
+                />
+                <small>
+                  {isEditing
+                    ? "Si no subes una nueva imagen, mantendremos la actual."
+                    : "Selecciona la imagen principal de la campaña para subirla a Cloudinary."}
+                </small>
+                {fileError ? <small>{fileError}</small> : null}
+              </label>
+
+              <label className="dashboard-input">
                 <span>Descripcion</span>
                 <textarea
                   className="form-control"
@@ -304,7 +381,7 @@ const CampaignFormPage = () => {
 
             <div className="dashboard-form__actions">
               <button className="dashboard-btn dashboard-btn--primary" disabled={saving} type="submit">
-                {saving ? "Guardando..." : isEditing ? "Guardar cambios" : "Crear campania"}
+                {saving ? "Guardando..." : isEditing ? "Guardar cambios" : "Crear campaña"}
               </button>
               <Link className="dashboard-btn dashboard-btn--ghost" to="/dashboard/campanias">
                 Cancelar
@@ -318,4 +395,3 @@ const CampaignFormPage = () => {
 };
 
 export default CampaignFormPage;
-
