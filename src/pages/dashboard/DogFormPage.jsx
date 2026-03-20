@@ -164,7 +164,7 @@ const DogFormPage = () => {
     const loadDog = async () => {
       try {
         setDetailLoading(true);
-        const detail = await dogsApi.getDogById(idPerrito, { force: true });
+        const detail = await dogsApi.getDogByIdAdmin(idPerrito, { force: true });
         setCurrentDog(detail);
         reset(mapDogToForm(detail));
       } catch (error) {
