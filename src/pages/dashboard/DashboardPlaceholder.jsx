@@ -29,7 +29,7 @@ const SCHEMA_NOTES_BY_TABLE = {
       { label: "Solicitudes", to: "/dashboard/solicitudes" },
       { label: "Preguntas", to: "/dashboard/preguntas" },
     ],
-    tags: ["Relacion N:N"],
+    tags: [""],
   },
   FIDE_RESPUESTA_TB: {
     note:
