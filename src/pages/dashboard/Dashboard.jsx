@@ -10,6 +10,8 @@ import BrandFormPage from "./BrandFormPage";
 import BrandsDashboard from "./BrandsDashboard";
 import BreedFormPage from "./BreedFormPage";
 import BreedsDashboard from "./BreedsDashboard";
+import CampaignFormPage from "./CampaignFormPage";
+import CampaignsDashboard from "./CampaignsDashboard";
 import CategoriesDashboard from "./CategoriesDashboard";
 import CantonsDashboard from "./CantonsDashboard";
 import CantonFormPage from "./CantonFormPage";
@@ -154,6 +156,9 @@ const Dashboard = () => {
             <Route path="marcas" element={<BrandsDashboard />} />
             <Route path="marcas/nuevo" element={<BrandFormPage />} />
             <Route path="marcas/:idMarca/editar" element={<BrandFormPage />} />
+            <Route path="campanias" element={<CampaignsDashboard />} />
+            <Route path="campanias/nuevo" element={<CampaignFormPage />} />
+            <Route path="campanias/:idCampania/editar" element={<CampaignFormPage />} />
             <Route path="productos" element={<ProductsDashboard />} />
             <Route path="productos/nuevo" element={<ProductFormPage />} />
             <Route path="productos/:idProducto/editar" element={<ProductFormPage />} />
