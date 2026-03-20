@@ -1,41 +1,81 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import * as responseTypesApi from "../../api/responseTypes";
+import * as campaignsApi from "../../api/campaigns";
 import { useAuth } from "../../hooks/useAuth";
 
-const ResponseTypesDashboard = () => {
+const imageStyle = {
+  width: "56px",
+  height: "56px",
+  borderRadius: "16px",
+  objectFit: "cover",
+  display: "block",
+};
+
+const formatDate = (value) => {
+  if (!value) {
+    return "Sin fecha";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return date.toLocaleDateString("es-CR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+};
+
+const buildDateRangeLabel = (campaign) => {
+  const start = formatDate(campaign.fechaInicio);
+  const end = formatDate(campaign.fechaFin);
+  return `${start} al ${end}`;
+};
+
+const CampaignsDashboard = () => {
   const { isAdmin } = useAuth();
-  const [responseTypes, setResponseTypes] = useState([]);
+  const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [search, setSearch] = useState("");
 
-  const filteredResponseTypes = useMemo(() => {
+  const filteredCampaigns = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     if (!query) {
-      return responseTypes;
+      return campaigns;
     }
 
-    return responseTypes.filter((responseType) =>
-      [responseType.idTipoRespuesta, responseType.nombre, responseType.estado]
+    return campaigns.filter((campaign) =>
+      [
+        campaign.idCampania,
+        campaign.nombre,
+        campaign.descripcion,
+        campaign.imageUrl,
+        campaign.estado,
+        campaign.fechaInicio,
+        campaign.fechaFin,
+      ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
         .includes(query),
     );
-  }, [responseTypes, search]);
+  }, [campaigns, search]);
 
-  const loadResponseTypes = async () => {
+  const loadCampaigns = async () => {
     try {
       setLoading(true);
-      const data = await responseTypesApi.getResponseTypes({ force: true });
-      setResponseTypes(Array.isArray(data) ? data : []);
+      const data = await campaignsApi.getCampaigns({ force: true });
+      setCampaigns(Array.isArray(data) ? data : []);
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "No pudimos cargar los tipos de respuesta",
+        title: "No pudimos cargar las campañas",
         text: error?.response?.data?.message || "Intenta nuevamente en un momento.",
       });
     } finally {
@@ -44,7 +84,7 @@ const ResponseTypesDashboard = () => {
   };
 
   useEffect(() => {
-    document.title = "Tipos de respuesta | Dashboard Kalö";
+    document.title = "Campañas | Dashboard Kalö";
   }, []);
 
   useEffect(() => {
@@ -53,14 +93,14 @@ const ResponseTypesDashboard = () => {
       return;
     }
 
-    loadResponseTypes();
+    loadCampaigns();
   }, [isAdmin]);
 
-  const onDelete = async (responseType) => {
+  const onDelete = async (campaign) => {
     const result = await Swal.fire({
       icon: "warning",
-      title: "Eliminar tipo de respuesta",
-      text: `Se desactivara el tipo "${responseType.nombre}".`,
+      title: "Eliminar campaña",
+      text: `Se desactivara la campaña "${campaign.nombre}".`,
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -71,14 +111,14 @@ const ResponseTypesDashboard = () => {
     }
 
     try {
-      setDeletingId(responseType.idTipoRespuesta);
-      await responseTypesApi.deleteResponseType(responseType.idTipoRespuesta);
-      await loadResponseTypes();
+      setDeletingId(campaign.idCampania);
+      await campaignsApi.deleteCampaign(campaign.idCampania);
+      await loadCampaigns();
 
       Swal.fire({
         icon: "success",
-        title: "Tipo de respuesta eliminado",
-        text: "El tipo de respuesta fue desactivado correctamente.",
+        title: "Campaña eliminada",
+        text: "La campaña fue desactivada correctamente.",
       });
     } catch (error) {
       Swal.fire({
@@ -96,7 +136,7 @@ const ResponseTypesDashboard = () => {
       <div className="dashboard-page">
         <section className="dashboard-card">
           <p className="dashboard-page__eyebrow">Acceso restringido</p>
-          <h1>Tipos de respuesta</h1>
+          <h1>Campañas</h1>
           <p className="dashboard-page__lede">
             Solo un administrador puede gestionar esta tabla desde el dashboard.
           </p>
@@ -109,21 +149,21 @@ const ResponseTypesDashboard = () => {
     <div className="dashboard-page">
       <div className="dashboard-page__header mt-4">
         <div>
-          <p className="dashboard-page__eyebrow">Gestion de catalogo</p>
-          <h1>Tipos de respuesta</h1>
+          <p className="dashboard-page__eyebrow">Gestion de donaciones</p>
+          <h1>Campañas</h1>
           <p className="dashboard-page__lede">
-            Administra los tipos de respuesta disponibles para el banco reutilizable de preguntas y
-            los formularios del sistema.
+            Administra la imagen principal, el nombre, la descripcion, la vigencia y el estado de
+            las campañas que apoyan la recaudacion del proyecto.
           </p>
         </div>
-        <Link className="dashboard-btn dashboard-btn--primary" to="/dashboard/tipos-respuesta/nuevo">
-          Crear tipo
+        <Link className="dashboard-btn dashboard-btn--primary" to="/dashboard/campanias/nuevo">
+          Crear campaña
         </Link>
       </div>
 
       <section className="dashboard-card">
         <div className="dashboard-alert">
-          No puedes eliminar un tipo de respuesta si todavia tiene preguntas activas asociadas.
+          No puedes eliminar una campaña si todavia tiene donaciones activas asociadas.
         </div>
 
         <div className="dashboard-toolbar dashboard-toolbar--between">
@@ -131,40 +171,59 @@ const ResponseTypesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, nombre o estado"
+            placeholder="Buscar por ID, nombre, descripcion, fecha o estado"
             value={search}
           />
           <span className="dashboard-muted">
-            {filteredResponseTypes.length} de {responseTypes.length} tipos
+            {filteredCampaigns.length} de {campaigns.length} campañas
           </span>
         </div>
 
         {loading ? (
-          <div className="dashboard-empty-state">Cargando tipos de respuesta...</div>
-        ) : filteredResponseTypes.length === 0 ? (
+          <div className="dashboard-empty-state">Cargando campañas...</div>
+        ) : filteredCampaigns.length === 0 ? (
           <div className="dashboard-empty-state">
-            No hay tipos de respuesta que coincidan con tu busqueda.
+            No hay campañas que coincidan con tu busqueda.
           </div>
         ) : (
           <div className="dashboard-table-wrap">
             <table className="dashboard-table">
               <thead>
                 <tr>
+                  <th>Imagen</th>
                   <th>ID</th>
                   <th>Nombre</th>
+                  <th>Descripcion</th>
+                  <th>Vigencia</th>
                   <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredResponseTypes.map((responseType) => {
-                  const isDeletingCurrent = deletingId === responseType.idTipoRespuesta;
+                {filteredCampaigns.map((campaign) => {
+                  const isDeletingCurrent = deletingId === campaign.idCampania;
 
                   return (
-                    <tr key={responseType.idTipoRespuesta}>
-                      <td>{responseType.idTipoRespuesta}</td>
-                      <td>{responseType.nombre}</td>
-                      <td>{responseType.estado || responseType.idEstado}</td>
+                    <tr key={campaign.idCampania}>
+                      <td>
+                        {campaign.imageUrl ? (
+                          <a href={campaign.imageUrl} rel="noreferrer" target="_blank">
+                            <img
+                              alt={`Campania ${campaign.nombre}`}
+                              loading="lazy"
+                              src={campaign.imageUrl}
+                              style={imageStyle}
+                            />
+                          </a>
+                        ) : (
+                          <span className="dashboard-muted">Sin imagen</span>
+                        )}
+                      </td>
+                      <td>{campaign.idCampania}</td>
+                      <td>{campaign.nombre}</td>
+                      <td>{campaign.descripcion || "Sin descripcion"}</td>
+                      <td>{buildDateRangeLabel(campaign)}</td>
+                      <td>{campaign.estado || campaign.idEstado}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link
@@ -174,14 +233,14 @@ const ResponseTypesDashboard = () => {
                                 event.preventDefault();
                               }
                             }}
-                            to={`/dashboard/tipos-respuesta/${responseType.idTipoRespuesta}/editar`}
+                            to={`/dashboard/campanias/${campaign.idCampania}/editar`}
                           >
                             Editar
                           </Link>
                           <button
                             className="dashboard-btn dashboard-btn--danger"
                             disabled={deletingId !== null}
-                            onClick={() => onDelete(responseType)}
+                            onClick={() => onDelete(campaign)}
                             type="button"
                           >
                             {isDeletingCurrent ? "Eliminando..." : "Eliminar"}
@@ -200,4 +259,4 @@ const ResponseTypesDashboard = () => {
   );
 };
 
-export default ResponseTypesDashboard;
+export default CampaignsDashboard;

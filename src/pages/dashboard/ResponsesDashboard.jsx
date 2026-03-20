@@ -1,41 +1,75 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import * as responseTypesApi from "../../api/responseTypes";
+import * as responsesApi from "../../api/responses";
 import { useAuth } from "../../hooks/useAuth";
 
-const ResponseTypesDashboard = () => {
+const buildRequestLabel = (response) => {
+  const base = `#${response.idSolicitud}`;
+  return response.solicitante ? `${base} - ${response.solicitante}` : base;
+};
+
+const buildQuestionLabel = (response) => {
+  return `#${response.idPregunta} - ${response.pregunta}`;
+};
+
+const formatResponsePreview = (value) => {
+  const normalized = String(value || "").trim();
+
+  if (!normalized) {
+    return "-";
+  }
+
+  if (normalized.length <= 96) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, 93)}...`;
+};
+
+const ResponsesDashboard = () => {
   const { isAdmin } = useAuth();
-  const [responseTypes, setResponseTypes] = useState([]);
+  const [responses, setResponses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [search, setSearch] = useState("");
 
-  const filteredResponseTypes = useMemo(() => {
+  const filteredResponses = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     if (!query) {
-      return responseTypes;
+      return responses;
     }
 
-    return responseTypes.filter((responseType) =>
-      [responseType.idTipoRespuesta, responseType.nombre, responseType.estado]
+    return responses.filter((response) =>
+      [
+        response.idRespuesta,
+        response.idSolicitud,
+        response.identificacion,
+        response.solicitante,
+        response.tipoSolicitud,
+        response.idPregunta,
+        response.pregunta,
+        response.tipoRespuesta,
+        response.respuesta,
+        response.estado,
+      ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
         .includes(query),
     );
-  }, [responseTypes, search]);
+  }, [responses, search]);
 
-  const loadResponseTypes = async () => {
+  const loadResponses = async () => {
     try {
       setLoading(true);
-      const data = await responseTypesApi.getResponseTypes({ force: true });
-      setResponseTypes(Array.isArray(data) ? data : []);
+      const data = await responsesApi.getResponses({ force: true });
+      setResponses(Array.isArray(data) ? data : []);
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "No pudimos cargar los tipos de respuesta",
+        title: "No pudimos cargar las respuestas",
         text: error?.response?.data?.message || "Intenta nuevamente en un momento.",
       });
     } finally {
@@ -44,7 +78,7 @@ const ResponseTypesDashboard = () => {
   };
 
   useEffect(() => {
-    document.title = "Tipos de respuesta | Dashboard Kalö";
+    document.title = "Respuestas | Dashboard Kalö";
   }, []);
 
   useEffect(() => {
@@ -53,14 +87,14 @@ const ResponseTypesDashboard = () => {
       return;
     }
 
-    loadResponseTypes();
+    loadResponses();
   }, [isAdmin]);
 
-  const onDelete = async (responseType) => {
+  const onDelete = async (response) => {
     const result = await Swal.fire({
       icon: "warning",
-      title: "Eliminar tipo de respuesta",
-      text: `Se desactivara el tipo "${responseType.nombre}".`,
+      title: "Eliminar respuesta",
+      text: `Se desactivara la respuesta #${response.idRespuesta}.`,
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -71,14 +105,14 @@ const ResponseTypesDashboard = () => {
     }
 
     try {
-      setDeletingId(responseType.idTipoRespuesta);
-      await responseTypesApi.deleteResponseType(responseType.idTipoRespuesta);
-      await loadResponseTypes();
+      setDeletingId(response.idRespuesta);
+      await responsesApi.deleteResponse(response.idRespuesta);
+      await loadResponses();
 
       Swal.fire({
         icon: "success",
-        title: "Tipo de respuesta eliminado",
-        text: "El tipo de respuesta fue desactivado correctamente.",
+        title: "Respuesta eliminada",
+        text: "La respuesta fue desactivada correctamente.",
       });
     } catch (error) {
       Swal.fire({
@@ -96,7 +130,7 @@ const ResponseTypesDashboard = () => {
       <div className="dashboard-page">
         <section className="dashboard-card">
           <p className="dashboard-page__eyebrow">Acceso restringido</p>
-          <h1>Tipos de respuesta</h1>
+          <h1>Respuestas</h1>
           <p className="dashboard-page__lede">
             Solo un administrador puede gestionar esta tabla desde el dashboard.
           </p>
@@ -109,21 +143,27 @@ const ResponseTypesDashboard = () => {
     <div className="dashboard-page">
       <div className="dashboard-page__header mt-4">
         <div>
-          <p className="dashboard-page__eyebrow">Gestion de catalogo</p>
-          <h1>Tipos de respuesta</h1>
+          <p className="dashboard-page__eyebrow">Captura de formularios</p>
+          <h1>Respuestas</h1>
           <p className="dashboard-page__lede">
-            Administra los tipos de respuesta disponibles para el banco reutilizable de preguntas y
-            los formularios del sistema.
+            Administra las respuestas registradas para cada pregunta asignada dentro de una
+            solicitud.
           </p>
         </div>
-        <Link className="dashboard-btn dashboard-btn--primary" to="/dashboard/tipos-respuesta/nuevo">
-          Crear tipo
+        <Link className="dashboard-btn dashboard-btn--primary" to="/dashboard/respuestas/nuevo">
+          Crear respuesta
         </Link>
       </div>
 
       <section className="dashboard-card">
         <div className="dashboard-alert">
-          No puedes eliminar un tipo de respuesta si todavia tiene preguntas activas asociadas.
+          Cada combinacion de solicitud y pregunta puede tener una sola respuesta. Si ya existe,
+          edita el registro actual en lugar de crear uno nuevo.
+        </div>
+
+        <div className="dashboard-alert">
+          Solo puedes responder preguntas que sigan activas en{" "}
+          <Link to="/dashboard/solicitudes-pregunta">Solicitud-pregunta</Link>.
         </div>
 
         <div className="dashboard-toolbar dashboard-toolbar--between">
@@ -131,19 +171,19 @@ const ResponseTypesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, nombre o estado"
+            placeholder="Buscar por respuesta, solicitud, solicitante, pregunta, tipo o estado"
             value={search}
           />
           <span className="dashboard-muted">
-            {filteredResponseTypes.length} de {responseTypes.length} tipos
+            {filteredResponses.length} de {responses.length} respuestas
           </span>
         </div>
 
         {loading ? (
-          <div className="dashboard-empty-state">Cargando tipos de respuesta...</div>
-        ) : filteredResponseTypes.length === 0 ? (
+          <div className="dashboard-empty-state">Cargando respuestas...</div>
+        ) : filteredResponses.length === 0 ? (
           <div className="dashboard-empty-state">
-            No hay tipos de respuesta que coincidan con tu busqueda.
+            No hay respuestas que coincidan con tu busqueda.
           </div>
         ) : (
           <div className="dashboard-table-wrap">
@@ -151,20 +191,28 @@ const ResponseTypesDashboard = () => {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Nombre</th>
+                  <th>Solicitud</th>
+                  <th>Tipo solicitud</th>
+                  <th>Pregunta</th>
+                  <th>Tipo respuesta</th>
+                  <th>Respuesta</th>
                   <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredResponseTypes.map((responseType) => {
-                  const isDeletingCurrent = deletingId === responseType.idTipoRespuesta;
+                {filteredResponses.map((response) => {
+                  const isDeletingCurrent = deletingId === response.idRespuesta;
 
                   return (
-                    <tr key={responseType.idTipoRespuesta}>
-                      <td>{responseType.idTipoRespuesta}</td>
-                      <td>{responseType.nombre}</td>
-                      <td>{responseType.estado || responseType.idEstado}</td>
+                    <tr key={response.idRespuesta}>
+                      <td>{response.idRespuesta}</td>
+                      <td>{buildRequestLabel(response)}</td>
+                      <td>{response.tipoSolicitud || response.idTipoSolicitud}</td>
+                      <td>{buildQuestionLabel(response)}</td>
+                      <td>{response.tipoRespuesta || response.idTipoRespuesta}</td>
+                      <td title={response.respuesta}>{formatResponsePreview(response.respuesta)}</td>
+                      <td>{response.estado || response.idEstado}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link
@@ -174,14 +222,14 @@ const ResponseTypesDashboard = () => {
                                 event.preventDefault();
                               }
                             }}
-                            to={`/dashboard/tipos-respuesta/${responseType.idTipoRespuesta}/editar`}
+                            to={`/dashboard/respuestas/${response.idRespuesta}/editar`}
                           >
                             Editar
                           </Link>
                           <button
                             className="dashboard-btn dashboard-btn--danger"
                             disabled={deletingId !== null}
-                            onClick={() => onDelete(responseType)}
+                            onClick={() => onDelete(response)}
                             type="button"
                           >
                             {isDeletingCurrent ? "Eliminando..." : "Eliminar"}
@@ -200,4 +248,4 @@ const ResponseTypesDashboard = () => {
   );
 };
 
-export default ResponseTypesDashboard;
+export default ResponsesDashboard;

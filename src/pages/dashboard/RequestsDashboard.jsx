@@ -1,41 +1,59 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import * as responseTypesApi from "../../api/responseTypes";
+import * as requestsApi from "../../api/requests";
 import { useAuth } from "../../hooks/useAuth";
 
-const ResponseTypesDashboard = () => {
+const formatDogReference = (request) => {
+  if (!request?.idPerrito) {
+    return "Sin adopcion";
+  }
+
+  return request.nombrePerrito
+    ? `#${request.idPerrito} - ${request.nombrePerrito}`
+    : `#${request.idPerrito}`;
+};
+
+const RequestsDashboard = () => {
   const { isAdmin } = useAuth();
-  const [responseTypes, setResponseTypes] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [search, setSearch] = useState("");
 
-  const filteredResponseTypes = useMemo(() => {
+  const filteredRequests = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     if (!query) {
-      return responseTypes;
+      return requests;
     }
 
-    return responseTypes.filter((responseType) =>
-      [responseType.idTipoRespuesta, responseType.nombre, responseType.estado]
+    return requests.filter((request) =>
+      [
+        request.idSolicitud,
+        request.identificacion,
+        request.solicitante,
+        request.idPerrito,
+        request.nombrePerrito,
+        request.tipoSolicitud,
+        request.estado,
+      ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
         .includes(query),
     );
-  }, [responseTypes, search]);
+  }, [requests, search]);
 
-  const loadResponseTypes = async () => {
+  const loadRequests = async () => {
     try {
       setLoading(true);
-      const data = await responseTypesApi.getResponseTypes({ force: true });
-      setResponseTypes(Array.isArray(data) ? data : []);
+      const data = await requestsApi.getRequests({ force: true });
+      setRequests(Array.isArray(data) ? data : []);
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "No pudimos cargar los tipos de respuesta",
+        title: "No pudimos cargar las solicitudes",
         text: error?.response?.data?.message || "Intenta nuevamente en un momento.",
       });
     } finally {
@@ -44,7 +62,7 @@ const ResponseTypesDashboard = () => {
   };
 
   useEffect(() => {
-    document.title = "Tipos de respuesta | Dashboard Kalö";
+    document.title = "Solicitudes | Dashboard Kalö";
   }, []);
 
   useEffect(() => {
@@ -53,14 +71,14 @@ const ResponseTypesDashboard = () => {
       return;
     }
 
-    loadResponseTypes();
+    loadRequests();
   }, [isAdmin]);
 
-  const onDelete = async (responseType) => {
+  const onDelete = async (request) => {
     const result = await Swal.fire({
       icon: "warning",
-      title: "Eliminar tipo de respuesta",
-      text: `Se desactivara el tipo "${responseType.nombre}".`,
+      title: "Eliminar solicitud",
+      text: `Se desactivara la solicitud #${request.idSolicitud}.`,
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -71,14 +89,14 @@ const ResponseTypesDashboard = () => {
     }
 
     try {
-      setDeletingId(responseType.idTipoRespuesta);
-      await responseTypesApi.deleteResponseType(responseType.idTipoRespuesta);
-      await loadResponseTypes();
+      setDeletingId(request.idSolicitud);
+      await requestsApi.deleteRequest(request.idSolicitud);
+      await loadRequests();
 
       Swal.fire({
         icon: "success",
-        title: "Tipo de respuesta eliminado",
-        text: "El tipo de respuesta fue desactivado correctamente.",
+        title: "Solicitud eliminada",
+        text: "La solicitud fue desactivada correctamente.",
       });
     } catch (error) {
       Swal.fire({
@@ -96,7 +114,7 @@ const ResponseTypesDashboard = () => {
       <div className="dashboard-page">
         <section className="dashboard-card">
           <p className="dashboard-page__eyebrow">Acceso restringido</p>
-          <h1>Tipos de respuesta</h1>
+          <h1>Solicitudes</h1>
           <p className="dashboard-page__lede">
             Solo un administrador puede gestionar esta tabla desde el dashboard.
           </p>
@@ -109,21 +127,28 @@ const ResponseTypesDashboard = () => {
     <div className="dashboard-page">
       <div className="dashboard-page__header mt-4">
         <div>
-          <p className="dashboard-page__eyebrow">Gestion de catalogo</p>
-          <h1>Tipos de respuesta</h1>
+          <p className="dashboard-page__eyebrow">Gestion de formularios</p>
+          <h1>Solicitudes</h1>
           <p className="dashboard-page__lede">
-            Administra los tipos de respuesta disponibles para el banco reutilizable de preguntas y
-            los formularios del sistema.
+            Administra cada formulario de solicitud, su solicitante, el tipo de proceso y el estado
+            actual del caso.
           </p>
         </div>
-        <Link className="dashboard-btn dashboard-btn--primary" to="/dashboard/tipos-respuesta/nuevo">
-          Crear tipo
+        <Link className="dashboard-btn dashboard-btn--primary" to="/dashboard/solicitudes/nuevo">
+          Crear solicitud
         </Link>
       </div>
 
       <section className="dashboard-card">
         <div className="dashboard-alert">
-          No puedes eliminar un tipo de respuesta si todavia tiene preguntas activas asociadas.
+          La solicitud guarda el formulario base. Las preguntas se asignan desde{" "}
+          <Link to="/dashboard/solicitudes-pregunta">Solicitud-pregunta</Link> y el perrito solo
+          aparece aqui cuando ya existe una adopcion asociada.
+        </div>
+
+        <div className="dashboard-alert">
+          No puedes eliminar o desactivar una solicitud si todavia tiene preguntas asignadas,
+          respuestas, adopciones o registros de casa cuna activos.
         </div>
 
         <div className="dashboard-toolbar dashboard-toolbar--between">
@@ -131,19 +156,19 @@ const ResponseTypesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, nombre o estado"
+            placeholder="Buscar por ID, identificacion, solicitante, perrito, tipo o estado"
             value={search}
           />
           <span className="dashboard-muted">
-            {filteredResponseTypes.length} de {responseTypes.length} tipos
+            {filteredRequests.length} de {requests.length} solicitudes
           </span>
         </div>
 
         {loading ? (
-          <div className="dashboard-empty-state">Cargando tipos de respuesta...</div>
-        ) : filteredResponseTypes.length === 0 ? (
+          <div className="dashboard-empty-state">Cargando solicitudes...</div>
+        ) : filteredRequests.length === 0 ? (
           <div className="dashboard-empty-state">
-            No hay tipos de respuesta que coincidan con tu busqueda.
+            No hay solicitudes que coincidan con tu busqueda.
           </div>
         ) : (
           <div className="dashboard-table-wrap">
@@ -151,20 +176,26 @@ const ResponseTypesDashboard = () => {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Nombre</th>
+                  <th>Identificacion</th>
+                  <th>Solicitante</th>
+                  <th>Tipo de solicitud</th>
+                  <th>Perrito</th>
                   <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredResponseTypes.map((responseType) => {
-                  const isDeletingCurrent = deletingId === responseType.idTipoRespuesta;
+                {filteredRequests.map((request) => {
+                  const isDeletingCurrent = deletingId === request.idSolicitud;
 
                   return (
-                    <tr key={responseType.idTipoRespuesta}>
-                      <td>{responseType.idTipoRespuesta}</td>
-                      <td>{responseType.nombre}</td>
-                      <td>{responseType.estado || responseType.idEstado}</td>
+                    <tr key={request.idSolicitud}>
+                      <td>{request.idSolicitud}</td>
+                      <td>{request.identificacion}</td>
+                      <td>{request.solicitante || "-"}</td>
+                      <td>{request.tipoSolicitud || request.idTipoSolicitud}</td>
+                      <td>{formatDogReference(request)}</td>
+                      <td>{request.estado || request.idEstado}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link
@@ -174,14 +205,14 @@ const ResponseTypesDashboard = () => {
                                 event.preventDefault();
                               }
                             }}
-                            to={`/dashboard/tipos-respuesta/${responseType.idTipoRespuesta}/editar`}
+                            to={`/dashboard/solicitudes/${request.idSolicitud}/editar`}
                           >
                             Editar
                           </Link>
                           <button
                             className="dashboard-btn dashboard-btn--danger"
                             disabled={deletingId !== null}
-                            onClick={() => onDelete(responseType)}
+                            onClick={() => onDelete(request)}
                             type="button"
                           >
                             {isDeletingCurrent ? "Eliminando..." : "Eliminar"}
@@ -200,4 +231,4 @@ const ResponseTypesDashboard = () => {
   );
 };
 
-export default ResponseTypesDashboard;
+export default RequestsDashboard;

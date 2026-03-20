@@ -1,41 +1,79 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import * as responseTypesApi from "../../api/responseTypes";
+import * as invoicesApi from "../../api/invoices";
 import { useAuth } from "../../hooks/useAuth";
 
-const ResponseTypesDashboard = () => {
+const amountFormatter = new Intl.NumberFormat("es-CR", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+const formatMoney = (amount, symbol) => {
+  const formattedAmount = amountFormatter.format(Number(amount || 0));
+
+  return symbol ? `${symbol} ${formattedAmount}` : formattedAmount;
+};
+
+const formatDateTime = (value) => {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat("es-CR", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+};
+
+const InvoicesDashboard = () => {
   const { isAdmin } = useAuth();
-  const [responseTypes, setResponseTypes] = useState([]);
+  const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [search, setSearch] = useState("");
 
-  const filteredResponseTypes = useMemo(() => {
+  const filteredInvoices = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     if (!query) {
-      return responseTypes;
+      return invoices;
     }
 
-    return responseTypes.filter((responseType) =>
-      [responseType.idTipoRespuesta, responseType.nombre, responseType.estado]
+    return invoices.filter((invoice) =>
+      [
+        invoice.idFactura,
+        invoice.moneda,
+        invoice.simbolo,
+        invoice.estado,
+        invoice.fechaFactura,
+        invoice.tasaImpuestoAplicada,
+        invoice.subtotal,
+        invoice.impuesto,
+        invoice.total,
+      ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
         .includes(query),
     );
-  }, [responseTypes, search]);
+  }, [invoices, search]);
 
-  const loadResponseTypes = async () => {
+  const loadInvoices = async () => {
     try {
       setLoading(true);
-      const data = await responseTypesApi.getResponseTypes({ force: true });
-      setResponseTypes(Array.isArray(data) ? data : []);
+      const data = await invoicesApi.getInvoices({ force: true });
+      setInvoices(Array.isArray(data) ? data : []);
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "No pudimos cargar los tipos de respuesta",
+        title: "No pudimos cargar las facturas",
         text: error?.response?.data?.message || "Intenta nuevamente en un momento.",
       });
     } finally {
@@ -44,7 +82,7 @@ const ResponseTypesDashboard = () => {
   };
 
   useEffect(() => {
-    document.title = "Tipos de respuesta | Dashboard Kalö";
+    document.title = "Facturas | Dashboard Kalo";
   }, []);
 
   useEffect(() => {
@@ -53,14 +91,14 @@ const ResponseTypesDashboard = () => {
       return;
     }
 
-    loadResponseTypes();
+    loadInvoices();
   }, [isAdmin]);
 
-  const onDelete = async (responseType) => {
+  const onDelete = async (invoice) => {
     const result = await Swal.fire({
       icon: "warning",
-      title: "Eliminar tipo de respuesta",
-      text: `Se desactivara el tipo "${responseType.nombre}".`,
+      title: "Eliminar factura",
+      text: `Se desactivara la factura "${invoice.idFactura}".`,
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -71,14 +109,14 @@ const ResponseTypesDashboard = () => {
     }
 
     try {
-      setDeletingId(responseType.idTipoRespuesta);
-      await responseTypesApi.deleteResponseType(responseType.idTipoRespuesta);
-      await loadResponseTypes();
+      setDeletingId(invoice.idFactura);
+      await invoicesApi.deleteInvoice(invoice.idFactura);
+      await loadInvoices();
 
       Swal.fire({
         icon: "success",
-        title: "Tipo de respuesta eliminado",
-        text: "El tipo de respuesta fue desactivado correctamente.",
+        title: "Factura eliminada",
+        text: "La factura fue desactivada correctamente.",
       });
     } catch (error) {
       Swal.fire({
@@ -96,7 +134,7 @@ const ResponseTypesDashboard = () => {
       <div className="dashboard-page">
         <section className="dashboard-card">
           <p className="dashboard-page__eyebrow">Acceso restringido</p>
-          <h1>Tipos de respuesta</h1>
+          <h1>Facturas</h1>
           <p className="dashboard-page__lede">
             Solo un administrador puede gestionar esta tabla desde el dashboard.
           </p>
@@ -109,21 +147,21 @@ const ResponseTypesDashboard = () => {
     <div className="dashboard-page">
       <div className="dashboard-page__header mt-4">
         <div>
-          <p className="dashboard-page__eyebrow">Gestion de catalogo</p>
-          <h1>Tipos de respuesta</h1>
+          <p className="dashboard-page__eyebrow">Gestion comercial</p>
+          <h1>Facturas</h1>
           <p className="dashboard-page__lede">
-            Administra los tipos de respuesta disponibles para el banco reutilizable de preguntas y
-            los formularios del sistema.
+            Administra facturas, moneda, tasa de impuesto y los totales recalculados del sistema.
           </p>
         </div>
-        <Link className="dashboard-btn dashboard-btn--primary" to="/dashboard/tipos-respuesta/nuevo">
-          Crear tipo
+        <Link className="dashboard-btn dashboard-btn--primary" to="/dashboard/facturas/nuevo">
+          Crear factura
         </Link>
       </div>
 
       <section className="dashboard-card">
         <div className="dashboard-alert">
-          No puedes eliminar un tipo de respuesta si todavia tiene preguntas activas asociadas.
+          No puedes eliminar una factura si todavia tiene ventas, donaciones o pagos PayPal
+          activos asociados.
         </div>
 
         <div className="dashboard-toolbar dashboard-toolbar--between">
@@ -131,19 +169,19 @@ const ResponseTypesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, nombre o estado"
+            placeholder="Buscar por ID, moneda, fecha, monto o estado"
             value={search}
           />
           <span className="dashboard-muted">
-            {filteredResponseTypes.length} de {responseTypes.length} tipos
+            {filteredInvoices.length} de {invoices.length} facturas
           </span>
         </div>
 
         {loading ? (
-          <div className="dashboard-empty-state">Cargando tipos de respuesta...</div>
-        ) : filteredResponseTypes.length === 0 ? (
+          <div className="dashboard-empty-state">Cargando facturas...</div>
+        ) : filteredInvoices.length === 0 ? (
           <div className="dashboard-empty-state">
-            No hay tipos de respuesta que coincidan con tu busqueda.
+            No hay facturas que coincidan con tu busqueda.
           </div>
         ) : (
           <div className="dashboard-table-wrap">
@@ -151,20 +189,30 @@ const ResponseTypesDashboard = () => {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Nombre</th>
+                  <th>Moneda</th>
+                  <th>Tasa</th>
+                  <th>Subtotal</th>
+                  <th>Impuesto</th>
+                  <th>Total</th>
+                  <th>Fecha</th>
                   <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredResponseTypes.map((responseType) => {
-                  const isDeletingCurrent = deletingId === responseType.idTipoRespuesta;
+                {filteredInvoices.map((invoice) => {
+                  const isDeletingCurrent = deletingId === invoice.idFactura;
 
                   return (
-                    <tr key={responseType.idTipoRespuesta}>
-                      <td>{responseType.idTipoRespuesta}</td>
-                      <td>{responseType.nombre}</td>
-                      <td>{responseType.estado || responseType.idEstado}</td>
+                    <tr key={invoice.idFactura}>
+                      <td>{invoice.idFactura}</td>
+                      <td>{invoice.moneda || invoice.idMoneda}</td>
+                      <td>{invoice.tasaImpuestoAplicada}</td>
+                      <td>{formatMoney(invoice.subtotal, invoice.simbolo)}</td>
+                      <td>{formatMoney(invoice.impuesto, invoice.simbolo)}</td>
+                      <td>{formatMoney(invoice.total, invoice.simbolo)}</td>
+                      <td>{formatDateTime(invoice.fechaFactura)}</td>
+                      <td>{invoice.estado || invoice.idEstado}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link
@@ -174,14 +222,14 @@ const ResponseTypesDashboard = () => {
                                 event.preventDefault();
                               }
                             }}
-                            to={`/dashboard/tipos-respuesta/${responseType.idTipoRespuesta}/editar`}
+                            to={`/dashboard/facturas/${invoice.idFactura}/editar`}
                           >
                             Editar
                           </Link>
                           <button
                             className="dashboard-btn dashboard-btn--danger"
                             disabled={deletingId !== null}
-                            onClick={() => onDelete(responseType)}
+                            onClick={() => onDelete(invoice)}
                             type="button"
                           >
                             {isDeletingCurrent ? "Eliminando..." : "Eliminar"}
@@ -200,4 +248,4 @@ const ResponseTypesDashboard = () => {
   );
 };
 
-export default ResponseTypesDashboard;
+export default InvoicesDashboard;

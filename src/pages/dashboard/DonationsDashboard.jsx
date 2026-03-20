@@ -1,41 +1,76 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import * as responseTypesApi from "../../api/responseTypes";
+import * as donationsApi from "../../api/donations";
 import { useAuth } from "../../hooks/useAuth";
 
-const ResponseTypesDashboard = () => {
+const amountFormatter = new Intl.NumberFormat("es-CR", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+const formatAmount = (value) => amountFormatter.format(Number(value || 0));
+
+const formatDate = (value) => {
+  if (!value) {
+    return "Sin fecha";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return date.toLocaleDateString("es-CR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+};
+
+const DonationsDashboard = () => {
   const { isAdmin } = useAuth();
-  const [responseTypes, setResponseTypes] = useState([]);
+  const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [search, setSearch] = useState("");
 
-  const filteredResponseTypes = useMemo(() => {
+  const filteredDonations = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     if (!query) {
-      return responseTypes;
+      return donations;
     }
 
-    return responseTypes.filter((responseType) =>
-      [responseType.idTipoRespuesta, responseType.nombre, responseType.estado]
-        .filter(Boolean)
+    return donations.filter((donation) =>
+      [
+        donation.idDonacion,
+        donation.identificacion,
+        donation.donador,
+        donation.idCampania,
+        donation.campania,
+        donation.monto,
+        donation.fechaDonacion,
+        donation.mensaje,
+        donation.estado,
+      ]
+        .filter((value) => value !== null && value !== undefined && value !== "")
         .join(" ")
         .toLowerCase()
         .includes(query),
     );
-  }, [responseTypes, search]);
+  }, [donations, search]);
 
-  const loadResponseTypes = async () => {
+  const loadDonations = async () => {
     try {
       setLoading(true);
-      const data = await responseTypesApi.getResponseTypes({ force: true });
-      setResponseTypes(Array.isArray(data) ? data : []);
+      const data = await donationsApi.getDonations({ force: true });
+      setDonations(Array.isArray(data) ? data : []);
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "No pudimos cargar los tipos de respuesta",
+        title: "No pudimos cargar las donaciones",
         text: error?.response?.data?.message || "Intenta nuevamente en un momento.",
       });
     } finally {
@@ -44,7 +79,7 @@ const ResponseTypesDashboard = () => {
   };
 
   useEffect(() => {
-    document.title = "Tipos de respuesta | Dashboard Kalö";
+    document.title = "Donaciones | Dashboard Kalö";
   }, []);
 
   useEffect(() => {
@@ -53,14 +88,14 @@ const ResponseTypesDashboard = () => {
       return;
     }
 
-    loadResponseTypes();
+    loadDonations();
   }, [isAdmin]);
 
-  const onDelete = async (responseType) => {
+  const onDelete = async (donation) => {
     const result = await Swal.fire({
       icon: "warning",
-      title: "Eliminar tipo de respuesta",
-      text: `Se desactivara el tipo "${responseType.nombre}".`,
+      title: "Eliminar donacion",
+      text: `Se desactivara la donacion #${donation.idDonacion}.`,
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -71,14 +106,14 @@ const ResponseTypesDashboard = () => {
     }
 
     try {
-      setDeletingId(responseType.idTipoRespuesta);
-      await responseTypesApi.deleteResponseType(responseType.idTipoRespuesta);
-      await loadResponseTypes();
+      setDeletingId(donation.idDonacion);
+      await donationsApi.deleteDonation(donation.idDonacion);
+      await loadDonations();
 
       Swal.fire({
         icon: "success",
-        title: "Tipo de respuesta eliminado",
-        text: "El tipo de respuesta fue desactivado correctamente.",
+        title: "Donacion eliminada",
+        text: "La donacion fue desactivada correctamente.",
       });
     } catch (error) {
       Swal.fire({
@@ -96,7 +131,7 @@ const ResponseTypesDashboard = () => {
       <div className="dashboard-page">
         <section className="dashboard-card">
           <p className="dashboard-page__eyebrow">Acceso restringido</p>
-          <h1>Tipos de respuesta</h1>
+          <h1>Donaciones</h1>
           <p className="dashboard-page__lede">
             Solo un administrador puede gestionar esta tabla desde el dashboard.
           </p>
@@ -109,21 +144,20 @@ const ResponseTypesDashboard = () => {
     <div className="dashboard-page">
       <div className="dashboard-page__header mt-4">
         <div>
-          <p className="dashboard-page__eyebrow">Gestion de catalogo</p>
-          <h1>Tipos de respuesta</h1>
+          <p className="dashboard-page__eyebrow">Gestion de donaciones</p>
+          <h1>Donaciones</h1>
           <p className="dashboard-page__lede">
-            Administra los tipos de respuesta disponibles para el banco reutilizable de preguntas y
-            los formularios del sistema.
+            Administra aportes economicos por usuario, campania, monto, fecha, mensaje y estado.
           </p>
         </div>
-        <Link className="dashboard-btn dashboard-btn--primary" to="/dashboard/tipos-respuesta/nuevo">
-          Crear tipo
+        <Link className="dashboard-btn dashboard-btn--primary" to="/dashboard/donaciones/nuevo">
+          Crear donacion
         </Link>
       </div>
 
       <section className="dashboard-card">
         <div className="dashboard-alert">
-          No puedes eliminar un tipo de respuesta si todavia tiene preguntas activas asociadas.
+          No puedes eliminar una donacion si todavia tiene facturas activas asociadas.
         </div>
 
         <div className="dashboard-toolbar dashboard-toolbar--between">
@@ -131,40 +165,48 @@ const ResponseTypesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, nombre o estado"
+            placeholder="Buscar por ID, donador, identificacion, campania, monto, fecha, mensaje o estado"
             value={search}
           />
           <span className="dashboard-muted">
-            {filteredResponseTypes.length} de {responseTypes.length} tipos
+            {filteredDonations.length} de {donations.length} donaciones
           </span>
         </div>
 
         {loading ? (
-          <div className="dashboard-empty-state">Cargando tipos de respuesta...</div>
-        ) : filteredResponseTypes.length === 0 ? (
-          <div className="dashboard-empty-state">
-            No hay tipos de respuesta que coincidan con tu busqueda.
-          </div>
+          <div className="dashboard-empty-state">Cargando donaciones...</div>
+        ) : filteredDonations.length === 0 ? (
+          <div className="dashboard-empty-state">No hay donaciones que coincidan con tu busqueda.</div>
         ) : (
           <div className="dashboard-table-wrap">
             <table className="dashboard-table">
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Nombre</th>
+                  <th>Identificacion</th>
+                  <th>Donador</th>
+                  <th>Campania</th>
+                  <th>Monto</th>
+                  <th>Fecha</th>
+                  <th>Mensaje</th>
                   <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredResponseTypes.map((responseType) => {
-                  const isDeletingCurrent = deletingId === responseType.idTipoRespuesta;
+                {filteredDonations.map((donation) => {
+                  const isDeletingCurrent = deletingId === donation.idDonacion;
 
                   return (
-                    <tr key={responseType.idTipoRespuesta}>
-                      <td>{responseType.idTipoRespuesta}</td>
-                      <td>{responseType.nombre}</td>
-                      <td>{responseType.estado || responseType.idEstado}</td>
+                    <tr key={donation.idDonacion}>
+                      <td>{donation.idDonacion}</td>
+                      <td>{donation.identificacion}</td>
+                      <td>{donation.donador || "-"}</td>
+                      <td>{donation.campania || donation.idCampania}</td>
+                      <td>{formatAmount(donation.monto)}</td>
+                      <td>{formatDate(donation.fechaDonacion)}</td>
+                      <td>{donation.mensaje || "Sin mensaje"}</td>
+                      <td>{donation.estado || donation.idEstado}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link
@@ -174,14 +216,14 @@ const ResponseTypesDashboard = () => {
                                 event.preventDefault();
                               }
                             }}
-                            to={`/dashboard/tipos-respuesta/${responseType.idTipoRespuesta}/editar`}
+                            to={`/dashboard/donaciones/${donation.idDonacion}/editar`}
                           >
                             Editar
                           </Link>
                           <button
                             className="dashboard-btn dashboard-btn--danger"
                             disabled={deletingId !== null}
-                            onClick={() => onDelete(responseType)}
+                            onClick={() => onDelete(donation)}
                             type="button"
                           >
                             {isDeletingCurrent ? "Eliminando..." : "Eliminar"}
@@ -200,4 +242,4 @@ const ResponseTypesDashboard = () => {
   );
 };
 
-export default ResponseTypesDashboard;
+export default DonationsDashboard;
