@@ -503,10 +503,9 @@ const DogAdoptionPage = () => {
                       <fieldset key={question.idPregunta} className="adoption-question">
                         <legend>
                           {question.pregunta}
-                          <small>{question.tipoRespuesta}</small>
                         </legend>
 
-                        {normalizedType === "si / no" ? (
+                        {normalizedType === "boolean" ? (
                           <div className="adoption-choice-list">
                             <label className="adoption-choice">
                               <input
@@ -518,6 +517,7 @@ const DogAdoptionPage = () => {
                               />
                               <span>Si</span>
                             </label>
+
                             <label className="adoption-choice">
                               <input
                                 {...register(fieldName, {
@@ -529,7 +529,7 @@ const DogAdoptionPage = () => {
                               <span>No</span>
                             </label>
                           </div>
-                        ) : normalizedType === "numerico" ? (
+                        ) : normalizedType === "number" ? (
                           <input
                             {...register(fieldName, {
                               required: "Esta pregunta es obligatoria",
@@ -537,12 +537,12 @@ const DogAdoptionPage = () => {
                                 Number.isFinite(Number(value)) || "Ingresa un valor numerico valido",
                             })}
                             className="form-control"
-                            inputMode="numeric"
+                            type="number"
+                            inputMode="number"
                             min="0"
                             step="1"
-                            type="number"
                           />
-                        ) : normalizedType === "texto libre" ? (
+                        ) : normalizedType === "text" ? (
                           <textarea
                             {...register(fieldName, {
                               required: "Esta pregunta es obligatoria",
@@ -554,7 +554,7 @@ const DogAdoptionPage = () => {
                             className="form-control"
                             rows="4"
                           />
-                        ) : (
+                        ) : normalizedType === "opcion multiple" ? (
                           <>
                             <input
                               {...register(fieldName, {
@@ -566,12 +566,15 @@ const DogAdoptionPage = () => {
                               })}
                               className="form-control"
                               type="text"
+                              placeholder="Selecciona o escribe una opcion"
                             />
+
                             {suggestions.length ? (
                               <div className="adoption-suggestion-list">
                                 {suggestions.map((suggestion) => (
                                   <button
                                     key={suggestion}
+                                    type="button"
                                     className={`adoption-suggestion${currentValue === suggestion ? " is-selected" : ""}`}
                                     onClick={() =>
                                       setValue(fieldName, suggestion, {
@@ -579,7 +582,6 @@ const DogAdoptionPage = () => {
                                         shouldValidate: true,
                                       })
                                     }
-                                    type="button"
                                   >
                                     {suggestion}
                                   </button>
@@ -587,6 +589,18 @@ const DogAdoptionPage = () => {
                               </div>
                             ) : null}
                           </>
+                        ) : (
+                          <input
+                            {...register(fieldName, {
+                              required: "Esta pregunta es obligatoria",
+                              maxLength: {
+                                value: 500,
+                                message: "La respuesta no puede superar los 500 caracteres",
+                              },
+                            })}
+                            className="form-control"
+                            type="text"
+                          />
                         )}
 
                         {questionError ? <small className="text-danger">{questionError}</small> : null}
