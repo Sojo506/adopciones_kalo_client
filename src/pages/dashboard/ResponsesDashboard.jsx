@@ -163,7 +163,7 @@ const ResponsesDashboard = () => {
 
         <div className="dashboard-alert">
           Solo puedes responder preguntas que sigan activas en{" "}
-          <Link to="/dashboard/solicitudes-pregunta">Solicitud-pregunta</Link>.
+          <Link to="/dashboard/tipos-solicitud-pregunta">Tipo solicitud-pregunta</Link>.
         </div>
 
         <div className="dashboard-toolbar dashboard-toolbar--between">

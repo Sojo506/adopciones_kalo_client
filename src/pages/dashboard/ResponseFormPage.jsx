@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import * as catalogsApi from "../../api/catalogs";
 import * as requestQuestionsApi from "../../api/requestQuestions";
+import * as requestsApi from "../../api/requests";
 import * as responsesApi from "../../api/responses";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -16,9 +17,9 @@ const EMPTY_FORM = {
 
 const buildRelationKey = (idSolicitud, idPregunta) => `${String(idSolicitud)}:${String(idPregunta)}`;
 
-const buildRequestLabel = (requestQuestion) => {
-  const base = `#${requestQuestion.idSolicitud}`;
-  return requestQuestion.solicitante ? `${base} - ${requestQuestion.solicitante}` : base;
+const buildRequestLabel = (request) => {
+  const base = `#${request.idSolicitud}`;
+  return request.solicitante ? `${base} - ${request.solicitante}` : base;
 };
 
 const buildQuestionLabel = (requestQuestion) => {
@@ -39,7 +40,12 @@ const buildPayload = (values) => ({
   idEstado: Number(values.idEstado),
 });
 
-const getSelectableRequestQuestions = ({ requestQuestions, responses, currentResponse }) => {
+const getSelectableRequestQuestions = ({
+  requests,
+  requestQuestions,
+  responses,
+  currentResponse,
+}) => {
   const currentRelationKey = currentResponse
     ? buildRelationKey(currentResponse.idSolicitud, currentResponse.idPregunta)
     : null;
@@ -49,18 +55,32 @@ const getSelectableRequestQuestions = ({ requestQuestions, responses, currentRes
       .map((response) => buildRelationKey(response.idSolicitud, response.idPregunta)),
   );
 
-  return (Array.isArray(requestQuestions) ? requestQuestions : []).filter((requestQuestion) => {
-    const relationKey = buildRelationKey(requestQuestion.idSolicitud, requestQuestion.idPregunta);
+  return (Array.isArray(requests) ? requests : []).flatMap((request) => {
+    const relationsForType = (Array.isArray(requestQuestions) ? requestQuestions : []).filter(
+      (requestQuestion) =>
+        Number(requestQuestion.idTipoSolicitud) === Number(request.idTipoSolicitud),
+    );
 
-    if (relationKey === currentRelationKey) {
-      return true;
-    }
+    return relationsForType
+      .filter((requestQuestion) => {
+        const relationKey = buildRelationKey(request.idSolicitud, requestQuestion.idPregunta);
 
-    if (Number(requestQuestion.idEstado) !== 1) {
-      return false;
-    }
+        if (relationKey === currentRelationKey) {
+          return true;
+        }
 
-    return !usedRelationKeys.has(relationKey);
+        if (Number(request.idEstado) !== 1 || Number(requestQuestion.idEstado) !== 1) {
+          return false;
+        }
+
+        return !usedRelationKeys.has(relationKey);
+      })
+      .map((requestQuestion) => ({
+        ...requestQuestion,
+        idSolicitud: request.idSolicitud,
+        identificacion: request.identificacion,
+        solicitante: request.solicitante,
+      }));
   });
 };
 
@@ -69,6 +89,7 @@ const ResponseFormPage = () => {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
   const [states, setStates] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [requestQuestions, setRequestQuestions] = useState([]);
   const [responses, setResponses] = useState([]);
   const [catalogsLoading, setCatalogsLoading] = useState(true);
@@ -80,11 +101,12 @@ const ResponseFormPage = () => {
 
   const selectableRequestQuestions = useMemo(() => {
     return getSelectableRequestQuestions({
+      requests,
       requestQuestions,
       responses,
       currentResponse,
     });
-  }, [currentResponse, requestQuestions, responses]);
+  }, [currentResponse, requestQuestions, requests, responses]);
 
   const requestOptions = useMemo(() => {
     const byRequest = new Map();
@@ -146,17 +168,20 @@ const ResponseFormPage = () => {
     const loadBaseData = async () => {
       try {
         setCatalogsLoading(true);
-        const [statesData, requestQuestionsData, responsesData] = await Promise.all([
+        const [statesData, requestsData, requestQuestionsData, responsesData] = await Promise.all([
           catalogsApi.getStates(),
+          requestsApi.getRequests({ force: true }),
           requestQuestionsApi.getRequestQuestions({ force: true }),
           responsesApi.getResponses({ force: true }),
         ]);
 
         const availableStates = Array.isArray(statesData) ? statesData : [];
+        const availableRequests = Array.isArray(requestsData) ? requestsData : [];
         const availableRequestQuestions = Array.isArray(requestQuestionsData) ? requestQuestionsData : [];
         const availableResponses = Array.isArray(responsesData) ? responsesData : [];
         const activeState = availableStates.find((state) => Number(state.idEstado) === 1);
         const selectableRelations = getSelectableRequestQuestions({
+          requests: availableRequests,
           requestQuestions: availableRequestQuestions,
           responses: availableResponses,
           currentResponse: null,
@@ -164,6 +189,7 @@ const ResponseFormPage = () => {
         const defaultRelation = selectableRelations[0] || null;
 
         setStates(availableStates);
+        setRequests(availableRequests);
         setRequestQuestions(availableRequestQuestions);
         setResponses(availableResponses);
 
@@ -321,8 +347,8 @@ const ResponseFormPage = () => {
       <section className="dashboard-card">
         <div className="dashboard-alert">
           Las preguntas disponibles salen de{" "}
-          <Link to="/dashboard/solicitudes-pregunta">Solicitud-pregunta</Link> y se ocultan si ya
-          tienen una respuesta registrada en esa misma solicitud.
+          <Link to="/dashboard/tipos-solicitud-pregunta">Tipo solicitud-pregunta</Link> y se
+          ocultan si ya tienen una respuesta registrada en esa misma solicitud.
         </div>
 
         <div className="dashboard-alert">
@@ -332,8 +358,8 @@ const ResponseFormPage = () => {
 
         {selectedRequestQuestion && Number(selectedRequestQuestion.idEstado) !== 1 ? (
           <div className="dashboard-alert">
-            La relacion actual solicitud-pregunta esta inactiva. Necesitas mover la respuesta a una
-            relacion activa para poder guardar cambios.
+            La relacion actual tipo solicitud-pregunta esta inactiva. Necesitas mover la respuesta
+            a una relacion activa para poder guardar cambios.
           </div>
         ) : null}
 
@@ -341,8 +367,8 @@ const ResponseFormPage = () => {
           <div className="dashboard-empty-state">Cargando formulario...</div>
         ) : !hasRequiredData ? (
           <div className="dashboard-empty-state">
-            Necesitas estados y relaciones solicitud-pregunta disponibles para completar este
-            formulario.
+            Necesitas estados, solicitudes y relaciones tipo solicitud-pregunta disponibles para
+            completar este formulario.
           </div>
         ) : (
           <form className="dashboard-form" onSubmit={handleSubmit(onSubmit)}>

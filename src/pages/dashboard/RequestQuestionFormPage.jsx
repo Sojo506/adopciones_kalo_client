@@ -5,18 +5,18 @@ import Swal from "sweetalert2";
 import * as catalogsApi from "../../api/catalogs";
 import * as questionsApi from "../../api/questions";
 import * as requestQuestionsApi from "../../api/requestQuestions";
-import * as requestsApi from "../../api/requests";
+import * as requestTypesApi from "../../api/requestTypes";
 import { useAuth } from "../../hooks/useAuth";
 
 const EMPTY_FORM = {
-  idSolicitud: "",
+  idTipoSolicitud: "",
   idPregunta: "",
   idEstado: "1",
 };
 
-const buildRequestLabel = (request) => {
-  const base = `#${request.idSolicitud}`;
-  return request.solicitante ? `${base} - ${request.solicitante}` : base;
+const buildRequestTypeLabel = (requestType) => {
+  const base = `#${requestType.idTipoSolicitud}`;
+  return requestType.nombre ? `${base} - ${requestType.nombre}` : base;
 };
 
 const buildQuestionLabel = (question) => {
@@ -24,13 +24,13 @@ const buildQuestionLabel = (question) => {
 };
 
 const mapRequestQuestionToForm = (requestQuestion) => ({
-  idSolicitud: String(requestQuestion?.idSolicitud ?? ""),
+  idTipoSolicitud: String(requestQuestion?.idTipoSolicitud ?? ""),
   idPregunta: String(requestQuestion?.idPregunta ?? ""),
   idEstado: String(requestQuestion?.idEstado ?? "1"),
 });
 
 const buildCreatePayload = (values) => ({
-  idSolicitud: Number(values.idSolicitud),
+  idTipoSolicitud: Number(values.idTipoSolicitud),
   idPregunta: Number(values.idPregunta),
   idEstado: 1,
 });
@@ -40,26 +40,26 @@ const buildUpdatePayload = (values) => ({
 });
 
 const RequestQuestionFormPage = () => {
-  const { idSolicitud, idPregunta } = useParams();
+  const { idTipoSolicitud, idPregunta } = useParams();
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
   const [states, setStates] = useState([]);
-  const [requests, setRequests] = useState([]);
+  const [requestTypes, setRequestTypes] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [catalogsLoading, setCatalogsLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [currentRequestQuestion, setCurrentRequestQuestion] = useState(null);
 
-  const isEditing = Boolean(idSolicitud && idPregunta);
+  const isEditing = Boolean(idTipoSolicitud && idPregunta);
 
-  const requestOptions = useMemo(() => {
-    return requests.filter(
-      (request) =>
-        Number(request.idEstado) === 1 ||
-        Number(request.idSolicitud) === Number(currentRequestQuestion?.idSolicitud),
+  const requestTypeOptions = useMemo(() => {
+    return requestTypes.filter(
+      (requestType) =>
+        Number(requestType.idEstado) === 1 ||
+        Number(requestType.idTipoSolicitud) === Number(currentRequestQuestion?.idTipoSolicitud),
     );
-  }, [currentRequestQuestion?.idSolicitud, requests]);
+  }, [currentRequestQuestion?.idTipoSolicitud, requestTypes]);
 
   const questionOptions = useMemo(() => {
     return questions.filter(
@@ -70,7 +70,7 @@ const RequestQuestionFormPage = () => {
   }, [currentRequestQuestion?.idPregunta, questions]);
 
   const hasRequiredData =
-    states.length > 0 && requestOptions.length > 0 && questionOptions.length > 0;
+    states.length > 0 && requestTypeOptions.length > 0 && questionOptions.length > 0;
   const formDisabled = catalogsLoading || detailLoading || saving || !hasRequiredData;
 
   const {
@@ -81,12 +81,16 @@ const RequestQuestionFormPage = () => {
     formState: { errors },
   } = useForm({ defaultValues: EMPTY_FORM });
 
-  const watchedRequestId = watch("idSolicitud");
+  const watchedRequestTypeId = watch("idTipoSolicitud");
   const watchedQuestionId = watch("idPregunta");
 
-  const selectedRequest = useMemo(() => {
-    return requestOptions.find((request) => Number(request.idSolicitud) === Number(watchedRequestId)) || null;
-  }, [requestOptions, watchedRequestId]);
+  const selectedRequestType = useMemo(() => {
+    return (
+      requestTypeOptions.find(
+        (requestType) => Number(requestType.idTipoSolicitud) === Number(watchedRequestTypeId),
+      ) || null
+    );
+  }, [requestTypeOptions, watchedRequestTypeId]);
 
   const selectedQuestion = useMemo(() => {
     return questionOptions.find((question) => Number(question.idPregunta) === Number(watchedQuestionId)) || null;
@@ -94,35 +98,37 @@ const RequestQuestionFormPage = () => {
 
   useEffect(() => {
     document.title = isEditing
-      ? "Editar solicitud-pregunta | Dashboard Kalö"
-      : "Nueva solicitud-pregunta | Dashboard Kalö";
+      ? "Editar tipo solicitud-pregunta | Dashboard Kalö"
+      : "Nueva relacion tipo solicitud-pregunta | Dashboard Kalö";
   }, [isEditing]);
 
   useEffect(() => {
     const loadBaseData = async () => {
       try {
         setCatalogsLoading(true);
-        const [statesData, requestsData, questionsData] = await Promise.all([
+        const [statesData, requestTypesData, questionsData] = await Promise.all([
           catalogsApi.getStates(),
-          requestsApi.getRequests({ force: true }),
+          requestTypesApi.getRequestTypes({ force: true }),
           questionsApi.getQuestions({ force: true }),
         ]);
 
         const availableStates = Array.isArray(statesData) ? statesData : [];
-        const availableRequests = Array.isArray(requestsData) ? requestsData : [];
+        const availableRequestTypes = Array.isArray(requestTypesData) ? requestTypesData : [];
         const availableQuestions = Array.isArray(questionsData) ? questionsData : [];
         const activeState = availableStates.find((state) => Number(state.idEstado) === 1);
-        const activeRequest = availableRequests.find((request) => Number(request.idEstado) === 1);
+        const activeRequestType = availableRequestTypes.find(
+          (requestType) => Number(requestType.idEstado) === 1,
+        );
         const activeQuestion = availableQuestions.find((question) => Number(question.idEstado) === 1);
 
         setStates(availableStates);
-        setRequests(availableRequests);
+        setRequestTypes(availableRequestTypes);
         setQuestions(availableQuestions);
 
         if (!isEditing) {
           reset({
             ...EMPTY_FORM,
-            idSolicitud: String(activeRequest?.idSolicitud ?? ""),
+            idTipoSolicitud: String(activeRequestType?.idTipoSolicitud ?? ""),
             idPregunta: String(activeQuestion?.idPregunta ?? ""),
             idEstado: String(activeState?.idEstado ?? 1),
           });
@@ -149,25 +155,27 @@ const RequestQuestionFormPage = () => {
     const loadRequestQuestion = async () => {
       try {
         setDetailLoading(true);
-        const detail = await requestQuestionsApi.getRequestQuestionByPk(idSolicitud, idPregunta, {
-          force: true,
-        });
+        const detail = await requestQuestionsApi.getRequestQuestionByPk(
+          idTipoSolicitud,
+          idPregunta,
+          { force: true },
+        );
         setCurrentRequestQuestion(detail);
         reset(mapRequestQuestionToForm(detail));
       } catch (error) {
         Swal.fire({
           icon: "error",
-          title: "No pudimos cargar la relacion solicitud-pregunta",
+          title: "No pudimos cargar la relacion tipo solicitud-pregunta",
           text: error?.response?.data?.message || "Volvamos al listado para evitar inconsistencias.",
         });
-        navigate("/dashboard/solicitudes-pregunta");
+        navigate("/dashboard/tipos-solicitud-pregunta");
       } finally {
         setDetailLoading(false);
       }
     };
 
     loadRequestQuestion();
-  }, [idPregunta, idSolicitud, isEditing, navigate, reset]);
+  }, [idPregunta, idTipoSolicitud, isEditing, navigate, reset]);
 
   const onSubmit = async (values) => {
     if (!isAdmin || !hasRequiredData) {
@@ -179,7 +187,7 @@ const RequestQuestionFormPage = () => {
 
       if (isEditing) {
         await requestQuestionsApi.updateRequestQuestion(
-          idSolicitud,
+          idTipoSolicitud,
           idPregunta,
           buildUpdatePayload(values),
         );
@@ -192,10 +200,10 @@ const RequestQuestionFormPage = () => {
         title: isEditing ? "Relacion actualizada" : "Relacion creada",
         text: isEditing
           ? "Los cambios quedaron guardados correctamente."
-          : "La relacion solicitud-pregunta fue creada correctamente.",
+          : "La relacion tipo solicitud-pregunta fue creada correctamente.",
       });
 
-      navigate("/dashboard/solicitudes-pregunta");
+      navigate("/dashboard/tipos-solicitud-pregunta");
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -212,7 +220,7 @@ const RequestQuestionFormPage = () => {
       <div className="dashboard-page">
         <section className="dashboard-card">
           <p className="dashboard-page__eyebrow">Acceso restringido</p>
-          <h1>Solicitud-pregunta</h1>
+          <h1>Tipo solicitud-pregunta</h1>
           <p className="dashboard-page__lede">
             Solo un administrador puede crear o actualizar esta informacion.
           </p>
@@ -228,21 +236,21 @@ const RequestQuestionFormPage = () => {
           <p className="dashboard-page__eyebrow">
             {isEditing ? "Editar relacion" : "Nueva relacion"}
           </p>
-          <h1>{isEditing ? "Actualizar solicitud-pregunta" : "Crear solicitud-pregunta"}</h1>
+          <h1>{isEditing ? "Actualizar tipo solicitud-pregunta" : "Crear tipo solicitud-pregunta"}</h1>
           <p className="dashboard-page__lede">
-            Define qué pregunta forma parte de una solicitud y controla el estado de esa relacion
-            dentro del formulario.
+            Define qué pregunta forma parte de un tipo de solicitud y controla el estado de esa
+            relacion dentro del formulario.
           </p>
         </div>
-        <Link className="dashboard-btn dashboard-btn--ghost" to="/dashboard/solicitudes-pregunta">
+        <Link className="dashboard-btn dashboard-btn--ghost" to="/dashboard/tipos-solicitud-pregunta">
           Volver al listado
         </Link>
       </div>
 
       <section className="dashboard-card">
         <div className="dashboard-alert">
-          Esta tabla compone el formulario de cada solicitud. Las respuestas solo se pueden capturar
-          si la pregunta sigue activa dentro de esta relacion.
+          Esta tabla compone el formulario base de cada tipo de solicitud. Las respuestas solo se
+          pueden capturar si la pregunta sigue activa dentro de esta relacion.
         </div>
 
         <div className="dashboard-alert">
@@ -251,37 +259,41 @@ const RequestQuestionFormPage = () => {
         </div>
 
         <div className="dashboard-alert">
-          Solo se muestran solicitudes y preguntas activas al crear. Al editar se conserva la
-          relacion actual aunque alguno de los registros haya quedado inactivo despues.
+          Solo se muestran tipos de solicitud y preguntas activas al crear. Al editar se conserva
+          la relacion actual aunque alguno de los registros haya quedado inactivo despues.
         </div>
 
         {catalogsLoading || detailLoading ? (
           <div className="dashboard-empty-state">Cargando formulario...</div>
         ) : !hasRequiredData ? (
           <div className="dashboard-empty-state">
-            Necesitas estados, solicitudes y preguntas disponibles para completar este formulario.
+            Necesitas estados, tipos de solicitud y preguntas disponibles para completar este
+            formulario.
           </div>
         ) : (
           <form className="dashboard-form" onSubmit={handleSubmit(onSubmit)}>
             <fieldset className="dashboard-form__fieldset" disabled={formDisabled}>
               <div className="dashboard-form-grid">
                 <label className="dashboard-input">
-                  <span>Solicitud</span>
+                  <span>Tipo de solicitud</span>
                   <select
                     className="form-select"
                     disabled={isEditing}
-                    {...register("idSolicitud", {
-                      required: "La solicitud es obligatoria",
+                    {...register("idTipoSolicitud", {
+                      required: "El tipo de solicitud es obligatorio",
                     })}
                   >
-                    <option value="">Selecciona una solicitud</option>
-                    {requestOptions.map((request) => (
-                      <option key={request.idSolicitud} value={request.idSolicitud}>
-                        {buildRequestLabel(request)}
+                    <option value="">Selecciona un tipo de solicitud</option>
+                    {requestTypeOptions.map((requestType) => (
+                      <option
+                        key={requestType.idTipoSolicitud}
+                        value={requestType.idTipoSolicitud}
+                      >
+                        {buildRequestTypeLabel(requestType)}
                       </option>
                     ))}
                   </select>
-                  {errors.idSolicitud ? <small>{errors.idSolicitud.message}</small> : null}
+                  {errors.idTipoSolicitud ? <small>{errors.idTipoSolicitud.message}</small> : null}
                 </label>
 
                 <label className="dashboard-input dashboard-input--full">
@@ -321,8 +333,10 @@ const RequestQuestionFormPage = () => {
               </div>
             </fieldset>
 
-            {selectedRequest ? (
-              <p className="dashboard-muted">Solicitud seleccionada: {buildRequestLabel(selectedRequest)}.</p>
+            {selectedRequestType ? (
+              <p className="dashboard-muted">
+                Tipo seleccionado: {buildRequestTypeLabel(selectedRequestType)}.
+              </p>
             ) : null}
 
             {selectedQuestion ? (
@@ -336,7 +350,7 @@ const RequestQuestionFormPage = () => {
               <button className="dashboard-btn dashboard-btn--primary" disabled={saving} type="submit">
                 {saving ? "Guardando..." : isEditing ? "Guardar cambios" : "Crear relacion"}
               </button>
-              <Link className="dashboard-btn dashboard-btn--ghost" to="/dashboard/solicitudes-pregunta">
+              <Link className="dashboard-btn dashboard-btn--ghost" to="/dashboard/tipos-solicitud-pregunta">
                 Cancelar
               </Link>
             </div>

@@ -190,7 +190,7 @@ const QuestionFormPage = () => {
           <>
             <div className="dashboard-alert">
               Esta pantalla administra solo el banco de preguntas. La asignacion a formularios se
-              resuelve desde <Link to="/dashboard/solicitudes-pregunta">Solicitud-pregunta</Link>.
+              resuelve desde <Link to="/dashboard/tipos-solicitud-pregunta">Tipo solicitud-pregunta</Link>.
             </div>
 
             <div className="dashboard-alert">

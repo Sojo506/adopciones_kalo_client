@@ -48,7 +48,6 @@ const InventoryFormPage = () => {
   } = useForm({ defaultValues: EMPTY_FORM });
 
   const watchedQuantity = Number(watch("cantidad") || 0);
-  const watchedProductId = watch("idProducto");
   const currentQuantity = Number(currentInventory?.cantidad || 0);
   const quantityDelta = isEditing ? watchedQuantity - currentQuantity : watchedQuantity;
 

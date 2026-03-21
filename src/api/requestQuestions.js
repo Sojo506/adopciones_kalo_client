@@ -4,20 +4,22 @@ import { dedupeRequest } from "./requestCache";
 const unwrapResponse = (response) => response.data?.data ?? response.data ?? [];
 let requestQuestionsCache = null;
 const requestQuestionDetailCache = new Map();
+const requestQuestionsByTypeCache = new Map();
 
-const normalizeRequestQuestionKey = (idSolicitud, idPregunta) =>
-  `${String(idSolicitud)}:${String(idPregunta)}`;
+const normalizeRequestQuestionKey = (idTipoSolicitud, idPregunta) =>
+  `${String(idTipoSolicitud)}:${String(idPregunta)}`;
 
-export const clearRequestQuestionCaches = (idSolicitud, idPregunta) => {
+export const clearRequestQuestionCaches = (idTipoSolicitud, idPregunta) => {
   requestQuestionsCache = null;
+  requestQuestionsByTypeCache.clear();
 
   if (
-    idSolicitud !== undefined &&
-    idSolicitud !== null &&
+    idTipoSolicitud !== undefined &&
+    idTipoSolicitud !== null &&
     idPregunta !== undefined &&
     idPregunta !== null
   ) {
-    requestQuestionDetailCache.delete(normalizeRequestQuestionKey(idSolicitud, idPregunta));
+    requestQuestionDetailCache.delete(normalizeRequestQuestionKey(idTipoSolicitud, idPregunta));
     return;
   }
 
@@ -29,52 +31,79 @@ export const getRequestQuestions = async ({ force = false } = {}) => {
     return requestQuestionsCache;
   }
 
-  return dedupeRequest("request-questions:list", async () => {
-    const response = await axiosInstance.get("/request-questions");
+  return dedupeRequest("request-type-questions:list", async () => {
+    const response = await axiosInstance.get("/request-type-questions");
     requestQuestionsCache = unwrapResponse(response);
     return requestQuestionsCache;
   });
 };
 
 export const getRequestQuestionByPk = async (
-  idSolicitud,
+  idTipoSolicitud,
   idPregunta,
   { force = false } = {},
 ) => {
-  const cacheKey = normalizeRequestQuestionKey(idSolicitud, idPregunta);
+  const cacheKey = normalizeRequestQuestionKey(idTipoSolicitud, idPregunta);
 
   if (!force && requestQuestionDetailCache.has(cacheKey)) {
     return requestQuestionDetailCache.get(cacheKey);
   }
 
-  return dedupeRequest(`request-questions:detail:${cacheKey}`, async () => {
-    const response = await axiosInstance.get(`/request-questions/${idSolicitud}/${idPregunta}`);
+  return dedupeRequest(`request-type-questions:detail:${cacheKey}`, async () => {
+    const response = await axiosInstance.get(
+      `/request-type-questions/${idTipoSolicitud}/${idPregunta}`,
+    );
     const data = unwrapResponse(response);
     requestQuestionDetailCache.set(cacheKey, data);
     return data;
   });
 };
 
+export const getActiveQuestionsByRequestType = async (
+  idTipoSolicitud,
+  { force = false } = {},
+) => {
+  const cacheKey = String(idTipoSolicitud);
+
+  if (!force && requestQuestionsByTypeCache.has(cacheKey)) {
+    return requestQuestionsByTypeCache.get(cacheKey);
+  }
+
+  return dedupeRequest(`request-type-questions:type:${cacheKey}`, async () => {
+    const response = await axiosInstance.get(
+      `/request-type-questions/request-types/${idTipoSolicitud}/questions`,
+    );
+    const data = unwrapResponse(response);
+    requestQuestionsByTypeCache.set(cacheKey, data);
+    return data;
+  });
+};
+
 export const createRequestQuestion = async (payload) => {
-  const response = await axiosInstance.post("/request-questions", payload);
+  const response = await axiosInstance.post("/request-type-questions", payload);
   const data = unwrapResponse(response);
-  clearRequestQuestionCaches(data?.idSolicitud, data?.idPregunta);
+  clearRequestQuestionCaches(data?.idTipoSolicitud, data?.idPregunta);
   return data;
 };
 
-export const updateRequestQuestion = async (idSolicitud, idPregunta, payload) => {
+export const updateRequestQuestion = async (idTipoSolicitud, idPregunta, payload) => {
   const response = await axiosInstance.put(
-    `/request-questions/${idSolicitud}/${idPregunta}`,
+    `/request-type-questions/${idTipoSolicitud}/${idPregunta}`,
     payload,
   );
   const data = unwrapResponse(response);
-  clearRequestQuestionCaches(idSolicitud, idPregunta);
-  requestQuestionDetailCache.set(normalizeRequestQuestionKey(idSolicitud, idPregunta), data);
+  clearRequestQuestionCaches(idTipoSolicitud, idPregunta);
+  requestQuestionDetailCache.set(
+    normalizeRequestQuestionKey(idTipoSolicitud, idPregunta),
+    data,
+  );
   return data;
 };
 
-export const deleteRequestQuestion = async (idSolicitud, idPregunta) => {
-  const response = await axiosInstance.delete(`/request-questions/${idSolicitud}/${idPregunta}`);
-  clearRequestQuestionCaches(idSolicitud, idPregunta);
+export const deleteRequestQuestion = async (idTipoSolicitud, idPregunta) => {
+  const response = await axiosInstance.delete(
+    `/request-type-questions/${idTipoSolicitud}/${idPregunta}`,
+  );
+  clearRequestQuestionCaches(idTipoSolicitud, idPregunta);
   return unwrapResponse(response);
 };

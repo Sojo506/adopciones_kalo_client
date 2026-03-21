@@ -142,8 +142,8 @@ const RequestsDashboard = () => {
       <section className="dashboard-card">
         <div className="dashboard-alert">
           La solicitud guarda el formulario base. Las preguntas se asignan desde{" "}
-          <Link to="/dashboard/solicitudes-pregunta">Solicitud-pregunta</Link> y el perrito solo
-          aparece aqui cuando ya existe una adopcion asociada.
+          <Link to="/dashboard/tipos-solicitud-pregunta">Tipo solicitud-pregunta</Link> y el
+          perrito solo aparece aqui cuando ya existe una adopcion asociada.
         </div>
 
         <div className="dashboard-alert">
