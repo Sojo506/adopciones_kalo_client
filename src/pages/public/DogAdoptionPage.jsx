@@ -9,6 +9,7 @@ import { getActiveQuestionsByRequestType } from "../../api/requestQuestions";
 import { useAuth } from "../../hooks/useAuth";
 
 const ADOPTION_REQUEST_TYPE_NAME = "Adopcion";
+const DOG_PAGE_SIZE = 6;
 
 const formatDate = (value) => {
   if (!value) {
@@ -89,6 +90,7 @@ const DogAdoptionPage = () => {
   const [questions, setQuestions] = useState([]);
   const [selectedDogId, setSelectedDogId] = useState(null);
   const [selectedDog, setSelectedDog] = useState(null);
+  const [dogPage, setDogPage] = useState(1);
   const [pageLoading, setPageLoading] = useState(true);
   const [dogLoading, setDogLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -237,6 +239,13 @@ const DogAdoptionPage = () => {
     };
   }, [selectedDogId]);
 
+  useEffect(() => {
+    setDogPage(1);
+  }, [dogs]);
+
+  const dogTotalPages = Math.ceil(dogs.length / DOG_PAGE_SIZE);
+  const paginatedDogs = dogs.slice((dogPage - 1) * DOG_PAGE_SIZE, dogPage * DOG_PAGE_SIZE);
+
   const onSubmit = async (values) => {
     if (!selectedDogId) {
       Swal.fire({
@@ -304,13 +313,14 @@ const DogAdoptionPage = () => {
     <section className="adoption-page">
       <div className="container adoption-shell">
         <section className="adoption-hero">
+          <span className="hero-deco" aria-hidden="true">🐾</span>
+
           <div>
-            <span className="adoption-pill">Formulario publico de adopcion</span>
-            <h1>Elige un perrito, responde con calma y deja tu solicitud lista para revision.</h1>
+            <span className="adoption-pill">Adopciones Kalo</span>
+            <h1>Dale un hogar a un <em className="hero-highlight">perrito</em> que te esta esperando.</h1>
             <p>
-              Esta vista esta abierta para cualquier persona que use la app. La informacion del
-              formulario se conecta con perritos, solicitudes, preguntas y respuestas del modulo de
-              adopciones.
+              Explora los perritos disponibles, completa el formulario con calma y deja tu
+              solicitud lista para que el equipo de Kalo la revise.
             </p>
           </div>
 
@@ -321,11 +331,11 @@ const DogAdoptionPage = () => {
             </article>
             <article>
               <strong>{questions.length}</strong>
-              <span>Preguntas activas</span>
+              <span>Preguntas del formulario</span>
             </article>
             <article>
               <strong>{isAuthenticated ? "Activa" : "Pendiente"}</strong>
-              <span>{isAuthenticated ? "Sesion lista para enviar" : "Necesitas iniciar sesion para enviar"}</span>
+              <span>{isAuthenticated ? "Sesion lista para enviar" : "Inicia sesion para enviar"}</span>
             </article>
           </div>
         </section>
@@ -350,7 +360,7 @@ const DogAdoptionPage = () => {
               </div>
 
               <div className="adoption-dog-grid">
-                {dogs.map((dog) => (
+                {paginatedDogs.map((dog) => (
                   <button
                     key={dog.idPerrito}
                     className={`adoption-dog-card${Number(selectedDogId) === Number(dog.idPerrito) ? " is-selected" : ""}`}
@@ -375,6 +385,30 @@ const DogAdoptionPage = () => {
                   </button>
                 ))}
               </div>
+
+              {dogTotalPages > 1 && (
+                <div className="pagination">
+                  <button
+                    className="pagination-btn"
+                    disabled={dogPage === 1}
+                    onClick={() => setDogPage((p) => p - 1)}
+                    type="button"
+                  >
+                    Anterior
+                  </button>
+                  <span className="pagination-info">
+                    {dogPage} / {dogTotalPages}
+                  </span>
+                  <button
+                    className="pagination-btn"
+                    disabled={dogPage === dogTotalPages}
+                    onClick={() => setDogPage((p) => p + 1)}
+                    type="button"
+                  >
+                    Siguiente
+                  </button>
+                </div>
+              )}
             </aside>
 
             <div className="adoption-main-column">
