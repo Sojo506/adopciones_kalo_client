@@ -81,6 +81,9 @@ const Home = () => {
               <Link className="home-btn home-btn--primary" to="/adopciones">
                 Quiero adoptar
               </Link>
+              <Link className="home-btn home-btn--secondary-light" to="/tienda">
+                Tienda solidaria
+              </Link>
               {!isAuthenticated ? (
                 <>
                   <Link className="home-btn home-btn--secondary-light" to="/signup">
