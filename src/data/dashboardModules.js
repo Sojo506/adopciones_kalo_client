@@ -184,10 +184,10 @@ export const dashboardNavigationSections = [
         "Formulario base"
       ),
       createDashboardItem(
-        "solicitudes-pregunta",
-        "Solicitud-pregunta",
-        "FIDE_SOLICITUD_PREGUNTA_TB",
-        "Relaciona cada solicitud con las preguntas activas que componen su formulario.",
+        "tipos-solicitud-pregunta",
+        "Tipo solicitud-pregunta",
+        "FIDE_TIPO_SOLICITUD_PREGUNTA_TB",
+        "Relaciona cada tipo de solicitud con las preguntas activas que componen su formulario.",
         "Relacion N:N"
       ),
       createDashboardItem(
@@ -302,14 +302,14 @@ export const dashboardModuleGroups = [
       "Prepara el flujo de formularios de solicitud, su composicion N:N con preguntas, las respuestas capturadas, las adopciones aprobadas y los seguimientos que luego habilitan evidencias del usuario.",
     tables: [
       "FIDE_SOLICITUD_TB",
-      "FIDE_SOLICITUD_PREGUNTA_TB",
+      "FIDE_TIPO_SOLICITUD_PREGUNTA_TB",
       "FIDE_RESPUESTA_TB",
       "FIDE_ADOPCION_TB",
       "FIDE_SEGUIMIENTO_TB",
     ],
     modules: [
       "Solicitudes",
-      "Solicitud-pregunta",
+      "Tipo solicitud-pregunta",
       "Preguntas",
       "Respuestas",
       "Adopciones",

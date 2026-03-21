@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { submitAdoptionRequest } from "../../api/adoptionRequests";
-import { getQuestions } from "../../api/catalogs";
+import { getRequestTypes } from "../../api/catalogs";
 import { getAvailableDogs, getDogById } from "../../api/dogs";
+import { getActiveQuestionsByRequestType } from "../../api/requestQuestions";
 import { useAuth } from "../../hooks/useAuth";
+
+const ADOPTION_REQUEST_TYPE_NAME = "Adopcion";
 
 const formatDate = (value) => {
   if (!value) {
@@ -66,6 +69,20 @@ const getQuestionError = (errors, idPregunta) =>
   errors.answers?.[String(idPregunta)]?.message ||
   "";
 
+const findAdoptionRequestType = (requestTypes) => {
+  const normalizedTarget = normalizeText(ADOPTION_REQUEST_TYPE_NAME);
+
+  return (
+    (Array.isArray(requestTypes) ? requestTypes : []).find(
+      (requestType) => normalizeText(requestType.nombre) === normalizedTarget,
+    ) ||
+    (Array.isArray(requestTypes) ? requestTypes : []).find(
+      (requestType) => Number(requestType.idTipoSolicitud) === 1,
+    ) ||
+    null
+  );
+};
+
 const DogAdoptionPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [dogs, setDogs] = useState([]);
@@ -91,6 +108,7 @@ const DogAdoptionPage = () => {
   });
 
   const currentDogParam = searchParams.get("perrito");
+  const initialDogParamRef = useRef(currentDogParam);
 
   useEffect(() => {
     document.title = "Formulario de adopcion | Adopciones Kalo";
@@ -104,7 +122,20 @@ const DogAdoptionPage = () => {
       setPageError("");
 
       try {
-        const [nextDogs, nextQuestions] = await Promise.all([getAvailableDogs(), getQuestions()]);
+        const [nextDogs, nextRequestTypes] = await Promise.all([
+          getAvailableDogs(),
+          getRequestTypes(),
+        ]);
+        const adoptionRequestType = findAdoptionRequestType(nextRequestTypes);
+
+        if (!adoptionRequestType) {
+          throw new Error("No existe un tipo de solicitud de adopcion configurado.");
+        }
+
+        const nextQuestions = await getActiveQuestionsByRequestType(
+          adoptionRequestType.idTipoSolicitud,
+          { force: true },
+        );
 
         if (ignore) {
           return;
@@ -120,7 +151,7 @@ const DogAdoptionPage = () => {
           return;
         }
 
-        const requestedDogId = Number(currentDogParam);
+        const requestedDogId = Number(initialDogParamRef.current);
         const requestedDog = nextDogs.find((dog) => Number(dog.idPerrito) === requestedDogId);
         setSelectedDogId((requestedDog || nextDogs[0]).idPerrito);
       } catch (error) {

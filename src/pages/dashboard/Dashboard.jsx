@@ -277,13 +277,13 @@ const Dashboard = () => {
             <Route path="evidencias" element={<EvidencesDashboard />} />
             <Route path="evidencias/nuevo" element={<EvidenceFormPage />} />
             <Route path="evidencias/:idEvidencia/editar" element={<EvidenceFormPage />} />
-            <Route path="solicitudes-pregunta" element={<RequestQuestionsDashboard />} />
+            <Route path="tipos-solicitud-pregunta" element={<RequestQuestionsDashboard />} />
             <Route
-              path="solicitudes-pregunta/nuevo"
+              path="tipos-solicitud-pregunta/nuevo"
               element={<RequestQuestionFormPage />}
             />
             <Route
-              path="solicitudes-pregunta/:idSolicitud/:idPregunta/editar"
+              path="tipos-solicitud-pregunta/:idTipoSolicitud/:idPregunta/editar"
               element={<RequestQuestionFormPage />}
             />
             <Route path="respuestas" element={<ResponsesDashboard />} />

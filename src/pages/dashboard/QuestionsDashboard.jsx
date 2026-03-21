@@ -113,7 +113,7 @@ const QuestionsDashboard = () => {
           <h1>Preguntas</h1>
           <p className="dashboard-page__lede">
             Administra el banco reutilizable de preguntas que luego se asigna a cada solicitud
-            mediante la relacion solicitud-pregunta.
+            mediante la relacion tipo solicitud-pregunta.
           </p>
         </div>
         <Link className="dashboard-btn dashboard-btn--primary" to="/dashboard/preguntas/nuevo">
@@ -124,7 +124,7 @@ const QuestionsDashboard = () => {
       <section className="dashboard-card">
         <div className="dashboard-alert">
           Las preguntas no pertenecen a una sola solicitud. La composicion de cada formulario se
-          gestiona desde <Link to="/dashboard/solicitudes-pregunta">Solicitud-pregunta</Link>.
+          gestiona desde <Link to="/dashboard/tipos-solicitud-pregunta">Tipo solicitud-pregunta</Link>.
         </div>
 
         <div className="dashboard-alert">

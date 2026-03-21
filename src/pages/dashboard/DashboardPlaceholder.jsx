@@ -17,26 +17,26 @@ const SCHEMA_NOTES_BY_TABLE = {
     note:
       "La solicitud ahora funciona como formulario base: conserva usuario y tipo de solicitud, pero ya no selecciona perrito directamente.",
     related: [
-      { label: "Solicitud-pregunta", to: "/dashboard/solicitudes-pregunta" },
+      { label: "Tipo solicitud-pregunta", to: "/dashboard/tipos-solicitud-pregunta" },
       { label: "Adopciones", to: "/dashboard/adopciones" },
     ],
     tags: ["Formulario base", "Sin perrito directo"],
   },
-  FIDE_SOLICITUD_PREGUNTA_TB: {
+  FIDE_TIPO_SOLICITUD_PREGUNTA_TB: {
     note:
-      "Esta tabla intermedia resuelve la relacion N:N entre formularios y preguntas reutilizables del sistema.",
+      "Esta tabla intermedia resuelve la relacion N:N entre tipos de solicitud y preguntas reutilizables del sistema.",
     related: [
-      { label: "Solicitudes", to: "/dashboard/solicitudes" },
+      { label: "Tipos de solicitud", to: "/dashboard/tipos-solicitud" },
       { label: "Preguntas", to: "/dashboard/preguntas" },
     ],
-    tags: [""],
+    tags: ["Relacion N:N"],
   },
   FIDE_RESPUESTA_TB: {
     note:
-      "Cada respuesta debe apuntar a una pregunta que ya este asignada a la solicitud correspondiente.",
+      "Cada respuesta debe apuntar a una pregunta que ya este asignada al tipo de solicitud correspondiente.",
     related: [
       { label: "Solicitudes", to: "/dashboard/solicitudes" },
-      { label: "Solicitud-pregunta", to: "/dashboard/solicitudes-pregunta" },
+      { label: "Tipo solicitud-pregunta", to: "/dashboard/tipos-solicitud-pregunta" },
       { label: "Preguntas", to: "/dashboard/preguntas" },
     ],
     tags: ["Valida asignacion"],

@@ -235,13 +235,13 @@ const RequestFormPage = () => {
       <section className="dashboard-card">
         <div className="dashboard-alert">
           Esta pantalla administra solo la solicitud base. Las preguntas se asignan desde{" "}
-          <Link to="/dashboard/solicitudes-pregunta">Solicitud-pregunta</Link> y el perrito se
-          define despues desde <Link to="/dashboard/adopciones">Adopciones</Link>.
+          <Link to="/dashboard/tipos-solicitud-pregunta">Tipo solicitud-pregunta</Link> y el
+          perrito se define despues desde <Link to="/dashboard/adopciones">Adopciones</Link>.
         </div>
 
         <div className="dashboard-alert">
-          Si la solicitud ya tiene relaciones activas en solicitud-pregunta, respuestas, adopciones
-          o casas cuna, el backend no permitira desactivarla.
+          Si la solicitud ya tiene respuestas, adopciones o casas cuna activas, el backend no
+          permitira desactivarla.
         </div>
 
         <div className="dashboard-alert">
