@@ -2935,6 +2935,50 @@ a {
   letter-spacing: 0.08em;
 }
 
+.adoption-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(214, 162, 74, 0.14);
+  margin-bottom: 0.25rem;
+}
+
+.adoption-search,
+.adoption-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d9e0;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #10233a;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.adoption-search:focus,
+.adoption-select:focus {
+  border-color: #d6a24a;
+}
+
+.adoption-clear-btn {
+  align-self: flex-start;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid #d6a24a;
+  border-radius: 6px;
+  background: transparent;
+  color: #9a6a1a;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.adoption-clear-btn:hover {
+  background: #d6a24a;
+  color: #fff;
+}
+
 .adoption-dog-grid {
   display: grid;
   gap: 0.85rem;
@@ -3068,6 +3112,15 @@ a {
 .adoption-user-banner--ready {
   background: linear-gradient(180deg, #eaf6ee, #deefe5);
   border-color: rgba(44, 125, 83, 0.18);
+}
+
+.adoption-user-banner--warning {
+  background: linear-gradient(180deg, #fff8ec, #fef0d5);
+  border-color: rgba(193, 120, 20, 0.28);
+}
+
+.adoption-user-banner--warning strong {
+  color: #7a4500;
 }
 
 .adoption-user-banner strong {

@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
-import { submitAdoptionRequest } from "../../api/adoptionRequests";
+import { checkPendingAdoption, submitAdoptionRequest } from "../../api/adoptionRequests";
 import { getRequestTypes } from "../../api/catalogs";
 import { getAvailableDogs, getDogById } from "../../api/dogs";
 import { getActiveQuestionsByRequestType } from "../../api/requestQuestions";
@@ -91,10 +91,15 @@ const DogAdoptionPage = () => {
   const [selectedDogId, setSelectedDogId] = useState(null);
   const [selectedDog, setSelectedDog] = useState(null);
   const [dogPage, setDogPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [selectedBreed, setSelectedBreed] = useState("");
+  const [selectedSex, setSelectedSex] = useState("");
+  const [sortBy, setSortBy] = useState("nombre");
   const [pageLoading, setPageLoading] = useState(true);
   const [dogLoading, setDogLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [pageError, setPageError] = useState("");
+  const [hasPendingAdoption, setHasPendingAdoption] = useState(false);
   const { isAuthenticated, loading: authLoading, user } = useAuth();
   const {
     register,
@@ -240,11 +245,72 @@ const DogAdoptionPage = () => {
   }, [selectedDogId]);
 
   useEffect(() => {
-    setDogPage(1);
-  }, [dogs]);
+    if (!selectedDogId || !isAuthenticated) {
+      setHasPendingAdoption(false);
+      return;
+    }
 
-  const dogTotalPages = Math.ceil(dogs.length / DOG_PAGE_SIZE);
-  const paginatedDogs = dogs.slice((dogPage - 1) * DOG_PAGE_SIZE, dogPage * DOG_PAGE_SIZE);
+    let ignore = false;
+
+    checkPendingAdoption(selectedDogId)
+      .then((data) => {
+        if (!ignore) {
+          setHasPendingAdoption(data?.hasPending ?? false);
+        }
+      })
+      .catch(() => {
+        if (!ignore) {
+          setHasPendingAdoption(false);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [selectedDogId, isAuthenticated]);
+
+  const breeds = useMemo(
+    () => [...new Set(dogs.map((d) => d.raza).filter(Boolean))].sort(),
+    [dogs],
+  );
+
+  const sexes = useMemo(
+    () => [...new Set(dogs.map((d) => d.sexo).filter(Boolean))].sort(),
+    [dogs],
+  );
+
+  const filteredDogs = useMemo(() => {
+    const normalizedSearch = normalizeText(search);
+
+    return dogs
+      .filter((dog) => {
+        if (selectedBreed && dog.raza !== selectedBreed) return false;
+        if (selectedSex && dog.sexo !== selectedSex) return false;
+        if (normalizedSearch && !normalizeText(dog.nombre).includes(normalizedSearch)) return false;
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortBy === "edad_asc") return (a.edad ?? 0) - (b.edad ?? 0);
+        if (sortBy === "edad_desc") return (b.edad ?? 0) - (a.edad ?? 0);
+        return normalizeText(a.nombre).localeCompare(normalizeText(b.nombre));
+      });
+  }, [dogs, search, selectedBreed, selectedSex, sortBy]);
+
+  const hasActiveFilters = search || selectedBreed || selectedSex || sortBy !== "nombre";
+
+  const handleClearFilters = () => {
+    setSearch("");
+    setSelectedBreed("");
+    setSelectedSex("");
+    setSortBy("nombre");
+  };
+
+  useEffect(() => {
+    setDogPage(1);
+  }, [dogs, search, selectedBreed, selectedSex, sortBy]);
+
+  const dogTotalPages = Math.ceil(filteredDogs.length / DOG_PAGE_SIZE);
+  const paginatedDogs = filteredDogs.slice((dogPage - 1) * DOG_PAGE_SIZE, dogPage * DOG_PAGE_SIZE);
 
   const onSubmit = async (values) => {
     if (!selectedDogId) {
@@ -356,8 +422,62 @@ const DogAdoptionPage = () => {
                   <p className="adoption-panel__eyebrow">Perritos</p>
                   <h2>Selecciona un companero</h2>
                 </div>
-                <span className="adoption-counter">{dogs.length} opciones</span>
+                <span className="adoption-counter">
+                  {hasActiveFilters ? `${filteredDogs.length} de ${dogs.length}` : `${dogs.length} opciones`}
+                </span>
               </div>
+
+              <div className="adoption-filters">
+                <input
+                  className="adoption-search"
+                  placeholder="Buscar por nombre..."
+                  type="search"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+
+                <select
+                  className="adoption-select"
+                  value={selectedBreed}
+                  onChange={(e) => setSelectedBreed(e.target.value)}
+                >
+                  <option value="">Todas las razas</option>
+                  {breeds.map((breed) => (
+                    <option key={breed} value={breed}>{breed}</option>
+                  ))}
+                </select>
+
+                <select
+                  className="adoption-select"
+                  value={selectedSex}
+                  onChange={(e) => setSelectedSex(e.target.value)}
+                >
+                  <option value="">Todos los sexos</option>
+                  {sexes.map((sex) => (
+                    <option key={sex} value={sex}>{sex}</option>
+                  ))}
+                </select>
+
+                <select
+                  className="adoption-select"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="nombre">Ordenar: A-Z</option>
+                  <option value="edad_asc">Edad: menor a mayor</option>
+                  <option value="edad_desc">Edad: mayor a menor</option>
+                </select>
+
+                {hasActiveFilters && (
+                  <button className="adoption-clear-btn" onClick={handleClearFilters} type="button">
+                    Limpiar filtros
+                  </button>
+                )}
+              </div>
+
+              {hasActiveFilters && !filteredDogs.length && (
+                <div className="adoption-empty">Ningun perrito coincide con tu busqueda.</div>
+              )}
 
               <div className="adoption-dog-grid">
                 {paginatedDogs.map((dog) => (
@@ -522,6 +642,16 @@ const DogAdoptionPage = () => {
                   </div>
                 )}
 
+                {hasPendingAdoption && (
+                  <div className="adoption-user-banner adoption-user-banner--warning">
+                    <strong>Ya tienes una solicitud pendiente para este perrito</strong>
+                    <span>
+                      Tu solicitud anterior sigue activa. Selecciona otro perrito o espera a que
+                      el equipo de Kalo revise tu solicitud actual.
+                    </span>
+                  </div>
+                )}
+
                 <form className="adoption-form" onSubmit={handleSubmit(onSubmit)}>
                   {questions.map((question) => {
                     const fieldName = `answers.${question.idPregunta}`;
@@ -649,7 +779,7 @@ const DogAdoptionPage = () => {
                     </p>
                     <button
                       className="home-btn home-btn--primary"
-                      disabled={submitting || !questions.length || !isAuthenticated || authLoading}
+                      disabled={submitting || !questions.length || !isAuthenticated || authLoading || hasPendingAdoption}
                       type="submit"
                     >
                       {submitting
