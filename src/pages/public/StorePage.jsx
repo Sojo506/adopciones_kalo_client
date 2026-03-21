@@ -20,6 +20,8 @@ const normalizeText = (value) =>
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 
+const PAGE_SIZE = 9;
+
 const StorePage = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -30,10 +32,11 @@ const StorePage = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [sortBy, setSortBy] = useState("nombre");
+  const [page, setPage] = useState(1);
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    document.title = "Tienda Solidaria | Adopciones Kalo";
+    document.title = "Tienda | Adopciones Kalo";
   }, []);
 
   useEffect(() => {
@@ -90,6 +93,13 @@ const StorePage = () => {
       });
   }, [products, selectedCategory, selectedBrand, search, sortBy]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [search, selectedCategory, selectedBrand, sortBy]);
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
   const inStock = products.filter((p) => (p.stock ?? 0) > 0).length;
 
   const handleBuy = (product) => {
@@ -133,9 +143,10 @@ const StorePage = () => {
       <div className="container store-shell">
 
         <section className="store-hero">
+
           <div>
-            <span className="store-pill">Tienda Solidaria</span>
-            <h1>Cada compra apoya directamente a los perritos de Kalo.</h1>
+            <span className="store-pill">Tienda</span>
+            <h1>Cada compra <em className="hero-highlight">apoya</em> directamente a los perritos de Kalo.</h1>
             <p>
               Los productos de nuestra tienda financian cuidados veterinarios, alimentacion y
               bienestar para los perritos que esperan un hogar.
@@ -145,11 +156,11 @@ const StorePage = () => {
           <div className="store-hero__aside">
             <article>
               <strong>{products.length}</strong>
-              <span>Productos</span>
+              <span>Productos en tienda</span>
             </article>
             <article>
               <strong>{inStock}</strong>
-              <span>Con stock</span>
+              <span>Con stock disponible</span>
             </article>
             <article>
               <strong>{isAuthenticated ? "Lista" : "Requiere cuenta"}</strong>
@@ -227,61 +238,87 @@ const StorePage = () => {
               : "No hay productos disponibles en este momento."}
           </div>
         ) : (
-          <div className="store-grid">
-            {filtered.map((product) => {
-              const outOfStock = (product.stock ?? 0) <= 0;
+          <>
+            <div className="store-grid">
+              {paginated.map((product) => {
+                const outOfStock = (product.stock ?? 0) <= 0;
 
-              return (
-                <article key={product.idProducto} className={`store-card${outOfStock ? " store-card--out" : ""}`}>
-                  <div
-                    className="store-card__image"
-                    style={
-                      product.imageUrl
-                        ? {
+                return (
+                  <article key={product.idProducto} className={`store-card${outOfStock ? " store-card--out" : ""}`}>
+                    <div
+                      className="store-card__image"
+                      style={
+                        product.imageUrl
+                          ? {
                             backgroundImage: `linear-gradient(180deg, rgba(9,18,29,0.06), rgba(9,18,29,0.34)), url("${product.imageUrl}")`,
                           }
-                        : undefined
-                    }
-                  />
+                          : undefined
+                      }
+                    />
 
-                  <div className="store-card__body">
-                    <div className="store-card__tags">
-                      {product.categoria && (
-                        <span className="store-tag">{product.categoria}</span>
-                      )}
-                      {product.marca && (
-                        <span className="store-tag store-tag--brand">{product.marca}</span>
-                      )}
-                    </div>
-
-                    <h3>{product.nombre}</h3>
-
-                    {product.descripcion && (
-                      <p className="store-card__desc">{product.descripcion}</p>
-                    )}
-
-                    <div className="store-card__footer">
-                      <div className="store-card__meta">
-                        <strong className="store-card__price">{formatPrice(product.precio)}</strong>
-                        <span className={`store-stock${outOfStock ? " store-stock--out" : ""}`}>
-                          {outOfStock ? "Sin stock" : `${product.stock} en stock`}
-                        </span>
+                    <div className="store-card__body">
+                      <div className="store-card__tags">
+                        {product.categoria && (
+                          <span className="store-tag">{product.categoria}</span>
+                        )}
+                        {product.marca && (
+                          <span className="store-tag store-tag--brand">{product.marca}</span>
+                        )}
                       </div>
 
-                      <button
-                        className="store-btn"
-                        disabled={outOfStock}
-                        onClick={() => handleBuy(product)}
-                        type="button"
-                      >
-                        {outOfStock ? "Agotado" : "Comprar"}
-                      </button>
+                      <h3>{product.nombre}</h3>
+
+                      {product.descripcion && (
+                        <p className="store-card__desc">{product.descripcion}</p>
+                      )}
+
+                      <div className="store-card__footer">
+                        <div className="store-card__meta">
+                          <strong className="store-card__price">{formatPrice(product.precio)}</strong>
+                          <span className={`store-stock${outOfStock ? " store-stock--out" : ""}`}>
+                            {outOfStock ? "Sin stock" : `${product.stock} en stock`}
+                          </span>
+                        </div>
+
+                        <button
+                          className="store-btn"
+                          disabled={outOfStock}
+                          onClick={() => handleBuy(product)}
+                          type="button"
+                        >
+                          {outOfStock ? "Agotado" : "Comprar"}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+                  </article>
+                );
+              })}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="pagination">
+                <button
+                  className="pagination-btn"
+                  disabled={page === 1}
+                  onClick={() => setPage((p) => p - 1)}
+                  type="button"
+                >
+                  Anterior
+                </button>
+                <span className="pagination-info">
+                  Pagina {page} de {totalPages}
+                </span>
+                <button
+                  className="pagination-btn"
+                  disabled={page === totalPages}
+                  onClick={() => setPage((p) => p + 1)}
+                  type="button"
+                >
+                  Siguiente
+                </button>
+              </div>
+            )}
+          </>
         )}
 
         {!isAuthenticated && !loading && products.length > 0 && (
