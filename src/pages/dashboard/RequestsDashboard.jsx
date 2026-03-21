@@ -6,7 +6,7 @@ import { useAuth } from "../../hooks/useAuth";
 
 const formatDogReference = (request) => {
   if (!request?.idPerrito) {
-    return "Sin adopcion";
+    return "Sin adopción";
   }
 
   return request.nombrePerrito

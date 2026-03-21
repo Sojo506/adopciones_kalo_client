@@ -242,9 +242,9 @@ const AdoptionsDashboard = () => {
                             {isDeletingCurrent ? "Eliminando..." : "Eliminar"}
                           </button>
                         </div>
-                        {isInactive ? (
+                        {/* {isInactive ? (
                           <small className="dashboard-table__note">Adopcion ya inactiva</small>
-                        ) : null}
+                        ) : null} */}
                       </td>
                     </tr>
                   );
