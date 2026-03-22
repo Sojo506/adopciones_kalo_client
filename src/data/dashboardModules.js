@@ -237,15 +237,15 @@ export const dashboardNavigationSections = [
     items: [
       createDashboardItem(
         "campanias",
-        "Campanias",
+        "Campañas",
         "FIDE_CAMPANIA_TB",
-        "Gestiona imagen principal, nombre, descripcion, vigencia y estado de las campanias usadas en el proceso de recaudacion."
+        "Gestiona imagen principal, nombre, descripcion, vigencia y estado de las campañas usadas en el proceso de recaudacion."
       ),
       createDashboardItem(
         "donaciones",
         "Donaciones",
         "FIDE_DONACION_TB",
-        "Administra aportes economicos por usuario y campania."
+        "Administra aportes economicos por usuario y campaña."
       ),
       createDashboardItem(
         "donaciones-factura",
@@ -333,12 +333,12 @@ export const dashboardModuleGroups = [
     modules: ["Ventas", "Detalle de venta", "Facturas", "Monedas", "Pagos PayPal"],
   },
   {
-    title: "Donaciones y campanas",
+    title: "Donaciones y campañas",
     badge: "Impacto social",
     description:
-      "Conecta campanas activas, donaciones recibidas y su facturacion para medir el aporte economico del proyecto.",
+      "Conecta campañas activas, donaciones recibidas y su facturacion para medir el aporte economico del proyecto.",
     tables: ["FIDE_CAMPANIA_TB", "FIDE_DONACION_TB", "FIDE_DONACION_FACTURA_TB", "FIDE_MONEDA_TB"],
-    modules: ["Campanas", "Donaciones", "Facturas de donacion", "Monedas"],
+    modules: ["Campañas", "Donaciones", "Facturas de donacion", "Monedas"],
   },
 ];
 

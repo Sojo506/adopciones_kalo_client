@@ -43,6 +43,13 @@ export const getDonationById = async (idDonacion, { force = false } = {}) => {
   });
 };
 
+export const createPublicDonation = async (payload) => {
+  const response = await axiosInstance.post("/donations/public", payload);
+  const data = unwrapResponse(response);
+  clearDonationCaches(data?.idDonacion);
+  return data;
+};
+
 export const createDonation = async (payload) => {
   const response = await axiosInstance.post("/donations", payload);
   const data = unwrapResponse(response);

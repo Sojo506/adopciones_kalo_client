@@ -267,7 +267,7 @@ const DonationFormPage = () => {
           <p className="dashboard-page__eyebrow">{isEditing ? "Editar donacion" : "Nueva donacion"}</p>
           <h1>{isEditing ? "Actualizar donacion" : "Crear donacion"}</h1>
           <p className="dashboard-page__lede">
-            Registra el donador, la campania destino, el monto, la fecha, el mensaje y el estado de
+            Registra el donador, la campaña destino, el monto, la fecha, el mensaje y el estado de
             cada aporte.
           </p>
         </div>
@@ -278,13 +278,13 @@ const DonationFormPage = () => {
 
       <section className="dashboard-card">
         <div className="dashboard-alert">
-          Solo se muestran usuarios y campanias activas al crear una donacion nueva. Si la donacion
+          Solo se muestran usuarios y campañas activas al crear una donacion nueva. Si la donacion
           ya existe, sus relaciones actuales se mantienen disponibles aunque luego se desactiven.
         </div>
 
         {selectedCampaign?.imageUrl ? (
           <div className="dashboard-alert">
-            <strong>Campania seleccionada:</strong>
+            <strong>Campaña seleccionada:</strong>
             <div style={{ marginTop: "0.75rem" }}>
               <img
                 alt={selectedCampaign.nombre ? `Campania ${selectedCampaign.nombre}` : "Campania seleccionada"}
@@ -306,7 +306,7 @@ const DonationFormPage = () => {
           <div className="dashboard-empty-state">Cargando formulario...</div>
         ) : !hasRequiredData ? (
           <div className="dashboard-empty-state">
-            No hay usuarios, campanias o estados disponibles para completar este formulario.
+            No hay usuarios, campañas o estados disponibles para completar este formulario.
           </div>
         ) : (
           <form className="dashboard-form" onSubmit={handleSubmit(onSubmit)}>

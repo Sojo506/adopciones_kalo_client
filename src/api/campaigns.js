@@ -28,6 +28,13 @@ const clearCampaignCaches = (idCampania) => {
   campaignDetailCache.clear();
 };
 
+export const getActiveCampaigns = async () => {
+  return dedupeRequest("campaigns:public-list", async () => {
+    const response = await axiosInstance.get("/campaigns/public");
+    return unwrapResponse(response);
+  });
+};
+
 export const getCampaigns = async ({ force = false } = {}) => {
   if (!force && campaignsCache) {
     return campaignsCache;
