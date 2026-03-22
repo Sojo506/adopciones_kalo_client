@@ -6,7 +6,7 @@ const PRIMARY_NAV_ITEMS = [
   { label: "Inicio", to: "/", end: true },
   { label: "Adoptar", to: "/adopciones", end: false },
   { label: "Tienda", to: "/tienda", end: false },
-  { label: "Campanas", to: "/campanas", end: false },
+  { label: "Campañas", to: "/campañas", end: false },
 ];
 
 const Header = () => {

@@ -87,7 +87,7 @@ const CampaignsPage = () => {
   const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
-    document.title = "Campanas | Adopciones Kalo";
+    document.title = "Campañas | Adopciones Kalö";
   }, []);
 
   useEffect(() => {
@@ -105,7 +105,7 @@ const CampaignsPage = () => {
         }
       } catch {
         if (!ignore) {
-          setError("No pudimos cargar las campanas. Intenta nuevamente en unos segundos.");
+          setError("No pudimos cargar las campañas. Intenta nuevamente en unos segundos.");
         }
       } finally {
         if (!ignore) {
@@ -191,8 +191,8 @@ const CampaignsPage = () => {
 
         <section className="campaign-hero">
           <div>
-            <span className="campaign-pill">Campanas</span>
-            <h1>Apoya nuestras <em className="hero-highlight">campanas</em> y ayuda a mas perritos.</h1>
+            <span className="campaign-pill">Campañas</span>
+            <h1>Apoya nuestras <em className="hero-highlight">campañas</em> y ayuda a mas perritos.</h1>
             <p>
               Cada donacion contribuye directamente al rescate, atencion veterinaria y
               bienestar de los perritos de Kalo mientras esperan un hogar.
@@ -202,7 +202,7 @@ const CampaignsPage = () => {
           <div className="campaign-hero__aside">
             <article>
               <strong>{campaigns.length}</strong>
-              <span>Campanas activas</span>
+              <span>Campañas activas</span>
             </article>
             <article>
               <strong>{isAuthenticated ? "Lista" : "Requiere cuenta"}</strong>
@@ -230,11 +230,11 @@ const CampaignsPage = () => {
         )}
 
         {loading ? (
-          <div className="campaign-empty">Cargando campanas...</div>
+          <div className="campaign-empty">Cargando campañas...</div>
         ) : error ? (
           <div className="campaign-empty campaign-empty--error">{error}</div>
         ) : !campaigns.length ? (
-          <div className="campaign-empty">No hay campanas activas en este momento.</div>
+          <div className="campaign-empty">No hay campañas activas en este momento.</div>
         ) : (
           <div className="campaign-grid">
             {campaigns.map((campaign) => (

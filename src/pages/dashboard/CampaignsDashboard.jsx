@@ -209,7 +209,7 @@ const CampaignsDashboard = () => {
                         {campaign.imageUrl ? (
                           <a href={campaign.imageUrl} rel="noreferrer" target="_blank">
                             <img
-                              alt={`Campania ${campaign.nombre}`}
+                              alt={`Campaña ${campaign.nombre}`}
                               loading="lazy"
                               src={campaign.imageUrl}
                               style={imageStyle}
