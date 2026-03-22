@@ -236,7 +236,7 @@ export const dashboardNavigationSections = [
     title: "Donaciones",
     items: [
       createDashboardItem(
-        "campañas",
+        "campanias",
         "Campañas",
         "FIDE_CAMPANIA_TB",
         "Gestiona imagen principal, nombre, descripcion, vigencia y estado de las campañas usadas en el proceso de recaudacion."
