@@ -7,6 +7,7 @@ import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
 import VerifyEmail from "../pages/auth/VerifyEmail";
 import Dashboard from "../pages/dashboard/Dashboard";
+import CampaignsPage from "../pages/public/CampaignsPage";
 
 const LoadingRouteState = () => (
   <div className="d-flex justify-content-center align-items-center" style={{ height: "60vh" }}>
@@ -55,6 +56,7 @@ const AppRouter = () => {
       <Route path="/" element={<Home />} />
       <Route path="/adopciones" element={<DogAdoptionPage />} />
       <Route path="/tienda" element={<StorePage />} />
+      <Route path="/campanas" element={<CampaignsPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route
