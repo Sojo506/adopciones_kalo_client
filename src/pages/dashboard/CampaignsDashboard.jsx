@@ -191,7 +191,6 @@ const CampaignsDashboard = () => {
               <thead>
                 <tr>
                   <th>Imagen</th>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Descripcion</th>
                   <th>Vigencia</th>
@@ -219,7 +218,6 @@ const CampaignsDashboard = () => {
                           <span className="dashboard-muted">Sin imagen</span>
                         )}
                       </td>
-                      <td>{campaign.idCampania}</td>
                       <td>{campaign.nombre}</td>
                       <td>{campaign.descripcion || "Sin descripcion"}</td>
                       <td>{buildDateRangeLabel(campaign)}</td>

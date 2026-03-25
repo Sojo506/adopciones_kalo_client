@@ -17,6 +17,13 @@ export const dashboardNavigationSections = [
         "Vista consolidada del panel administrativo con accesos a todas las tablas del esquema.",
         "Vista principal"
       ),
+      createDashboardItem(
+        "reportes",
+        "Reportes PDF",
+        null,
+        "Centro administrativo para descargar reportes de modulos criticos del sistema.",
+        "Descargas admin"
+      ),
     ],
   },
   {

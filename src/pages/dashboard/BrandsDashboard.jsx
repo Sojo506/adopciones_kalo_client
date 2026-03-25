@@ -149,7 +149,6 @@ const BrandsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Estado</th>
                   <th>Acciones</th>
@@ -161,7 +160,6 @@ const BrandsDashboard = () => {
 
                   return (
                     <tr key={brand.idMarca}>
-                      <td>{brand.idMarca}</td>
                       <td>{brand.nombre}</td>
                       <td>{brand.estado || brand.idEstado}</td>
                       <td>

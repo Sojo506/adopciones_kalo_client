@@ -75,6 +75,7 @@ import QuestionFormPage from "./QuestionFormPage";
 import QuestionsDashboard from "./QuestionsDashboard";
 import RefreshTokenFormPage from "./RefreshTokenFormPage";
 import RefreshTokensDashboard from "./RefreshTokensDashboard";
+import ReportsDashboard from "./ReportsDashboard";
 import RequestFormPage from "./RequestFormPage";
 import RequestQuestionFormPage from "./RequestQuestionFormPage";
 import RequestQuestionsDashboard from "./RequestQuestionsDashboard";
@@ -133,6 +134,7 @@ const Dashboard = () => {
         <div className="dashboard-layout__body">
           <Routes>
             <Route index element={<DashboardHome />} />
+            <Route path="reportes" element={<ReportsDashboard />} />
             <Route path="usuarios" element={<UsersDashboard />} />
             <Route path="usuarios/nuevo" element={<UserFormPage />} />
             <Route path="usuarios/:identificacion/editar" element={<UserFormPage />} />

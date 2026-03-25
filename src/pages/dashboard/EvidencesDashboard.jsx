@@ -296,7 +296,6 @@ const EvidencesDashboard = () => {
               <thead>
                 <tr>
                   <th>Vista previa</th>
-                  <th>ID</th>
                   <th>Seguimiento</th>
                   <th>Adoptante</th>
                   <th>Perrito</th>
@@ -325,7 +324,6 @@ const EvidencesDashboard = () => {
                           <span className="dashboard-muted">Sin imagen</span>
                         )}
                       </td>
-                      <td>{evidence.idEvidencia}</td>
                       <td>{buildFollowUpLabel(evidence)}</td>
                       <td>{buildAdopterLabel(evidence)}</td>
                       <td>{buildDogLabel(evidence)}</td>

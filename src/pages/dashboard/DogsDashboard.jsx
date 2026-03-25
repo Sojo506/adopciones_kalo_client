@@ -210,7 +210,6 @@ const DogsDashboard = () => {
               <thead>
                 <tr>
                   <th>Imagen</th>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Fecha ingreso</th>
                   <th>Edad</th>
@@ -240,7 +239,6 @@ const DogsDashboard = () => {
                           <span className="dashboard-muted">Sin imagen</span>
                         )}
                       </td>
-                      <td>{dog.idPerrito}</td>
                       <td>{dog.nombre}</td>
                       <td>{formatDate(dog.fechaIngreso)}</td>
                       <td>{dog.edad ?? "-"}</td>

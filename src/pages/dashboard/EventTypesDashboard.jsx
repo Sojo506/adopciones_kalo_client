@@ -149,7 +149,6 @@ const EventTypesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Estado</th>
                   <th>Acciones</th>
@@ -161,7 +160,6 @@ const EventTypesDashboard = () => {
 
                   return (
                     <tr key={eventType.idTipoEvento}>
-                      <td>{eventType.idTipoEvento}</td>
                       <td>{eventType.nombre}</td>
                       <td>{eventType.estado || eventType.idEstado}</td>
                       <td>

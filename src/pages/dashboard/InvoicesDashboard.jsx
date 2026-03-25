@@ -188,7 +188,6 @@ const InvoicesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Moneda</th>
                   <th>Tasa</th>
                   <th>Subtotal</th>
@@ -205,7 +204,6 @@ const InvoicesDashboard = () => {
 
                   return (
                     <tr key={invoice.idFactura}>
-                      <td>{invoice.idFactura}</td>
                       <td>{invoice.moneda || invoice.idMoneda}</td>
                       <td>{invoice.tasaImpuestoAplicada}</td>
                       <td>{formatMoney(invoice.subtotal, invoice.simbolo)}</td>

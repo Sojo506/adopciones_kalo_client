@@ -198,7 +198,6 @@ const AdoptionsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Solicitud</th>
                   <th>Adoptante</th>
                   <th>Perrito</th>
@@ -214,7 +213,6 @@ const AdoptionsDashboard = () => {
 
                   return (
                     <tr key={adoption.idAdopcion}>
-                      <td>{adoption.idAdopcion}</td>
                       <td>{buildRequestLabel(adoption)}</td>
                       <td>{buildAdopterLabel(adoption)}</td>
                       <td>{buildDogLabel(adoption)}</td>

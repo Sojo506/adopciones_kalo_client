@@ -147,7 +147,6 @@ const ProvincesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Pais</th>
                   <th>Estado</th>
@@ -161,7 +160,6 @@ const ProvincesDashboard = () => {
 
                   return (
                     <tr key={province.idProvincia}>
-                      <td>{province.idProvincia}</td>
                       <td>{province.nombre}</td>
                       <td>{province.pais || province.idPais}</td>
                       <td>{province.estado || province.idEstado}</td>

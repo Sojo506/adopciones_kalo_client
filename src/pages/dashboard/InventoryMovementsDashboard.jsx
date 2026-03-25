@@ -190,7 +190,6 @@ const InventoryMovementsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Producto</th>
                   <th>Tipo</th>
                   <th>Cantidad</th>
@@ -205,7 +204,6 @@ const InventoryMovementsDashboard = () => {
 
                   return (
                     <tr key={movement.idMovimiento}>
-                      <td>{movement.idMovimiento}</td>
                       <td>{movement.producto || movement.idProducto}</td>
                       <td>{movement.tipoMovimiento || movement.idTipoMovimiento}</td>
                       <td>{Number(movement.cantidad || 0)}</td>

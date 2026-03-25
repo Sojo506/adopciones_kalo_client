@@ -214,7 +214,6 @@ const FollowUpsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Adopcion</th>
                   <th>Adoptante</th>
                   <th>Perrito</th>
@@ -233,7 +232,6 @@ const FollowUpsDashboard = () => {
 
                   return (
                     <tr key={followUp.idSeguimiento}>
-                      <td>{followUp.idSeguimiento}</td>
                       <td>{buildAdoptionLabel(followUp)}</td>
                       <td>{buildAdopterLabel(followUp)}</td>
                       <td>{buildDogLabel(followUp)}</td>

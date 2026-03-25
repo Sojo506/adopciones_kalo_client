@@ -149,7 +149,6 @@ const CategoriesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Estado</th>
                   <th>Acciones</th>
@@ -161,7 +160,6 @@ const CategoriesDashboard = () => {
 
                   return (
                     <tr key={category.idCategoria}>
-                      <td>{category.idCategoria}</td>
                       <td>{category.nombre}</td>
                       <td>{category.estado || category.idEstado}</td>
                       <td>

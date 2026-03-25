@@ -176,8 +176,6 @@ const RefreshTokensDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Cuenta</th>
                   <th>Usuario</th>
                   <th>JTI</th>
                   <th>Token hash</th>
@@ -195,8 +193,6 @@ const RefreshTokensDashboard = () => {
 
                   return (
                     <tr key={refreshToken.idRefreshToken}>
-                      <td>{refreshToken.idRefreshToken}</td>
-                      <td>{refreshToken.idCuenta}</td>
                       <td>{refreshToken.usuario || "-"}</td>
                       <td title={refreshToken.jti || ""}>{truncateText(refreshToken.jti, 18)}</td>
                       <td title={refreshToken.tokenHash || ""}>{truncateText(refreshToken.tokenHash, 18)}</td>

@@ -199,7 +199,6 @@ const FosterHomesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Encargado</th>
                   <th>Solicitud</th>
@@ -216,7 +215,6 @@ const FosterHomesDashboard = () => {
 
                   return (
                     <tr key={fosterHome.idCasaCuna}>
-                      <td>{fosterHome.idCasaCuna}</td>
                       <td>{fosterHome.nombre}</td>
                       <td>{buildManagerLabel(fosterHome)}</td>
                       <td>{buildRequestLabel(fosterHome)}</td>

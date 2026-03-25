@@ -268,7 +268,6 @@ const DogEventsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Perrito</th>
                   <th>Tipo de evento</th>
                   <th>Fecha</th>
@@ -284,7 +283,6 @@ const DogEventsDashboard = () => {
 
                   return (
                     <tr key={dogEvent.idEvento}>
-                      <td>{dogEvent.idEvento}</td>
                       <td>{dogEvent.nombrePerrito || dogEvent.idPerrito}</td>
                       <td>{dogEvent.tipoEvento || dogEvent.idTipoEvento}</td>
                       <td>{formatDate(dogEvent.fechaEvento)}</td>

@@ -158,7 +158,6 @@ const AddressesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Pais</th>
                   <th>Provincia</th>
                   <th>Canton</th>
@@ -176,7 +175,6 @@ const AddressesDashboard = () => {
 
                   return (
                     <tr key={address.idDireccion}>
-                      <td>{address.idDireccion}</td>
                       <td>{address.pais || address.idPais}</td>
                       <td>{address.provincia || address.idProvincia}</td>
                       <td>{address.canton || address.idCanton}</td>

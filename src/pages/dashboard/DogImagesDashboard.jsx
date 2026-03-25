@@ -260,7 +260,6 @@ const DogImagesDashboard = () => {
               <thead>
                 <tr>
                   <th>Vista previa</th>
-                  <th>ID imagen</th>
                   <th>Perrito</th>
                   <th>URL</th>
                   <th>Estado</th>
@@ -285,7 +284,6 @@ const DogImagesDashboard = () => {
                           <span className="dashboard-muted">Sin imagen</span>
                         )}
                       </td>
-                      <td>{image.idImagen}</td>
                       <td>{image.nombrePerrito || image.idPerrito}</td>
                       <td>
                         {image.imageUrl ? (

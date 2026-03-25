@@ -156,7 +156,6 @@ const QuestionsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Pregunta</th>
                   <th>Tipo de respuesta</th>
                   <th>Estado</th>
@@ -169,7 +168,6 @@ const QuestionsDashboard = () => {
 
                   return (
                     <tr key={question.idPregunta}>
-                      <td>{question.idPregunta}</td>
                       <td>{question.pregunta}</td>
                       <td>{question.tipoRespuesta || question.idTipoRespuesta}</td>
                       <td>{question.estado || question.idEstado}</td>
