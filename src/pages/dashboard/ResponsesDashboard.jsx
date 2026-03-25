@@ -190,7 +190,6 @@ const ResponsesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Solicitud</th>
                   <th>Tipo solicitud</th>
                   <th>Pregunta</th>
@@ -206,7 +205,6 @@ const ResponsesDashboard = () => {
 
                   return (
                     <tr key={response.idRespuesta}>
-                      <td>{response.idRespuesta}</td>
                       <td>{buildRequestLabel(response)}</td>
                       <td>{response.tipoSolicitud || response.idTipoSolicitud}</td>
                       <td>{buildQuestionLabel(response)}</td>

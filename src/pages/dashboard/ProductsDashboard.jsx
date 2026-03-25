@@ -184,7 +184,6 @@ const ProductsDashboard = () => {
               <thead>
                 <tr>
                   <th>Imagen</th>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Categoria</th>
                   <th>Marca</th>
@@ -212,7 +211,6 @@ const ProductsDashboard = () => {
                           <span className="dashboard-muted">Sin imagen</span>
                         )}
                       </td>
-                      <td>{product.idProducto}</td>
                       <td>{product.nombre}</td>
                       <td>{product.categoria || product.idCategoria}</td>
                       <td>{product.marca || product.idMarca}</td>

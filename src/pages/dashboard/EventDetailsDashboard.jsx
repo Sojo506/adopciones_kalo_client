@@ -313,7 +313,6 @@ const EventDetailsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Evento</th>
                   <th>Perrito</th>
                   <th>Vista previa</th>
@@ -331,7 +330,6 @@ const EventDetailsDashboard = () => {
 
                   return (
                     <tr key={eventDetail.idDetalleEvento}>
-                      <td>{eventDetail.idDetalleEvento}</td>
                       <td>{buildEventLabel(linkedEvent) || eventDetail.idEvento}</td>
                       <td>{eventDetail.nombrePerrito || eventDetail.idPerrito || "-"}</td>
                       <td>

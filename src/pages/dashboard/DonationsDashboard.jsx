@@ -182,7 +182,6 @@ const DonationsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Identificacion</th>
                   <th>Donador</th>
                   <th>Campania</th>
@@ -199,7 +198,6 @@ const DonationsDashboard = () => {
 
                   return (
                     <tr key={donation.idDonacion}>
-                      <td>{donation.idDonacion}</td>
                       <td>{donation.identificacion}</td>
                       <td>{donation.donador || "-"}</td>
                       <td>{donation.campania || donation.idCampania}</td>

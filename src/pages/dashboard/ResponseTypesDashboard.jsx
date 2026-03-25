@@ -150,7 +150,6 @@ const ResponseTypesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Estado</th>
                   <th>Acciones</th>
@@ -162,7 +161,6 @@ const ResponseTypesDashboard = () => {
 
                   return (
                     <tr key={responseType.idTipoRespuesta}>
-                      <td>{responseType.idTipoRespuesta}</td>
                       <td>{responseType.nombre}</td>
                       <td>{responseType.estado || responseType.idEstado}</td>
                       <td>

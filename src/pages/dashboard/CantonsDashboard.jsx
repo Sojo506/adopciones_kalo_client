@@ -147,7 +147,6 @@ const CantonsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Provincia</th>
                   <th>Estado</th>
@@ -161,7 +160,6 @@ const CantonsDashboard = () => {
 
                   return (
                     <tr key={canton.idCanton}>
-                      <td>{canton.idCanton}</td>
                       <td>{canton.nombre}</td>
                       <td>{canton.provincia || canton.idProvincia}</td>
                       <td>{canton.estado || canton.idEstado}</td>

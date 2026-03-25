@@ -149,7 +149,6 @@ const CurrenciesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Simbolo</th>
                   <th>Estado</th>
@@ -162,7 +161,6 @@ const CurrenciesDashboard = () => {
 
                   return (
                     <tr key={currency.idMoneda}>
-                      <td>{currency.idMoneda}</td>
                       <td>{currency.nombre}</td>
                       <td>{currency.simbolo}</td>
                       <td>{currency.estado || currency.idEstado}</td>

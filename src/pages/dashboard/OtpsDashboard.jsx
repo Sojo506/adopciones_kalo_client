@@ -175,8 +175,6 @@ const OtpsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID OTP</th>
-                  <th>ID cuenta</th>
                   <th>Usuario</th>
                   <th>Tipo OTP</th>
                   <th>Hash</th>
@@ -194,8 +192,6 @@ const OtpsDashboard = () => {
 
                   return (
                     <tr key={otp.idCodigoOtp}>
-                      <td>{otp.idCodigoOtp}</td>
-                      <td>{otp.idCuenta}</td>
                       <td>{otp.usuario || "-"}</td>
                       <td>{otp.tipoOtp || otp.idTipoOtp}</td>
                       <td title={otp.codigoHash || ""}>{truncateHash(otp.codigoHash)}</td>

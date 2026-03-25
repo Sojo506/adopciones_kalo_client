@@ -152,7 +152,6 @@ const UserTypesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Estado</th>
                   <th>Acciones</th>
@@ -165,7 +164,6 @@ const UserTypesDashboard = () => {
 
                   return (
                     <tr key={userType.idTipoUsuario}>
-                      <td>{userType.idTipoUsuario}</td>
                       <td>{userType.nombre}</td>
                       <td>{userType.estado || userType.idEstado}</td>
                       <td>

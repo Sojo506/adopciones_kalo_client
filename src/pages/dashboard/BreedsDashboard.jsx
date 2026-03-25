@@ -149,7 +149,6 @@ const BreedsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Estado</th>
                   <th>Acciones</th>
@@ -161,7 +160,6 @@ const BreedsDashboard = () => {
 
                   return (
                     <tr key={breed.idRaza}>
-                      <td>{breed.idRaza}</td>
                       <td>{breed.nombre}</td>
                       <td>{breed.estado || breed.idEstado}</td>
                       <td>

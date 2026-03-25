@@ -175,7 +175,6 @@ const SalesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Identificacion</th>
                   <th>Cliente</th>
                   <th>Total</th>
@@ -190,7 +189,6 @@ const SalesDashboard = () => {
 
                   return (
                     <tr key={sale.idVenta}>
-                      <td>{sale.idVenta}</td>
                       <td>{sale.identificacion}</td>
                       <td>{sale.cliente || "-"}</td>
                       <td>{formatCurrency(sale.totalVenta)}</td>

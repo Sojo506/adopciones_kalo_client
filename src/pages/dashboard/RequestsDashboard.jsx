@@ -175,7 +175,6 @@ const RequestsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Identificacion</th>
                   <th>Solicitante</th>
                   <th>Tipo de solicitud</th>
@@ -190,7 +189,6 @@ const RequestsDashboard = () => {
 
                   return (
                     <tr key={request.idSolicitud}>
-                      <td>{request.idSolicitud}</td>
                       <td>{request.identificacion}</td>
                       <td>{request.solicitante || "-"}</td>
                       <td>{request.tipoSolicitud || request.idTipoSolicitud}</td>

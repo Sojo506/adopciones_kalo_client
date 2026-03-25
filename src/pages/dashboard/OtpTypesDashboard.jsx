@@ -150,7 +150,6 @@ const OtpTypesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Estado</th>
                   <th>Acciones</th>
@@ -162,7 +161,6 @@ const OtpTypesDashboard = () => {
 
                   return (
                     <tr key={otpType.idTipoOtp}>
-                      <td>{otpType.idTipoOtp}</td>
                       <td>{otpType.nombre}</td>
                       <td>{otpType.estado || otpType.idEstado}</td>
                       <td>

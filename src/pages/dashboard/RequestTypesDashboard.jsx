@@ -150,7 +150,6 @@ const RequestTypesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Estado</th>
                   <th>Acciones</th>
@@ -162,7 +161,6 @@ const RequestTypesDashboard = () => {
 
                   return (
                     <tr key={requestType.idTipoSolicitud}>
-                      <td>{requestType.idTipoSolicitud}</td>
                       <td>{requestType.nombre}</td>
                       <td>{requestType.estado || requestType.idEstado}</td>
                       <td>

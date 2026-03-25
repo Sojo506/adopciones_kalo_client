@@ -149,7 +149,6 @@ const TrackingTypesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Estado</th>
                   <th>Acciones</th>
@@ -161,7 +160,6 @@ const TrackingTypesDashboard = () => {
 
                   return (
                     <tr key={trackingType.idTipoSeguimiento}>
-                      <td>{trackingType.idTipoSeguimiento}</td>
                       <td>{trackingType.nombre}</td>
                       <td>{trackingType.estado || trackingType.idEstado}</td>
                       <td>

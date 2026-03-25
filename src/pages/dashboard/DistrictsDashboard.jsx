@@ -149,7 +149,6 @@ const DistrictsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nombre</th>
                   <th>Canton</th>
                   <th>Estado</th>
@@ -163,7 +162,6 @@ const DistrictsDashboard = () => {
 
                   return (
                     <tr key={district.idDistrito}>
-                      <td>{district.idDistrito}</td>
                       <td>{district.nombre}</td>
                       <td>{district.canton || district.idCanton}</td>
                       <td>{district.estado || district.idEstado}</td>

@@ -153,7 +153,6 @@ const AccountsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID cuenta</th>
                   <th>Identificacion</th>
                   <th>Usuario</th>
                   <th>Nombre</th>
@@ -168,7 +167,6 @@ const AccountsDashboard = () => {
 
                   return (
                     <tr key={account.idCuenta}>
-                      <td>{account.idCuenta}</td>
                       <td>{account.identificacion}</td>
                       <td>{account.usuario}</td>
                       <td>{account.usuarioNombre || "-"}</td>

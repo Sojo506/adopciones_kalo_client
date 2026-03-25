@@ -174,7 +174,6 @@ const PayPalPaymentsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Factura</th>
                   <th>PayPal order ID</th>
                   <th>PayPal capture ID</th>
@@ -189,7 +188,6 @@ const PayPalPaymentsDashboard = () => {
 
                   return (
                     <tr key={paypalPayment.idPago}>
-                      <td>{paypalPayment.idPago}</td>
                       <td>{paypalPayment.idFactura}</td>
                       <td>{paypalPayment.paypalOrderId || "-"}</td>
                       <td>{paypalPayment.paypalCaptureId || "-"}</td>
