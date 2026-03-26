@@ -52,9 +52,7 @@ const Header = () => {
             {PRIMARY_NAV_ITEMS.map((item) => (
               <NavLink
                 key={item.to}
-                className={({ isActive }) =>
-                  `site-header__nav-link${isActive ? " is-active" : ""}`
-                }
+                className={({ isActive }) => `site-header__nav-link${isActive ? " is-active" : ""}`}
                 end={item.end}
                 onClick={closeMenu}
                 to={item.to}
@@ -67,9 +65,9 @@ const Header = () => {
           <div className="site-header__actions">
             {isAuthenticated ? (
               <>
-                <span className="header-user-link" title="Perfil de usuario próximamente">
+                <Link className="header-user-link" onClick={closeMenu} title="Ver perfil" to="/perfil">
                   {displayName}
-                </span>
+                </Link>
                 {!isEmailVerified && (
                   <div className="header-alert-chip">
                     <div className="header-alert-chip__content">
