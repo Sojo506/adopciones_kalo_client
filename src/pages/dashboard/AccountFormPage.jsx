@@ -275,9 +275,9 @@ const AccountFormPage = () => {
                           return true;
                         }
 
-                        return trimmedValue.length >= 6
+                        return trimmedValue.length >= 8
                           ? true
-                          : "La password debe tener al menos 6 caracteres";
+                          : "La password debe tener al menos 8 caracteres";
                       },
                     })}
                   />

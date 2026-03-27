@@ -407,9 +407,9 @@ const UserFormPage = () => {
                     type="password"
                     {...register("password", {
                       validate: (value) =>
-                        (isEditing && !requiresAccountCreation) || value.trim().length >= 6
+                        (isEditing && !requiresAccountCreation) || value.trim().length >= 8
                           ? true
-                          : "La password debe tener al menos 6 caracteres",
+                          : "La password debe tener al menos 8 caracteres",
                     })}
                   />
                   {errors.password ? <small>{errors.password.message}</small> : null}
