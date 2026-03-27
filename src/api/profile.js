@@ -26,3 +26,26 @@ export const updateCurrentProfile = async (payload) => {
   profileOverviewCache = data;
   return data;
 };
+
+export const requestCurrentEmailChange = async (payload) => {
+  const response = await axiosInstance.post("/auth/profile/email/request-change", payload);
+  return unwrapResponse(response);
+};
+
+export const confirmCurrentEmailChange = async (payload) => {
+  const response = await axiosInstance.post("/auth/profile/email/confirm-change", payload);
+  const data = unwrapResponse(response);
+  profileOverviewCache = data;
+  return data;
+};
+
+export const requestCurrentPasswordChange = async (payload) => {
+  const response = await axiosInstance.post("/auth/profile/password/request-change", payload);
+  return unwrapResponse(response);
+};
+
+export const confirmCurrentPasswordChange = async (payload) => {
+  const response = await axiosInstance.post("/auth/profile/password/confirm-change", payload);
+  clearProfileOverviewCache();
+  return unwrapResponse(response);
+};
