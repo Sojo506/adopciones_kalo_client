@@ -2,6 +2,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import Home from "../pages/public/Home";
 import DogAdoptionPage from "../pages/public/DogAdoptionPage";
+import FollowUpPage from "../pages/public/FollowUpPage";
 import StorePage from "../pages/public/StorePage";
 import ProfilePage from "../pages/public/ProfilePage";
 import Login from "../pages/auth/Login";
@@ -71,6 +72,14 @@ const AppRouter = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/adopciones" element={<DogAdoptionPage />} />
+      <Route
+        path="/seguimiento"
+        element={
+          <AuthenticatedRoute>
+            <FollowUpPage />
+          </AuthenticatedRoute>
+        }
+      />
       <Route path="/tienda" element={<StorePage />} />
       <Route path="/campanias" element={<CampaignsPage />} />
       <Route

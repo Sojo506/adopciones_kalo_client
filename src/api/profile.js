@@ -3,9 +3,14 @@ import { dedupeRequest } from "./requestCache";
 
 const unwrapResponse = (response) => response.data?.data ?? response.data ?? null;
 let profileOverviewCache = null;
+let profileFollowUpsCache = null;
 
 export const clearProfileOverviewCache = () => {
   profileOverviewCache = null;
+};
+
+export const clearProfileFollowUpsCache = () => {
+  profileFollowUpsCache = null;
 };
 
 export const getCurrentProfileOverview = async ({ force = false } = {}) => {
@@ -17,6 +22,18 @@ export const getCurrentProfileOverview = async ({ force = false } = {}) => {
     const response = await axiosInstance.get("/auth/profile");
     profileOverviewCache = unwrapResponse(response);
     return profileOverviewCache;
+  });
+};
+
+export const getCurrentProfileFollowUps = async ({ force = false } = {}) => {
+  if (!force && profileFollowUpsCache) {
+    return profileFollowUpsCache;
+  }
+
+  return dedupeRequest("profile:follow-ups", async () => {
+    const response = await axiosInstance.get("/auth/profile/follow-ups");
+    profileFollowUpsCache = unwrapResponse(response) ?? [];
+    return profileFollowUpsCache;
   });
 };
 
@@ -47,5 +64,6 @@ export const requestCurrentPasswordChange = async (payload) => {
 export const confirmCurrentPasswordChange = async (payload) => {
   const response = await axiosInstance.post("/auth/profile/password/confirm-change", payload);
   clearProfileOverviewCache();
+  clearProfileFollowUpsCache();
   return unwrapResponse(response);
 };
