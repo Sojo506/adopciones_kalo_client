@@ -48,7 +48,7 @@ const StorePage = () => {
 
       try {
         const [nextProducts, nextCategories, nextBrands] = await Promise.all([
-          getProducts(),
+          getProducts({ force: true }),
           getCategories(),
           getBrands(),
         ]);

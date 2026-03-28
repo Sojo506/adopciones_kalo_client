@@ -155,8 +155,12 @@ export const getProducts = async ({ force = false } = {}) => {
     return productsCache;
   }
 
-  return dedupeRequest("catalogs:products", async () => {
-    const response = await axiosInstance.get("/catalogs/products");
+  const requestKey = force ? "catalogs:products:force" : "catalogs:products";
+
+  return dedupeRequest(requestKey, async () => {
+    const response = await axiosInstance.get("/catalogs/products", {
+      params: force ? { force: "true", _ts: Date.now() } : undefined,
+    });
     productsCache = unwrapResponse(response);
     return productsCache;
   });
