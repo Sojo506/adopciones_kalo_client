@@ -1937,21 +1937,23 @@ a {
 }
 
 .dashboard-sidebar-minimal__section-content {
-  max-height: 0;
+  display: grid;
+  grid-template-rows: 0fr;
   overflow: hidden;
-  transition: max-height 0.25s ease;
+  transition: grid-template-rows 0.25s ease;
 }
 
 .dashboard-sidebar-minimal__section-content.is-open {
-  max-height: 500px;
+  grid-template-rows: 1fr;
 }
 
 .dashboard-sidebar-minimal__section-content nav {
   display: grid;
   gap: 0.4rem;
+  min-height: 0;
+  overflow: hidden;
   padding: 0.4rem 0.6rem 0.8rem;
 }
-
 .dashboard-sidebar-minimal {
   scrollbar-width: thin; /* Firefox */
   scrollbar-color: #b8c2cc transparent; /* Firefox */
