@@ -721,8 +721,76 @@ const ProfilePage = () => {
 
   const renderAdoptions = () => (
     <section className="profile-panel">
-      <div className="profile-panel__header"><div><p className="profile-panel__eyebrow">Adopciones</p><h2>Solicitudes enviadas</h2></div><span className="profile-panel__note">{adoptionRequests.length} registradas</span></div>
-      {!adoptionRequests.length ? <div className="profile-empty-state">Aun no tienes solicitudes de adopcion registradas.</div> : <div className="profile-stack">{adoptionRequests.map((request) => <article key={request.idSolicitud} className="profile-collection-card"><div className="profile-collection-card__header"><div><span className="profile-collection-card__eyebrow">Solicitud #{request.idSolicitud}</span><h3>{request.nombrePerrito || "Perrito pendiente de asociar"}</h3></div><div className="profile-chip-list"><span className="profile-status-chip profile-status-chip--soft">Solicitud: {request.estadoSolicitud || "Sin estado"}</span><span className={`profile-status-chip${request.estadoProceso ? " profile-status-chip--success" : ""}`}>{request.estadoProceso ? `Proceso: ${request.estadoProceso}` : "En revision"}</span></div></div><div className="profile-detail-grid"><article><span>Perrito</span><strong>{request.idPerrito ? `#${request.idPerrito}${request.nombrePerrito ? ` - ${request.nombrePerrito}` : ""}` : "Sin perrito asociado"}</strong></article><article><span>Tipo</span><strong>{request.tipoSolicitud || "Adopcion"}</strong></article><article><span>Adopcion</span><strong>{request.idAdopcion ? `#${request.idAdopcion}` : "Pendiente"}</strong></article><article><span>Fecha de proceso</span><strong>{formatDate(request.fechaAdopcion)}</strong></article></div></article>)}</div>}
+      <div className="profile-panel__header">
+        <div>
+          <p className="profile-panel__eyebrow">Adopciones</p>
+          <h2>Solicitudes enviadas</h2>
+        </div>
+        <span className="profile-panel__note">{adoptionRequests.length} registradas</span>
+      </div>
+
+      {!adoptionRequests.length ? (
+        <div className="profile-empty-state">Aun no tienes solicitudes de adopcion registradas.</div>
+      ) : (
+        <div className="profile-stack">
+          {adoptionRequests.map((request) => {
+            const followUpPath =
+              request.idAdopcion && request.idPerrito
+                ? `/seguimiento?perrito=${encodeURIComponent(request.idPerrito)}&adopcion=${encodeURIComponent(request.idAdopcion)}&nombre=${encodeURIComponent(request.nombrePerrito || "")}`
+                : null;
+
+            return (
+              <article key={request.idSolicitud} className="profile-collection-card">
+                <div className="profile-collection-card__header">
+                  <div>
+                    <span className="profile-collection-card__eyebrow">Solicitud #{request.idSolicitud}</span>
+                    <h3>{request.nombrePerrito || "Perrito pendiente de asociar"}</h3>
+                  </div>
+                  <div className="profile-chip-list">
+                    <span className="profile-status-chip profile-status-chip--soft">
+                      Solicitud: {request.estadoSolicitud || "Sin estado"}
+                    </span>
+                    <span className={`profile-status-chip${request.estadoProceso ? " profile-status-chip--success" : ""}`}>
+                      {request.estadoProceso ? `Proceso: ${request.estadoProceso}` : "En revision"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="profile-detail-grid">
+                  <article>
+                    <span>Perrito</span>
+                    <strong>
+                      {request.idPerrito
+                        ? `#${request.idPerrito}${request.nombrePerrito ? ` - ${request.nombrePerrito}` : ""}`
+                        : "Sin perrito asociado"}
+                    </strong>
+                  </article>
+                  <article>
+                    <span>Tipo</span>
+                    <strong>{request.tipoSolicitud || "Adopcion"}</strong>
+                  </article>
+                  <article>
+                    <span>Adopcion</span>
+                    <strong>{request.idAdopcion ? `#${request.idAdopcion}` : "Pendiente"}</strong>
+                  </article>
+                  <article>
+                    <span>Fecha de proceso</span>
+                    <strong>{formatDate(request.fechaAdopcion)}</strong>
+                  </article>
+                </div>
+
+                {followUpPath ? (
+                  <div className="profile-collection-card__actions">
+                    <Link className="home-btn home-btn--primary profile-followup-link" to={followUpPath}>
+                      Ir a seguimiento
+                    </Link>
+                  </div>
+                ) : null}
+              </article>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 
