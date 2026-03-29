@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import PasswordInput from "./PasswordInput";
 
 const Login = () => {
   const { register, handleSubmit, formState } = useForm({
@@ -44,14 +45,16 @@ const Login = () => {
                 </div>
 
                 <div className="mb-4">
-                  <label className="form-label">Contraseña</label>
-                  <input
-                    {...register("password", { required: "La contraseña es obligatoria" })}
-                    className={`form-control ${errors.password ? "is-invalid" : ""}`}
-                    type="password"
-                    autoComplete="current-password"
+                  <PasswordInput
+                    name="password"
+                    label="Contraseña"
+                    register={register}
+                    error={errors.password}
+                    validation={{
+                      required: "La contraseña es obligatoria",
+                      minLength: { value: 8, message: "Mínimo 8 caracteres" },
+                    }}
                   />
-                  {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
                 </div>
 
                 <button className="btn btn-primary w-100" type="submit" disabled={loading}>
