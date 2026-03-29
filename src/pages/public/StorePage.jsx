@@ -244,7 +244,11 @@ const StorePage = () => {
                 const outOfStock = (product.stock ?? 0) <= 0;
 
                 return (
-                  <article key={product.idProducto} className={`store-card${outOfStock ? " store-card--out" : ""}`}>
+                  <Link
+                    key={product.idProducto}
+                    className={`store-card${outOfStock ? " store-card--out" : ""}`}
+                    to={`/tienda/${product.idProducto}`}
+                  >
                     <div
                       className="store-card__image"
                       style={
@@ -283,14 +287,17 @@ const StorePage = () => {
                         <button
                           className="store-btn"
                           disabled={outOfStock}
-                          onClick={() => handleBuy(product)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleBuy(product);
+                          }}
                           type="button"
                         >
                           {outOfStock ? "Agotado" : "Comprar"}
                         </button>
                       </div>
                     </div>
-                  </article>
+                  </Link>
                 );
               })}
             </div>
