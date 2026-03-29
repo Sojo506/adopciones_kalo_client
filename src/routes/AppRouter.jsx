@@ -4,6 +4,7 @@ import Home from "../pages/public/Home";
 import DogAdoptionPage from "../pages/public/DogAdoptionPage";
 import FollowUpPage from "../pages/public/FollowUpPage";
 import StorePage from "../pages/public/StorePage";
+import ProductDetailPage from "../pages/public/ProductDetailPage";
 import ProfilePage from "../pages/public/ProfilePage";
 import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
@@ -81,6 +82,7 @@ const AppRouter = () => {
         }
       />
       <Route path="/tienda" element={<StorePage />} />
+      <Route path="/tienda/:idProducto" element={<ProductDetailPage />} />
       <Route path="/campanias" element={<CampaignsPage />} />
       <Route
         path="/perfil"
