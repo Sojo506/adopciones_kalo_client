@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
+import { BiHide, BiShow } from "react-icons/bi";
 import { useAuth } from "../../hooks/useAuth";
 import {
   getCantons,
@@ -8,6 +9,7 @@ import {
   getDistricts,
   getProvinces,
 } from "../../api/locations";
+import PasswordInput from "./PasswordInput";
 
 const Signup = () => {
   const [countries, setCountries] = useState([]);
@@ -18,7 +20,7 @@ const Signup = () => {
   const [loadingProvinces, setLoadingProvinces] = useState(false);
   const [loadingCantons, setLoadingCantons] = useState(false);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
-  const { register, handleSubmit, formState, reset, setValue } = useForm({
+  const { register, handleSubmit, formState, reset, setValue, watch } = useForm({
     defaultValues: {
       identificacion: "",
       usuario: "",
@@ -26,6 +28,7 @@ const Signup = () => {
       apellidoPaterno: "",
       apellidoMaterno: "",
       password: "",
+      cPassword: "",
       correo: "",
       telefono: "",
       idPais: "",
@@ -36,6 +39,9 @@ const Signup = () => {
       numero: "",
     },
   });
+  const password = watch("password");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showCPassword, setShowCPassword] = useState(false);
 
   const { errors } = formState;
   const { register: signUp } = useAuth();
@@ -48,6 +54,7 @@ const Signup = () => {
       apellidoPaterno: values.apellidoPaterno,
       apellidoMaterno: values.apellidoMaterno,
       password: values.password,
+      cPassword: values.cPassword,
       correo: values.correo,
       telefono: values.telefono,
       idPais: Number(values.idPais),
@@ -242,9 +249,7 @@ const Signup = () => {
                       <div className="invalid-feedback">{errors.apellidoPaterno.message}</div>
                     )}
                   </div>
-                </div>
 
-                <div className="row">
                   <div className="col-md-6 mb-3">
                     <label className="form-label">Apellido materno</label>
                     <input
@@ -258,6 +263,39 @@ const Signup = () => {
                       <div className="invalid-feedback">{errors.apellidoMaterno.message}</div>
                     )}
                   </div>
+                </div>
+
+                <div className="row">
+                  <div className="col-md-6">
+                    <PasswordInput
+                      name="password"
+                      label="Contraseña"
+                      register={register}
+                      error={errors.password}
+                      validation={{
+                        required: "La contraseña es obligatoria",
+                        minLength: { value: 8, message: "Mínimo 8 caracteres" },
+                      }}
+                    />
+                  </div>
+
+                  <div className="col-md-6">
+                    <PasswordInput
+                      name="cPassword"
+                      label="Confirmar Contraseña"
+                      register={register}
+                      error={errors.cPassword}
+                      watch={watch}
+                      compareWith="password"
+                      validation={{
+                        required: "La contraseña es obligatoria",
+                        minLength: { value: 8, message: "Mínimo 8 caracteres" },
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="row">
                   <div className="col-md-6 mb-3">
                     <label className="form-label">Teléfono</label>
                     <input
@@ -273,22 +311,7 @@ const Signup = () => {
                     />
                     {errors.telefono && <div className="invalid-feedback">{errors.telefono.message}</div>}
                   </div>
-                </div>
 
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Contraseña</label>
-                    <input
-                      {...register("password", {
-                        required: "La contraseña es obligatoria",
-                        minLength: { value: 8, message: "Mínimo 8 caracteres" },
-                      })}
-                      className={`form-control ${errors.password ? "is-invalid" : ""}`}
-                      type="password"
-                      autoComplete="new-password"
-                    />
-                    {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
-                  </div>
                   <div className="col-md-6 mb-3">
                     <label className="form-label">Pais</label>
                     <select
@@ -313,6 +336,7 @@ const Signup = () => {
                     )}
                   </div>
                 </div>
+
 
                 <div className="row">
                   <div className="col-md-6 mb-3">
@@ -399,7 +423,7 @@ const Signup = () => {
                 </div>
 
                 <div className="row">
-                  <div className="col-md-6 mb-3">
+                  <div className="col-md-12 mb-3">
                     <label className="form-label">Numero, casa o referencia</label>
                     <input
                       {...register("numero")}
@@ -418,8 +442,8 @@ const Signup = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 
