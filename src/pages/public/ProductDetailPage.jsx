@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { getProducts } from "../../api/catalogs";
 import { useAuth } from "../../hooks/useAuth";
+import { addItem, selectCartItems } from "../../store/cartSlice";
 
 const formatPrice = (price) => {
   if (price === undefined || price === null) return "Sin precio";
@@ -16,6 +18,8 @@ const formatPrice = (price) => {
 const ProductDetailPage = () => {
   const { idProducto } = useParams();
   const { isAuthenticated } = useAuth();
+  const dispatch = useDispatch();
+  const cartItems = useSelector(selectCartItems);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -56,12 +60,12 @@ const ProductDetailPage = () => {
     };
   }, [idProducto]);
 
-  const handleBuy = () => {
+  const handleAddToCart = () => {
     if (!isAuthenticated) {
       Swal.fire({
         icon: "info",
         title: "Necesitas una cuenta",
-        html: `Para comprar <strong>${product.nombre}</strong> necesitas iniciar sesion o crear una cuenta.`,
+        html: `Para agregar <strong>${product.nombre}</strong> necesitas iniciar sesion o crear una cuenta.`,
         showCancelButton: true,
         confirmButtonText: "Iniciar sesion",
         cancelButtonText: "Crear cuenta",
@@ -76,11 +80,7 @@ const ProductDetailPage = () => {
       return;
     }
 
-    Swal.fire({
-      icon: "info",
-      title: "Proximamente",
-      text: "La pasarela de pago estara disponible muy pronto.",
-    });
+    dispatch(addItem(product));
   };
 
   if (loading) {
@@ -108,7 +108,9 @@ const ProductDetailPage = () => {
     );
   }
 
-  const outOfStock = (product.stock ?? 0) <= 0;
+  const inCart = cartItems.find((i) => i.idProducto === product.idProducto)?.cantidad ?? 0;
+  const available = (product.stock ?? 0) - inCart;
+  const outOfStock = available <= 0;
 
   return (
     <section className="store-page">
@@ -152,17 +154,17 @@ const ProductDetailPage = () => {
               <span
                 className={`store-stock${outOfStock ? " store-stock--out" : ""}`}
               >
-                {outOfStock ? "Sin stock" : `${product.stock} en stock`}
+                {outOfStock ? "Sin stock" : `${available} en stock`}
               </span>
             </div>
 
             <button
               className="product-detail__buy-btn"
               disabled={outOfStock}
-              onClick={handleBuy}
+              onClick={handleAddToCart}
               type="button"
             >
-              {outOfStock ? "Agotado" : "Comprar"}
+              {outOfStock ? "Agotado" : "Agregar al carrito"}
             </button>
 
             {!isAuthenticated && (
