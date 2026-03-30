@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { selectCartCount } from "../../store/cartSlice";
 
 const PRIMARY_NAV_ITEMS = [
   { label: "Inicio", to: "/", end: true },
@@ -11,6 +13,7 @@ const PRIMARY_NAV_ITEMS = [
 
 const Header = () => {
   const { isAuthenticated, isAdmin, isEmailVerified, user, logout } = useAuth();
+  const cartCount = useSelector(selectCartCount);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const displayName =
     [user?.nombre, user?.apellidoPaterno].filter(Boolean).join(" ") || user?.usuario || "Usuario";
@@ -99,7 +102,21 @@ const Header = () => {
               </>
             )}
           </div>
+
         </div>
+
+        {isAuthenticated && (
+          <Link className="header-cart-link" onClick={closeMenu} to="/carrito">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            {cartCount > 0 && (
+              <span className="header-cart-badge">{cartCount}</span>
+            )}
+          </Link>
+        )}
       </div>
     </header>
   );

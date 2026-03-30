@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { getBrands, getCategories, getProducts } from "../../api/catalogs";
 import { useAuth } from "../../hooks/useAuth";
+import { addItem, selectCartItems } from "../../store/cartSlice";
 
 const formatPrice = (price) => {
   if (price === undefined || price === null) return "Sin precio";
@@ -34,6 +36,8 @@ const StorePage = () => {
   const [sortBy, setSortBy] = useState("nombre");
   const [page, setPage] = useState(1);
   const { isAuthenticated } = useAuth();
+  const dispatch = useDispatch();
+  const cartItems = useSelector(selectCartItems);
 
   useEffect(() => {
     document.title = "Tienda | Adopciones Kalo";
@@ -102,12 +106,12 @@ const StorePage = () => {
 
   const inStock = products.filter((p) => (p.stock ?? 0) > 0).length;
 
-  const handleBuy = (product) => {
+  const handleAddToCart = (product) => {
     if (!isAuthenticated) {
       Swal.fire({
         icon: "info",
         title: "Necesitas una cuenta",
-        html: `Para comprar <strong>${product.nombre}</strong> necesitas iniciar sesion o crear una cuenta.`,
+        html: `Para agregar <strong>${product.nombre}</strong> necesitas iniciar sesion o crear una cuenta.`,
         showCancelButton: true,
         confirmButtonText: "Iniciar sesion",
         cancelButtonText: "Crear cuenta",
@@ -122,11 +126,7 @@ const StorePage = () => {
       return;
     }
 
-    Swal.fire({
-      icon: "info",
-      title: "Proximamente",
-      text: "La pasarela de pago estara disponible muy pronto.",
-    });
+    dispatch(addItem(product));
   };
 
   const hasActiveFilters = search || selectedCategory || selectedBrand;
@@ -241,10 +241,16 @@ const StorePage = () => {
           <>
             <div className="store-grid">
               {paginated.map((product) => {
-                const outOfStock = (product.stock ?? 0) <= 0;
+                const inCart = cartItems.find((i) => i.idProducto === product.idProducto)?.cantidad ?? 0;
+                const available = (product.stock ?? 0) - inCart;
+                const outOfStock = available <= 0;
 
                 return (
-                  <article key={product.idProducto} className={`store-card${outOfStock ? " store-card--out" : ""}`}>
+                  <Link
+                    key={product.idProducto}
+                    className={`store-card${outOfStock ? " store-card--out" : ""}`}
+                    to={`/tienda/${product.idProducto}`}
+                  >
                     <div
                       className="store-card__image"
                       style={
@@ -276,21 +282,24 @@ const StorePage = () => {
                         <div className="store-card__meta">
                           <strong className="store-card__price">{formatPrice(product.precio)}</strong>
                           <span className={`store-stock${outOfStock ? " store-stock--out" : ""}`}>
-                            {outOfStock ? "Sin stock" : `${product.stock} en stock`}
+                            {outOfStock ? "Sin stock" : `${available} en stock`}
                           </span>
                         </div>
 
                         <button
                           className="store-btn"
                           disabled={outOfStock}
-                          onClick={() => handleBuy(product)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleAddToCart(product);
+                          }}
                           type="button"
                         >
-                          {outOfStock ? "Agotado" : "Comprar"}
+                          {outOfStock ? "Agotado" : "Agregar"}
                         </button>
                       </div>
                     </div>
-                  </article>
+                  </Link>
                 );
               })}
             </div>
