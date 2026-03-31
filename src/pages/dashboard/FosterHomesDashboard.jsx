@@ -15,8 +15,8 @@ const buildRequestLabel = (fosterHome) => {
   }
 
   return fosterHome.tipoSolicitud
-    ? `#${fosterHome.idSolicitud} - ${fosterHome.tipoSolicitud}`
-    : `#${fosterHome.idSolicitud}`;
+    ? fosterHome.tipoSolicitud
+    : "Solicitud asociada";
 };
 
 const buildAddressLabel = (fosterHome) => {
@@ -29,7 +29,7 @@ const buildAddressLabel = (fosterHome) => {
     return `${line} - ${location}`;
   }
 
-  return line || location || `Direccion #${fosterHome.idDireccion}`;
+  return line || location || "Direccion disponible";
 };
 
 const FosterHomesDashboard = () => {
@@ -220,7 +220,7 @@ const FosterHomesDashboard = () => {
                       <td>{buildRequestLabel(fosterHome)}</td>
                       <td>{buildAddressLabel(fosterHome)}</td>
                       <td>{fosterHome.totalPerritos}</td>
-                      <td>{fosterHome.estado || fosterHome.idEstado}</td>
+                      <td>{fosterHome.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

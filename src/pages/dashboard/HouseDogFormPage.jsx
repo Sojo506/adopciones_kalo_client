@@ -18,13 +18,11 @@ const buildRelationKey = (idCasaCuna, idPerrito) =>
   `${String(idCasaCuna)}:${String(idPerrito)}`;
 
 const buildFosterHomeLabel = (fosterHome) => {
-  const base = `#${fosterHome.idCasaCuna}`;
-  return fosterHome.nombre ? `${base} - ${fosterHome.nombre}` : base;
+  return fosterHome.nombre || "Casa cuna disponible";
 };
 
 const buildDogLabel = (dog) => {
-  const base = `#${dog.idPerrito}`;
-  return dog.nombre ? `${base} - ${dog.nombre}` : base;
+  return dog.nombre || "Perrito disponible";
 };
 
 const mapHouseDogToForm = (houseDog) => ({

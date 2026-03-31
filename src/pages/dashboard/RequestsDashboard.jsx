@@ -9,9 +9,7 @@ const formatDogReference = (request) => {
     return "Sin adopción";
   }
 
-  return request.nombrePerrito
-    ? `#${request.idPerrito} - ${request.nombrePerrito}`
-    : `#${request.idPerrito}`;
+  return request.nombrePerrito || "Perrito asociado";
 };
 
 const RequestsDashboard = () => {
@@ -78,7 +76,7 @@ const RequestsDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar solicitud",
-      text: `Se desactivara la solicitud #${request.idSolicitud}.`,
+      text: "Se desactivara la solicitud seleccionada.",
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -156,7 +154,7 @@ const RequestsDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, identificacion, solicitante, perrito, tipo o estado"
+            placeholder="Buscar por identificacion, solicitante, perrito, tipo o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -191,9 +189,9 @@ const RequestsDashboard = () => {
                     <tr key={request.idSolicitud}>
                       <td>{request.identificacion}</td>
                       <td>{request.solicitante || "-"}</td>
-                      <td>{request.tipoSolicitud || request.idTipoSolicitud}</td>
+                      <td>{request.tipoSolicitud || "Tipo registrado"}</td>
                       <td>{formatDogReference(request)}</td>
-                      <td>{request.estado || request.idEstado}</td>
+                      <td>{request.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

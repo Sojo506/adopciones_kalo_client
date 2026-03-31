@@ -273,7 +273,7 @@ const ProductImageFormPage = () => {
                     <option value="">Selecciona un producto</option>
                     {products.map((product) => (
                       <option key={product.idProducto} value={product.idProducto}>
-                        #{product.idProducto} - {product.nombre}
+                        {product.nombre || "Producto registrado"}
                       </option>
                     ))}
                   </select>

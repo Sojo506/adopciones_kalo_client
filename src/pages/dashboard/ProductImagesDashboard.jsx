@@ -124,7 +124,7 @@ const ProductImagesDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Desactivar imagen",
-      text: `Se desactivara la imagen ${image.idImagen} del producto "${image.producto}".`,
+      text: `Se desactivara la imagen del producto "${image.producto || "seleccionado"}".`,
       showCancelButton: true,
       confirmButtonText: "Desactivar",
       cancelButtonText: "Cancelar",
@@ -217,7 +217,7 @@ const ProductImagesDashboard = () => {
               <option value="">Selecciona un producto</option>
               {products.map((product) => (
                 <option key={product.idProducto} value={product.idProducto}>
-                  #{product.idProducto} - {product.nombre}
+                  {product.nombre || "Producto registrado"}
                 </option>
               ))}
             </select>
@@ -228,7 +228,7 @@ const ProductImagesDashboard = () => {
               className="form-control dashboard-search"
               disabled={!selectedProductId || imagesLoading || deletingId !== null}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Buscar por ID, URL o estado"
+              placeholder="Buscar por URL o estado"
               value={search}
             />
             <span className="dashboard-muted">
@@ -276,7 +276,7 @@ const ProductImagesDashboard = () => {
                       <td>
                         {image.imageUrl ? (
                           <img
-                            alt={`Imagen ${image.idImagen} del producto ${image.producto}`}
+                            alt={`Imagen del producto ${image.producto || "registrado"}`}
                             loading="lazy"
                             src={image.imageUrl}
                             style={imageStyle}
@@ -285,7 +285,7 @@ const ProductImagesDashboard = () => {
                           <span className="dashboard-muted">Sin imagen</span>
                         )}
                       </td>
-                      <td>{image.producto || image.idProducto}</td>
+                      <td>{image.producto || "Producto registrado"}</td>
                       <td>
                         {image.imageUrl ? (
                           <a href={image.imageUrl} rel="noreferrer" target="_blank">
@@ -295,7 +295,7 @@ const ProductImagesDashboard = () => {
                           <span className="dashboard-muted">Sin URL</span>
                         )}
                       </td>
-                      <td>{image.estado || image.idEstado}</td>
+                      <td>{image.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLocation, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -9,23 +9,9 @@ import { useAuth } from "../../hooks/useAuth";
 
 const EMPTY_FORM = {
   fechaEvidencia: "",
-  estadoGeneral: "",
-  alimentacionDescanso: "",
-  saludComportamiento: "",
-  detalleRutina: "",
+  imageUrl: "",
+  comentarios: "",
 };
-
-const STATUS_SUGGESTIONS = [
-  "Alegre y con buena energia",
-  "Tranquilo y adaptandose bien",
-  "Un poco sensible, pero estable",
-];
-
-const FEEDING_SUGGESTIONS = [
-  "Come y descansa con normalidad",
-  "Ha tenido cambios leves",
-  "Necesita revision o apoyo",
-];
 
 const formatDate = (value) => {
   if (!value) return "Sin fecha";
@@ -103,21 +89,13 @@ const getClampedEvidenceDate = (followUp) => {
 const buildDisplayName = (user) =>
   [user?.nombre, user?.apellidoPaterno].filter(Boolean).join(" ") || user?.usuario || "tu cuenta";
 
-const buildEvidenceComment = (values) => {
-  const estadoGeneral = String(values.estadoGeneral || "").trim();
-  const alimentacionDescanso = String(values.alimentacionDescanso || "").trim();
-  const saludComportamiento = String(values.saludComportamiento || "").trim();
-  const detalleRutina = String(values.detalleRutina || "").trim();
-
-  return [
-    estadoGeneral ? `Estado general: ${estadoGeneral}` : null,
-    alimentacionDescanso ? `Alimentacion y descanso: ${alimentacionDescanso}` : null,
-    saludComportamiento ? `Salud y comportamiento: ${saludComportamiento}` : null,
-    detalleRutina ? `Rutina y adaptacion: ${detalleRutina}` : null,
-  ]
-    .filter(Boolean)
-    .join("\n\n")
-    .trim();
+const isValidHttpUrl = (value) => {
+  try {
+    const url = new URL(String(value || "").trim());
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
 };
 
 const getFollowUpTone = (followUp) => {
@@ -158,7 +136,7 @@ const getFollowUpTone = (followUp) => {
       label: "Seguimiento con respuestas",
       accent: "success",
       canSubmit: true,
-      description: "Puedes subir una nueva evidencia si quieres ampliar el seguimiento.",
+      description: "Puedes registrar una nueva evidencia si quieres ampliar el seguimiento.",
     };
   }
 
@@ -182,7 +160,7 @@ const buildDogCards = ({ followUps, requestedDogId, requestedDogName }) => {
 
     const current = dogMap.get(dogId) || {
       idPerrito: dogId,
-      nombrePerrito: followUp.nombrePerrito || `Perrito #${dogId}`,
+      nombrePerrito: followUp.nombrePerrito || "Perrito adoptado",
       followUps: [],
       totalEvidencias: 0,
       latestActivity: null,
@@ -203,7 +181,7 @@ const buildDogCards = ({ followUps, requestedDogId, requestedDogName }) => {
   if (requestedDogId && !dogMap.has(Number(requestedDogId))) {
     dogMap.set(Number(requestedDogId), {
       idPerrito: Number(requestedDogId),
-      nombrePerrito: requestedDogName || `Perrito #${requestedDogId}`,
+      nombrePerrito: requestedDogName || "Perrito con seguimiento",
       followUps: [],
       totalEvidencias: 0,
       latestActivity: null,
@@ -223,6 +201,7 @@ const buildDogCards = ({ followUps, requestedDogId, requestedDogName }) => {
 };
 
 const FollowUpPage = () => {
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
   const [followUps, setFollowUps] = useState([]);
@@ -234,30 +213,31 @@ const FollowUpPage = () => {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [pageError, setPageError] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
   const [evidences, setEvidences] = useState([]);
-  const requestedDogId = Number(searchParams.get("perrito") || 0) || null;
-  const requestedFollowUpId = Number(searchParams.get("seguimiento") || 0) || null;
-  const requestedAdoptionId = Number(searchParams.get("adopcion") || 0) || null;
-  const requestedDogName = searchParams.get("nombre") || "";
+  const initialRequestRef = useRef({
+    dogId: Number(location.state?.dogId || searchParams.get("perrito") || 0) || null,
+    followUpId:
+      Number(location.state?.followUpId || searchParams.get("seguimiento") || 0) || null,
+    adoptionId:
+      Number(location.state?.adoptionId || searchParams.get("adopcion") || 0) || null,
+    dogName: location.state?.dogName || searchParams.get("nombre") || "",
+  });
+  const requestedDogId = initialRequestRef.current.dogId;
+  const requestedFollowUpId = initialRequestRef.current.followUpId;
+  const requestedAdoptionId = initialRequestRef.current.adoptionId;
+  const requestedDogName = initialRequestRef.current.dogName;
   const {
     register,
     handleSubmit,
     reset,
-    setValue,
     watch,
     formState: { errors },
   } = useForm({ defaultValues: EMPTY_FORM });
 
   const watchedValues = watch();
-  const commentPreview = useMemo(() => buildEvidenceComment(watchedValues), [watchedValues]);
-  const previewUrl = useMemo(() => {
-    if (!selectedFile) {
-      return null;
-    }
-
-    return URL.createObjectURL(selectedFile);
-  }, [selectedFile]);
+  const watchedComments = String(watchedValues.comentarios || "");
+  const watchedImageUrl = String(watchedValues.imageUrl || "").trim();
+  const imagePreviewUrl = isValidHttpUrl(watchedImageUrl) ? watchedImageUrl : "";
 
   const dogCards = useMemo(
     () =>
@@ -298,14 +278,6 @@ const FollowUpPage = () => {
   }, []);
 
   useEffect(() => {
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
-
-  useEffect(() => {
     if (!selectedFollowUp) {
       reset(EMPTY_FORM);
       return;
@@ -315,7 +287,6 @@ const FollowUpPage = () => {
       ...EMPTY_FORM,
       fechaEvidencia: getClampedEvidenceDate(selectedFollowUp),
     });
-    setSelectedFile(null);
   }, [reset, selectedFollowUp]);
 
   useEffect(() => {
@@ -509,53 +480,18 @@ const FollowUpPage = () => {
   }, [selectedDogFollowUps, selectedDogId, selectedFollowUpId]);
 
   useEffect(() => {
-    const nextDogParam = selectedDogId ? String(selectedDogId) : "";
-    const nextFollowUpParam = selectedFollowUpId ? String(selectedFollowUpId) : "";
-    const nextAdoptionParam = selectedFollowUp?.idAdopcion ? String(selectedFollowUp.idAdopcion) : "";
-    const nextNameParam = selectedDog?.nombre || selectedDogCard?.nombrePerrito || "";
+    const currentParams = searchParams.toString();
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete("perrito");
+    nextParams.delete("seguimiento");
+    nextParams.delete("adopcion");
 
-    const currentDogParam = searchParams.get("perrito") || "";
-    const currentFollowUpParam = searchParams.get("seguimiento") || "";
-    const currentAdoptionParam = searchParams.get("adopcion") || "";
-    const currentNameParam = searchParams.get("nombre") || "";
-
-    if (
-      currentDogParam === nextDogParam &&
-      currentFollowUpParam === nextFollowUpParam &&
-      currentAdoptionParam === nextAdoptionParam &&
-      currentNameParam === nextNameParam
-    ) {
+    if (nextParams.toString() === currentParams) {
       return;
     }
 
-    const nextParams = new URLSearchParams();
-
-    if (nextDogParam) {
-      nextParams.set("perrito", nextDogParam);
-    }
-
-    if (nextAdoptionParam) {
-      nextParams.set("adopcion", nextAdoptionParam);
-    }
-
-    if (nextFollowUpParam) {
-      nextParams.set("seguimiento", nextFollowUpParam);
-    }
-
-    if (nextNameParam) {
-      nextParams.set("nombre", nextNameParam);
-    }
-
     setSearchParams(nextParams, { replace: true });
-  }, [
-    searchParams,
-    selectedDog?.nombre,
-    selectedDogCard?.nombrePerrito,
-    selectedDogId,
-    selectedFollowUp?.idAdopcion,
-    selectedFollowUpId,
-    setSearchParams,
-  ]);
+  }, [searchParams, setSearchParams]);
 
   const refreshFollowUpData = async () => {
     const [nextFollowUps, nextEvidences] = await Promise.all([
@@ -573,11 +509,6 @@ const FollowUpPage = () => {
     setSelectedDogId(dogId);
     const firstFollowUp = followUps.find((followUp) => Number(followUp.idPerrito) === Number(dogId));
     setSelectedFollowUpId(firstFollowUp?.idSeguimiento || null);
-  };
-
-  const handleFileChange = (event) => {
-    const file = event.target.files?.[0] || null;
-    setSelectedFile(file);
   };
 
   const onSubmit = async (values) => {
@@ -599,13 +530,14 @@ const FollowUpPage = () => {
       return;
     }
 
-    const comments = buildEvidenceComment(values);
+    const comments = String(values.comentarios || "").trim();
+    const imageUrl = String(values.imageUrl || "").trim();
 
-    if (!comments) {
+    if (!comments && !imageUrl) {
       Swal.fire({
         icon: "warning",
-        title: "Completa las preguntas",
-        text: "Necesitamos al menos tus respuestas del formulario para registrar el seguimiento.",
+        title: "Completa la evidencia",
+        text: "Registra al menos comentarios o una imagen URL para guardar la evidencia.",
       });
       return;
     }
@@ -614,41 +546,35 @@ const FollowUpPage = () => {
       Swal.fire({
         icon: "warning",
         title: "Tus respuestas son muy largas",
-        text: "Resume un poco las respuestas para no superar los 500 caracteres permitidos.",
+        text: "Resume un poco los comentarios para no superar los 500 caracteres permitidos.",
       });
       return;
     }
 
     try {
       setSubmitting(true);
-      const formData = new FormData();
-
-      formData.append("idSeguimiento", String(selectedFollowUp.idSeguimiento));
-      formData.append("fechaEvidencia", values.fechaEvidencia);
-      formData.append("comentarios", comments);
-      formData.append("idEstado", "1");
-
-      if (selectedFile) {
-        formData.append("image", selectedFile);
-      }
-
-      await createEvidence(formData);
+      await createEvidence({
+        idSeguimiento: String(selectedFollowUp.idSeguimiento),
+        fechaEvidencia: values.fechaEvidencia,
+        comentarios: comments,
+        imageUrl,
+        idEstado: "1",
+      });
       await refreshFollowUpData();
       reset({
         ...EMPTY_FORM,
         fechaEvidencia: getClampedEvidenceDate(selectedFollowUp),
       });
-      setSelectedFile(null);
 
       Swal.fire({
         icon: "success",
-        title: "Seguimiento registrado",
-        text: "Tu respuesta quedo guardada correctamente para este perrito.",
+        title: "Evidencia registrada",
+        text: "La evidencia quedo guardada correctamente para este perrito.",
       });
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "No pudimos guardar tu respuesta",
+        title: "No pudimos guardar la evidencia",
         text:
           error?.response?.data?.message ||
           "Revisa los datos del formulario e intenta nuevamente.",
@@ -673,7 +599,7 @@ const FollowUpPage = () => {
               </em>.
             </h1>
             <p>
-              Revisa los seguimientos programados para {buildDisplayName(user)} y responde cada
+              Revisa los seguimientos programados para {buildDisplayName(user)} y registra cada
               etapa con informacion clara, fechas correctas y, si quieres, una imagen de apoyo.
             </p>
           </div>
@@ -723,7 +649,7 @@ const FollowUpPage = () => {
                       type="button"
                     >
                       <div className="followup-dog-card__body">
-                        <strong>{dog.nombrePerrito || `Perrito #${dog.idPerrito}`}</strong>
+                        <strong>{dog.nombrePerrito || "Perrito con seguimiento"}</strong>
                         <span>{dog.followUps.length} seguimientos programados</span>
                         <small>{dog.totalEvidencias} respuestas registradas</small>
                       </div>
@@ -782,8 +708,8 @@ const FollowUpPage = () => {
                     <div className="adoption-dog-detail__content">
                       <p className="adoption-dog-detail__lead">
                         Cada seguimiento queda asociado a este perrito y a tu cuenta. Puedes
-                        responder las preguntas del formulario y revisar tus respuestas previas en
-                        una sola vista.
+                        registrar la evidencia real del seguimiento y revisar tus respuestas
+                        previas en una sola vista.
                       </p>
 
                       <div className="adoption-dog-detail__meta">
@@ -833,7 +759,7 @@ const FollowUpPage = () => {
                                 >
                                   <div className="followup-card__header">
                                     <strong>
-                                      {followUp.tipoSeguimiento || `Seguimiento #${followUp.idSeguimiento}`}
+                                      {followUp.tipoSeguimiento || "Seguimiento programado"}
                                     </strong>
                                     <span className={`followup-badge followup-badge--${tone.accent}`}>
                                       {tone.label}
@@ -862,15 +788,15 @@ const FollowUpPage = () => {
               <section className="adoption-panel followup-panel">
                 <div className="adoption-panel__header">
                   <div>
-                    <p className="adoption-panel__eyebrow">Formulario de seguimiento</p>
+                    <p className="adoption-panel__eyebrow">Formulario de evidencia</p>
                     <h2>{selectedFollowUp?.tipoSeguimiento || "Selecciona un seguimiento"}</h2>
                   </div>
-                  {selectedFollowUp ? <span className="adoption-counter">#{selectedFollowUp.idSeguimiento}</span> : null}
+                  {selectedFollowUp ? <span className="adoption-counter">Activo</span> : null}
                 </div>
 
                 {!selectedFollowUp ? (
                   <div className="adoption-empty">
-                    Cuando elijas un seguimiento podras responder las preguntas y subir tu evidencia.
+                    Cuando elijas un seguimiento podras completar fecha, comentarios e imagen URL.
                   </div>
                 ) : (
                   <>
@@ -889,7 +815,7 @@ const FollowUpPage = () => {
                     <form className="adoption-form" onSubmit={handleSubmit(onSubmit)}>
                       <fieldset className="followup-form-fieldset" disabled={submitting || !followUpTone.canSubmit}>
                         <label className="followup-date-field">
-                          <span>Fecha que deseas registrar</span>
+                          <span>Fecha evidencia</span>
                           <input
                             {...register("fechaEvidencia", {
                               required: "La fecha es obligatoria",
@@ -916,132 +842,59 @@ const FollowUpPage = () => {
                           {errors.fechaEvidencia ? <small className="text-danger">{errors.fechaEvidencia.message}</small> : null}
                         </label>
 
-                        <fieldset className="adoption-question">
-                          <legend>Como ha estado tu perrito desde la ultima revision?</legend>
-                          <input
-                            {...register("estadoGeneral", {
-                              required: "Esta respuesta es obligatoria",
-                              maxLength: {
-                                value: 80,
-                                message: "Resume esta respuesta en un maximo de 80 caracteres",
-                              },
-                            })}
-                            className={`form-control ${errors.estadoGeneral ? "is-invalid" : ""}`}
-                            placeholder="Ej. Alegre, activo y con buena adaptacion"
-                            type="text"
-                          />
-                          <div className="adoption-suggestion-list">
-                            {STATUS_SUGGESTIONS.map((suggestion) => (
-                              <button
-                                key={suggestion}
-                                type="button"
-                                className={`adoption-suggestion${watchedValues.estadoGeneral === suggestion ? " is-selected" : ""}`}
-                                onClick={() =>
-                                  setValue("estadoGeneral", suggestion, {
-                                    shouldDirty: true,
-                                    shouldValidate: true,
-                                  })
-                                }
-                              >
-                                {suggestion}
-                              </button>
-                            ))}
-                          </div>
-                          {errors.estadoGeneral ? <small className="text-danger">{errors.estadoGeneral.message}</small> : null}
-                        </fieldset>
-
-                        <fieldset className="adoption-question">
-                          <legend>Como han ido su alimentacion y descanso?</legend>
-                          <div className="adoption-suggestion-list">
-                            {FEEDING_SUGGESTIONS.map((suggestion) => (
-                              <button
-                                key={suggestion}
-                                type="button"
-                                className={`adoption-suggestion${watchedValues.alimentacionDescanso === suggestion ? " is-selected" : ""}`}
-                                onClick={() =>
-                                  setValue("alimentacionDescanso", suggestion, {
-                                    shouldDirty: true,
-                                    shouldValidate: true,
-                                  })
-                                }
-                              >
-                                {suggestion}
-                              </button>
-                            ))}
-                          </div>
-                          <input
-                            {...register("alimentacionDescanso", {
-                              required: "Selecciona o escribe una respuesta",
-                              maxLength: {
-                                value: 80,
-                                message: "Resume esta respuesta en un maximo de 80 caracteres",
-                              },
-                            })}
-                            className={`form-control ${errors.alimentacionDescanso ? "is-invalid" : ""}`}
-                            placeholder="Ej. Come bien y duerme tranquilo"
-                            type="text"
-                          />
-                          {errors.alimentacionDescanso ? <small className="text-danger">{errors.alimentacionDescanso.message}</small> : null}
-                        </fieldset>
-
-                        <fieldset className="adoption-question">
-                          <legend>Has notado algo sobre su salud o comportamiento que debamos conocer?</legend>
-                          <textarea
-                            {...register("saludComportamiento", {
-                              required: "Esta respuesta es obligatoria",
-                              maxLength: {
-                                value: 140,
-                                message: "Resume esta respuesta en un maximo de 140 caracteres",
-                              },
-                            })}
-                            className={`form-control ${errors.saludComportamiento ? "is-invalid" : ""}`}
-                            rows="4"
-                          />
-                          {errors.saludComportamiento ? <small className="text-danger">{errors.saludComportamiento.message}</small> : null}
-                        </fieldset>
-
-                        <fieldset className="adoption-question">
-                          <legend>Que cambios o avances notas en su rutina y adaptacion al hogar?</legend>
-                          <textarea
-                            {...register("detalleRutina", {
-                              required: "Esta respuesta es obligatoria",
-                              maxLength: {
-                                value: 140,
-                                message: "Resume esta respuesta en un maximo de 140 caracteres",
-                              },
-                            })}
-                            className={`form-control ${errors.detalleRutina ? "is-invalid" : ""}`}
-                            rows="4"
-                          />
-                          {errors.detalleRutina ? <small className="text-danger">{errors.detalleRutina.message}</small> : null}
-                        </fieldset>
-
                         <label className="followup-upload-field">
-                          <span>Imagen opcional de apoyo</span>
+                          <span>Imagen URL</span>
                           <input
-                            accept="image/png,image/jpeg,image/webp,image/avif,image/gif"
-                            className="form-control"
-                            onChange={handleFileChange}
-                            type="file"
+                            {...register("imageUrl", {
+                              maxLength: {
+                                value: 500,
+                                message: "La imagen URL no puede superar los 500 caracteres",
+                              },
+                              validate: (value) =>
+                                !String(value || "").trim() ||
+                                isValidHttpUrl(value) ||
+                                "Ingresa una URL valida que inicie con http o https",
+                            })}
+                            className={`form-control ${errors.imageUrl ? "is-invalid" : ""}`}
+                            placeholder="https://ejemplo.com/mi-evidencia.jpg"
+                            type="text"
                           />
+                          <small>Comparte un enlace seguro de la imagen que quieras adjuntar.</small>
+                          {errors.imageUrl ? <small className="text-danger">{errors.imageUrl.message}</small> : null}
                         </label>
 
-                        {previewUrl ? (
+                        <label className="adoption-question">
+                          <span>Comentarios</span>
+                          <textarea
+                            {...register("comentarios", {
+                              maxLength: {
+                                value: 500,
+                                message: "Los comentarios no pueden superar los 500 caracteres",
+                              },
+                            })}
+                            className={`form-control ${errors.comentarios ? "is-invalid" : ""}`}
+                            placeholder="Describe lo que corresponde registrar en esta evidencia"
+                            rows="5"
+                          />
+                          {errors.comentarios ? <small className="text-danger">{errors.comentarios.message}</small> : null}
+                        </label>
+
+                        {imagePreviewUrl ? (
                           <div className="followup-preview">
-                            <strong>Vista previa</strong>
-                            <img alt="Vista previa de la evidencia" src={previewUrl} />
+                            <strong>Vista previa de la imagen URL</strong>
+                            <img alt="Vista previa de la evidencia" src={imagePreviewUrl} />
                           </div>
                         ) : null}
 
                         <div className="followup-comment-preview">
-                          <strong>Resumen que se guardara</strong>
-                          <pre>{commentPreview || "Tus respuestas apareceran aqui conforme completes el formulario."}</pre>
-                          <small>{commentPreview.length} / 500 caracteres</small>
+                          <strong>Campos que se guardaran</strong>
+                          <pre>{`Fecha: ${watchedValues.fechaEvidencia || "Sin fecha"}\nImagen: ${watchedImageUrl || "Sin imagen"}\nComentarios: ${watchedComments.trim() || "Sin comentarios"}`}</pre>
+                          <small>{watchedComments.length} / 500 caracteres en comentarios</small>
                         </div>
 
                         <div className="adoption-form__footer">
                           <p>
-                            La respuesta se guardara como evidencia del seguimiento actual para{" "}
+                            La evidencia se guardara en el seguimiento actual para{" "}
                             {selectedDog?.nombre || selectedDogCard?.nombrePerrito || "tu perrito"}.
                           </p>
                           <button
@@ -1049,7 +902,7 @@ const FollowUpPage = () => {
                             disabled={submitting || !followUpTone.canSubmit}
                             type="submit"
                           >
-                            {submitting ? "Guardando seguimiento..." : "Registrar seguimiento"}
+                            {submitting ? "Guardando evidencia..." : "Registrar evidencia"}
                           </button>
                         </div>
                       </fieldset>
@@ -1083,9 +936,7 @@ const FollowUpPage = () => {
                       <article key={evidence.idEvidencia} className="followup-evidence-card">
                         <div className="followup-evidence-card__header">
                           <div>
-                            <span className="followup-evidence-card__eyebrow">
-                              Evidencia #{evidence.idEvidencia}
-                            </span>
+                            <span className="followup-evidence-card__eyebrow">Evidencia registrada</span>
                             <strong>{formatDate(evidence.fechaEvidencia)}</strong>
                           </div>
                           <small>{evidence.imageUrl ? "Incluye imagen" : "Solo comentario"}</small>
@@ -1093,7 +944,7 @@ const FollowUpPage = () => {
 
                         {evidence.imageUrl ? (
                           <img
-                            alt={`Evidencia ${evidence.idEvidencia}`}
+                            alt="Imagen de evidencia"
                             className="followup-evidence-card__image"
                             loading="lazy"
                             src={evidence.imageUrl}

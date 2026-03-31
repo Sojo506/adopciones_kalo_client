@@ -55,7 +55,12 @@ const buildPayload = (values) => ({
 });
 
 const buildAccountLabel = (account) => {
-  const segments = [account.idCuenta, account.usuario, account.usuarioNombre].filter(Boolean);
+  const segments = [
+    account.usuarioNombre,
+    account.usuario,
+    account.identificacion,
+    account.correo,
+  ].filter(Boolean);
   return segments.join(" - ");
 };
 

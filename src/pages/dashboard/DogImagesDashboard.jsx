@@ -123,7 +123,7 @@ const DogImagesDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Desactivar imagen",
-      text: `Se desactivara la imagen ${image.idImagen} del perrito "${image.nombrePerrito}".`,
+      text: `Se desactivara la imagen del perrito "${image.nombrePerrito || "seleccionado"}".`,
       showCancelButton: true,
       confirmButtonText: "Desactivar",
       cancelButtonText: "Cancelar",
@@ -216,7 +216,7 @@ const DogImagesDashboard = () => {
               <option value="">Selecciona un perrito</option>
               {dogs.map((dog) => (
                 <option key={dog.idPerrito} value={dog.idPerrito}>
-                  #{dog.idPerrito} - {dog.nombre}
+                  {dog.nombre || "Perrito registrado"}
                 </option>
               ))}
             </select>
@@ -227,7 +227,7 @@ const DogImagesDashboard = () => {
               className="form-control dashboard-search"
               disabled={!selectedDogId || imagesLoading || deletingId !== null}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Buscar por ID, URL o estado"
+              placeholder="Buscar por URL o estado"
               value={search}
             />
             <span className="dashboard-muted">
@@ -275,7 +275,7 @@ const DogImagesDashboard = () => {
                       <td>
                         {image.imageUrl ? (
                           <img
-                            alt={`Imagen ${image.idImagen} del perrito ${image.nombrePerrito}`}
+                            alt={`Imagen del perrito ${image.nombrePerrito || "registrado"}`}
                             loading="lazy"
                             src={image.imageUrl}
                             style={imageStyle}
@@ -284,7 +284,7 @@ const DogImagesDashboard = () => {
                           <span className="dashboard-muted">Sin imagen</span>
                         )}
                       </td>
-                      <td>{image.nombrePerrito || image.idPerrito}</td>
+                      <td>{image.nombrePerrito || "Perrito asociado"}</td>
                       <td>
                         {image.imageUrl ? (
                           <a href={image.imageUrl} rel="noreferrer" target="_blank">
@@ -294,7 +294,7 @@ const DogImagesDashboard = () => {
                           <span className="dashboard-muted">Sin URL</span>
                         )}
                       </td>
-                      <td>{image.estado || image.idEstado}</td>
+                      <td>{image.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

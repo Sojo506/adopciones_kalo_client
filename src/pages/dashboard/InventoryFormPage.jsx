@@ -257,7 +257,7 @@ const InventoryFormPage = () => {
                         disabled
                         value={
                           currentInventory
-                            ? `#${currentInventory.idProducto} - ${currentInventory.producto}`
+                            ? currentInventory.producto || "Producto asociado"
                             : ""
                         }
                       />
@@ -277,7 +277,7 @@ const InventoryFormPage = () => {
                       <option value="">Selecciona un producto</option>
                       {availableProducts.map((product) => (
                         <option key={product.idProducto} value={product.idProducto}>
-                          #{product.idProducto} - {product.nombre}
+                          {product.nombre || "Producto registrado"}
                         </option>
                       ))}
                     </select>

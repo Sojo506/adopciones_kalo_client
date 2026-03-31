@@ -162,7 +162,7 @@ const EmailsDashboard = () => {
                       <td>{email.identificacion}</td>
                       <td>{email.usuario || "-"}</td>
                       <td>{email.correo}</td>
-                      <td>{email.estado || email.idEstado}</td>
+                      <td>{email.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

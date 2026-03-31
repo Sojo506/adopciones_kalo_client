@@ -5,13 +5,11 @@ import * as houseDogsApi from "../../api/houseDogs";
 import { useAuth } from "../../hooks/useAuth";
 
 const buildFosterHomeLabel = (houseDog) => {
-  const base = `#${houseDog.idCasaCuna}`;
-  return houseDog.casaCuna ? `${base} - ${houseDog.casaCuna}` : base;
+  return houseDog.casaCuna || "Casa cuna asociada";
 };
 
 const buildDogLabel = (houseDog) => {
-  const base = `#${houseDog.idPerrito}`;
-  return houseDog.nombrePerrito ? `${base} - ${houseDog.nombrePerrito}` : base;
+  return houseDog.nombrePerrito || "Perrito asociado";
 };
 
 const HouseDogsDashboard = () => {
@@ -76,7 +74,7 @@ const HouseDogsDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar relacion casa-perrito",
-      text: `Se desactivara la asignacion de la casa cuna #${houseDog.idCasaCuna} con el perrito #${houseDog.idPerrito}.`,
+      text: "Se desactivara la asignacion seleccionada.",
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -191,7 +189,7 @@ const HouseDogsDashboard = () => {
                     <tr key={relationKey}>
                       <td>{buildFosterHomeLabel(houseDog)}</td>
                       <td>{buildDogLabel(houseDog)}</td>
-                      <td>{houseDog.estado || houseDog.idEstado}</td>
+                      <td>{houseDog.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

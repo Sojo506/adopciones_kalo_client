@@ -69,7 +69,7 @@ const AddressesDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar direccion",
-      text: `Se desactivara la direccion #${address.idDireccion}.`,
+      text: "Se desactivara la direccion seleccionada.",
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -139,7 +139,7 @@ const AddressesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, jerarquia, calle, numero o estado"
+            placeholder="Buscar por jerarquia, calle, numero o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -175,13 +175,13 @@ const AddressesDashboard = () => {
 
                   return (
                     <tr key={address.idDireccion}>
-                      <td>{address.pais || address.idPais}</td>
-                      <td>{address.provincia || address.idProvincia}</td>
-                      <td>{address.canton || address.idCanton}</td>
-                      <td>{address.distrito || address.idDistrito}</td>
+                      <td>{address.pais || "Pais relacionado"}</td>
+                      <td>{address.provincia || "Provincia relacionada"}</td>
+                      <td>{address.canton || "Canton relacionado"}</td>
+                      <td>{address.distrito || "Distrito relacionado"}</td>
                       <td>{address.calle || "Sin calle"}</td>
                       <td>{address.numero || "Sin numero"}</td>
-                      <td>{address.estado || address.idEstado}</td>
+                      <td>{address.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

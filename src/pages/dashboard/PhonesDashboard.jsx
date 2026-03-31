@@ -162,7 +162,7 @@ const PhonesDashboard = () => {
                       <td>{phone.identificacion}</td>
                       <td>{phone.usuario || "-"}</td>
                       <td>{phone.telefono}</td>
-                      <td>{phone.estado || phone.idEstado}</td>
+                      <td>{phone.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

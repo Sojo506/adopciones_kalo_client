@@ -84,7 +84,7 @@ const PayPalPaymentsDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar pago PayPal",
-      text: `Se desactivara el pago #${paypalPayment.idPago}.`,
+      text: "Se desactivara el pago PayPal seleccionado.",
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -155,7 +155,7 @@ const PayPalPaymentsDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, factura, orden, captura, fecha o estado"
+            placeholder="Buscar por factura, referencias PayPal, fecha o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -174,9 +174,8 @@ const PayPalPaymentsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>Factura</th>
-                  <th>PayPal order ID</th>
-                  <th>PayPal capture ID</th>
+                  <th>Relacion comercial</th>
+                  <th>Referencias PayPal</th>
                   <th>Fecha de pago</th>
                   <th>Estado</th>
                   <th>Acciones</th>
@@ -188,11 +187,19 @@ const PayPalPaymentsDashboard = () => {
 
                   return (
                     <tr key={paypalPayment.idPago}>
-                      <td>{paypalPayment.idFactura}</td>
-                      <td>{paypalPayment.paypalOrderId || "-"}</td>
-                      <td>{paypalPayment.paypalCaptureId || "-"}</td>
+                      <td>Pago asociado a factura</td>
+                      <td>
+                        {paypalPayment.paypalOrderId || paypalPayment.paypalCaptureId
+                          ? [
+                              paypalPayment.paypalOrderId ? "Orden registrada" : null,
+                              paypalPayment.paypalCaptureId ? "Captura registrada" : null,
+                            ]
+                              .filter(Boolean)
+                              .join(" / ")
+                          : "Sin referencias"}
+                      </td>
                       <td>{formatDateTime(paypalPayment.fechaPago)}</td>
-                      <td>{paypalPayment.estado || paypalPayment.idEstado}</td>
+                      <td>{paypalPayment.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

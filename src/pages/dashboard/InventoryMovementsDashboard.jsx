@@ -86,7 +86,7 @@ const InventoryMovementsDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Desactivar movimiento",
-      text: `Se desactivara el movimiento #${movement.idMovimiento} de "${movement.producto}".`,
+      text: `Se desactivara el movimiento de "${movement.producto || "producto seleccionado"}".`,
       showCancelButton: true,
       confirmButtonText: "Desactivar",
       cancelButtonText: "Cancelar",
@@ -171,7 +171,7 @@ const InventoryMovementsDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, producto, tipo, cantidad, fecha o estado"
+            placeholder="Buscar por producto, tipo, cantidad, fecha o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -204,11 +204,11 @@ const InventoryMovementsDashboard = () => {
 
                   return (
                     <tr key={movement.idMovimiento}>
-                      <td>{movement.producto || movement.idProducto}</td>
-                      <td>{movement.tipoMovimiento || movement.idTipoMovimiento}</td>
+                      <td>{movement.producto || "Producto registrado"}</td>
+                      <td>{movement.tipoMovimiento || "Tipo registrado"}</td>
                       <td>{Number(movement.cantidad || 0)}</td>
                       <td>{formatDateTime(movement.fechaMovimiento)}</td>
-                      <td>{movement.estado || movement.idEstado}</td>
+                      <td>{movement.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

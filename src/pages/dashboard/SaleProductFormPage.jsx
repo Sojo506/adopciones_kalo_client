@@ -35,17 +35,17 @@ const isEgresoMovementType = (movementTypeName) => {
 
 const buildSaleLabel = (sale) => {
   const clientLabel = sale?.cliente || sale?.identificacion || "Venta sin cliente";
-  return `#${sale.idVenta} - ${clientLabel}`;
+  return clientLabel;
 };
 
 const buildProductLabel = (product, inventory) => {
   const name = product?.nombre || "Producto sin nombre";
 
   if (!inventory) {
-    return `#${product.idProducto} - ${name}`;
+    return name;
   }
 
-  return `#${product.idProducto} - ${name} (stock: ${inventory.cantidad ?? 0})`;
+  return `${name} (stock: ${inventory.cantidad ?? 0})`;
 };
 
 const mapSaleProductToForm = (saleProduct) => ({

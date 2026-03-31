@@ -5,8 +5,7 @@ import * as requestQuestionsApi from "../../api/requestQuestions";
 import { useAuth } from "../../hooks/useAuth";
 
 const buildRequestTypeLabel = (requestQuestion) => {
-  const base = `#${requestQuestion.idTipoSolicitud}`;
-  return requestQuestion.tipoSolicitud ? `${base} - ${requestQuestion.tipoSolicitud}` : base;
+  return requestQuestion.tipoSolicitud || "Tipo de solicitud asociado";
 };
 
 const RequestQuestionsDashboard = () => {
@@ -72,7 +71,7 @@ const RequestQuestionsDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar relacion tipo solicitud-pregunta",
-      text: `Se desactivara la relacion del tipo de solicitud #${requestQuestion.idTipoSolicitud} con la pregunta #${requestQuestion.idPregunta}.`,
+      text: "Se desactivara la relacion seleccionada.",
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -194,8 +193,8 @@ const RequestQuestionsDashboard = () => {
                       <td>
                         #{requestQuestion.idPregunta} - {requestQuestion.pregunta}
                       </td>
-                      <td>{requestQuestion.tipoRespuesta || requestQuestion.idTipoRespuesta}</td>
-                      <td>{requestQuestion.estado || requestQuestion.idEstado}</td>
+                      <td>{requestQuestion.tipoRespuesta || "Tipo registrado"}</td>
+                      <td>{requestQuestion.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

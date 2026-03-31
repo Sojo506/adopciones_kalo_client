@@ -48,12 +48,11 @@ const buildAddressLabel = (address) => {
     return `${line} - ${hierarchy}`;
   }
 
-  return line || hierarchy || `Direccion #${address?.idDireccion || ""}`;
+  return line || hierarchy || "Direccion disponible";
 };
 
 const buildRequestLabel = (request) => {
-  const base = `#${request.idSolicitud}`;
-  return request.solicitante ? `${base} - ${request.solicitante}` : base;
+  return request.solicitante || request.tipoSolicitud || "Solicitud disponible";
 };
 
 const mapFosterHomeToForm = (fosterHome) => ({
@@ -376,7 +375,7 @@ const FosterHomeFormPage = () => {
                     <option value="">Selecciona una direccion</option>
                     {addressOptions.map((address) => (
                       <option key={address.idDireccion} value={address.idDireccion}>
-                        #{address.idDireccion} - {buildAddressLabel(address)}
+                        {buildAddressLabel(address)}
                       </option>
                     ))}
                   </select>

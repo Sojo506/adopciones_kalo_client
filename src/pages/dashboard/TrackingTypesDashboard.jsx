@@ -130,7 +130,7 @@ const TrackingTypesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, nombre o estado"
+            placeholder="Buscar por nombre o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -161,7 +161,7 @@ const TrackingTypesDashboard = () => {
                   return (
                     <tr key={trackingType.idTipoSeguimiento}>
                       <td>{trackingType.nombre}</td>
-                      <td>{trackingType.estado || trackingType.idEstado}</td>
+                      <td>{trackingType.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

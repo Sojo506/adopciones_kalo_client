@@ -139,7 +139,7 @@ const StatesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID o nombre"
+            placeholder="Buscar por nombre"
             value={search}
           />
           <span className="dashboard-muted">

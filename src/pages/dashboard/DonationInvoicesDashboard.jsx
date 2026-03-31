@@ -100,7 +100,7 @@ const DonationInvoicesDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar relacion donacion-factura",
-      text: `Se desactivara la relacion entre la donacion #${donationInvoice.idDonacion} y la factura ${donationInvoice.idFactura}.`,
+      text: `Se desactivara la relacion de factura para ${donationInvoice.donador || "la donacion seleccionada"}.`,
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -176,7 +176,7 @@ const DonationInvoicesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingKey !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por donacion, donador, campania, factura, monto, fecha o estado"
+            placeholder="Buscar por donador, campania, monto, fecha o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -195,10 +195,8 @@ const DonationInvoicesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>Donacion</th>
                   <th>Donador</th>
                   <th>Campania</th>
-                  <th>Factura</th>
                   <th>Moneda</th>
                   <th>Monto donacion</th>
                   <th>Total factura</th>
@@ -214,15 +212,13 @@ const DonationInvoicesDashboard = () => {
 
                   return (
                     <tr key={cacheKey}>
-                      <td>{donationInvoice.idDonacion}</td>
                       <td>{donationInvoice.donador || donationInvoice.identificacion || "-"}</td>
                       <td>{donationInvoice.campania || "-"}</td>
-                      <td>{donationInvoice.idFactura}</td>
                       <td>{donationInvoice.moneda || "-"}</td>
                       <td>{formatMoney(donationInvoice.montoDonacion)}</td>
                       <td>{formatMoney(donationInvoice.totalFactura, donationInvoice.simbolo)}</td>
                       <td>{formatDateTime(donationInvoice.fechaFactura) || "-"}</td>
-                      <td>{donationInvoice.estado || donationInvoice.idEstado}</td>
+                      <td>{donationInvoice.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link
