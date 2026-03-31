@@ -49,7 +49,7 @@ const buildSaleLabel = (sale) => {
 
 const buildInvoiceLabel = (invoice) => {
   const amountLabel = formatMoney(invoice?.total, invoice?.simbolo);
-  return `Factura relacionada - ${invoice?.moneda || "Moneda registrada"} - ${amountLabel}`;
+  return `${invoice.idFactura} - ${invoice?.moneda || "Moneda registrada"} - ${amountLabel}`;
 };
 
 const mapSaleInvoiceToForm = (saleInvoice) => ({
