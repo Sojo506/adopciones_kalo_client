@@ -265,12 +265,12 @@ const InvoiceFormPage = () => {
             <fieldset className="dashboard-form__fieldset" disabled={formDisabled}>
               <div className="dashboard-form-grid">
                 <label className="dashboard-input">
-                  <span>ID de factura</span>
+                  <span>Referencia interna</span>
                   <input
                     className="form-control"
                     readOnly
                     type="text"
-                    value={isEditing ? currentInvoice?.idFactura || "" : "Se generara automaticamente"}
+                    value="Administrada por el sistema"
                   />
                 </label>
 

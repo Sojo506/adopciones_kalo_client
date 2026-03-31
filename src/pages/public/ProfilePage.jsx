@@ -631,14 +631,14 @@ const ProfilePage = () => {
         <div className="profile-panel__header">
           <div>
             <p className="profile-panel__eyebrow">Detalle de factura</p>
-            <h2>Factura {selectedInvoice.idFactura}</h2>
+            <h2>Detalle de factura</h2>
           </div>
-          <span className="profile-panel__note">Productos asociados a la venta #{selectedPurchase.idVenta}.</span>
+          <span className="profile-panel__note">Productos asociados a esta compra.</span>
         </div>
         <div className="profile-detail-grid">
           <article>
-            <span>Venta relacionada</span>
-            <strong>#{selectedPurchase.idVenta}</strong>
+            <span>Compra relacionada</span>
+            <strong>Compra registrada</strong>
           </article>
           <article>
             <span>Total facturado</span>
@@ -659,7 +659,7 @@ const ProfilePage = () => {
             <div className="profile-inline-grid">
               {selectedPurchase.items.map((item) => (
                 <article key={`${selectedPurchase.idVenta}-${item.idProducto}`} className="profile-inline-card">
-                  <strong>{item.producto || `Producto #${item.idProducto}`}</strong>
+                  <strong>{item.producto || "Producto registrado"}</strong>
                   <span>{item.cantidad} x {formatMoney(item.precioUnitario, selectedInvoice.simbolo)}</span>
                   <small>Total: {formatMoney(item.total, selectedInvoice.simbolo)}</small>
                 </article>
@@ -680,9 +680,7 @@ const ProfilePage = () => {
       general: "Actualizar datos generales",
       email: "Actualizar correo",
       password: "Actualizar contrasena",
-      purchaseDetails: selectedPurchaseInvoice?.invoice?.idFactura
-        ? `Factura ${selectedPurchaseInvoice.invoice.idFactura}`
-        : "Detalle de factura",
+      purchaseDetails: "Detalle de factura",
     };
 
     const modalContentByType = {
@@ -734,16 +732,20 @@ const ProfilePage = () => {
       ) : (
         <div className="profile-stack">
           {adoptionRequests.map((request) => {
-            const followUpPath =
+            const followUpState =
               request.idAdopcion && request.idPerrito
-                ? `/seguimiento?perrito=${encodeURIComponent(request.idPerrito)}&adopcion=${encodeURIComponent(request.idAdopcion)}&nombre=${encodeURIComponent(request.nombrePerrito || "")}`
+                ? {
+                    dogId: request.idPerrito,
+                    adoptionId: request.idAdopcion,
+                    dogName: request.nombrePerrito || "",
+                  }
                 : null;
 
             return (
               <article key={request.idSolicitud} className="profile-collection-card">
                 <div className="profile-collection-card__header">
                   <div>
-                    <span className="profile-collection-card__eyebrow">Solicitud #{request.idSolicitud}</span>
+                    <span className="profile-collection-card__eyebrow">Solicitud enviada</span>
                     <h3>{request.nombrePerrito || "Perrito pendiente de asociar"}</h3>
                   </div>
                   <div className="profile-chip-list">
@@ -760,9 +762,7 @@ const ProfilePage = () => {
                   <article>
                     <span>Perrito</span>
                     <strong>
-                      {request.idPerrito
-                        ? `#${request.idPerrito}${request.nombrePerrito ? ` - ${request.nombrePerrito}` : ""}`
-                        : "Sin perrito asociado"}
+                      {request.nombrePerrito || "Sin perrito asociado"}
                     </strong>
                   </article>
                   <article>
@@ -771,7 +771,7 @@ const ProfilePage = () => {
                   </article>
                   <article>
                     <span>Adopcion</span>
-                    <strong>{request.idAdopcion ? `#${request.idAdopcion}` : "Pendiente"}</strong>
+                    <strong>{request.idAdopcion ? "Adopcion registrada" : "Pendiente"}</strong>
                   </article>
                   <article>
                     <span>Fecha de proceso</span>
@@ -779,9 +779,9 @@ const ProfilePage = () => {
                   </article>
                 </div>
 
-                {followUpPath ? (
+                {followUpState ? (
                   <div className="profile-collection-card__actions">
-                    <Link className="home-btn home-btn--primary profile-followup-link" to={followUpPath}>
+                    <Link className="home-btn home-btn--primary profile-followup-link" state={followUpState} to="/seguimiento">
                       Ir a seguimiento
                     </Link>
                   </div>
@@ -797,14 +797,14 @@ const ProfilePage = () => {
   const renderPurchases = () => (
     <section className="profile-panel">
       <div className="profile-panel__header"><div><p className="profile-panel__eyebrow">Compras</p><h2>Resumen de compras realizadas</h2></div><span className="profile-panel__note">{purchases.length} compras, {totalItemsPurchased} articulos</span></div>
-      {!purchases.length ? <div className="profile-empty-state">No hay compras registradas para esta cuenta todavia.</div> : <div className="profile-stack">{purchases.map((purchase) => { const invoiceSymbol = purchase.facturas[0]?.simbolo || null; return <article key={purchase.idVenta} className="profile-collection-card"><div className="profile-collection-card__header"><div><span className="profile-collection-card__eyebrow">Venta #{purchase.idVenta}</span><h3>{formatMoney(purchase.totalVenta, invoiceSymbol)}</h3></div><span className="profile-panel__note">{formatDateTime(purchase.fechaVenta)}</span></div><div className="profile-detail-grid"><article><span>Total de compra</span><strong>{formatMoney(purchase.totalVenta, invoiceSymbol)}</strong></article><article><span>Facturas relacionadas</span><strong>{purchase.facturas.length || 0}</strong></article><article><span>Productos en la venta</span><strong>{purchase.items.length || 0}</strong></article><article><span>Fecha</span><strong>{formatDateTime(purchase.fechaVenta)}</strong></article></div>{purchase.facturas.length ? <div className="profile-subsection"><span className="profile-subsection__title">Facturas asociadas</span><div className="profile-inline-grid">{purchase.facturas.map((invoice) => <button key={`${purchase.idVenta}-${invoice.idFactura}`} className="profile-inline-card profile-inline-card--interactive" onClick={() => openPurchaseInvoiceModal(purchase, invoice)} type="button"><strong>Factura {invoice.idFactura}</strong><span>{formatMoney(invoice.totalFactura, invoice.simbolo)}</span><small>{formatDateTime(invoice.fechaFactura)}</small></button>)}</div></div> : <div className="profile-empty-state profile-empty-state--compact">Esta venta no tiene facturas relacionadas todavia.</div>}</article>; })}</div>}
+      {!purchases.length ? <div className="profile-empty-state">No hay compras registradas para esta cuenta todavia.</div> : <div className="profile-stack">{purchases.map((purchase) => { const invoiceSymbol = purchase.facturas[0]?.simbolo || null; return <article key={purchase.idVenta} className="profile-collection-card"><div className="profile-collection-card__header"><div><span className="profile-collection-card__eyebrow">Compra registrada</span><h3>{formatMoney(purchase.totalVenta, invoiceSymbol)}</h3></div><span className="profile-panel__note">{formatDateTime(purchase.fechaVenta)}</span></div><div className="profile-detail-grid"><article><span>Total de compra</span><strong>{formatMoney(purchase.totalVenta, invoiceSymbol)}</strong></article><article><span>Facturas relacionadas</span><strong>{purchase.facturas.length || 0}</strong></article><article><span>Productos en la venta</span><strong>{purchase.items.length || 0}</strong></article><article><span>Fecha</span><strong>{formatDateTime(purchase.fechaVenta)}</strong></article></div>{purchase.facturas.length ? <div className="profile-subsection"><span className="profile-subsection__title">Facturas asociadas</span><div className="profile-inline-grid">{purchase.facturas.map((invoice) => <button key={`${purchase.idVenta}-${invoice.idFactura}`} className="profile-inline-card profile-inline-card--interactive" onClick={() => openPurchaseInvoiceModal(purchase, invoice)} type="button"><strong>Factura relacionada</strong><span>{formatMoney(invoice.totalFactura, invoice.simbolo)}</span><small>{formatDateTime(invoice.fechaFactura)}</small></button>)}</div></div> : <div className="profile-empty-state profile-empty-state--compact">Esta venta no tiene facturas relacionadas todavia.</div>}</article>; })}</div>}
     </section>
   );
 
   const renderFosterHomes = () => (
     <section className="profile-panel">
       <div className="profile-panel__header"><div><p className="profile-panel__eyebrow">Casas cuna</p><h2>Casas cuna y perritos alojados</h2></div><span className="profile-panel__note">{fosterHomes.length} registradas</span></div>
-      {!fosterHomes.length ? <div className="profile-empty-state">Esta cuenta no tiene casas cuna registradas actualmente.</div> : <div className="profile-stack">{fosterHomes.map((fosterHome) => <article key={fosterHome.idCasaCuna} className="profile-collection-card"><div className="profile-collection-card__header"><div><span className="profile-collection-card__eyebrow">Casa cuna #{fosterHome.idCasaCuna}</span><h3>{fosterHome.nombre || "Casa cuna sin nombre"}</h3></div><span className="profile-panel__note">{fosterHome.perrosAlojados.length} perritos alojados</span></div><div className="profile-detail-grid"><article><span>Ubicacion</span><strong>{fosterHome.ubicacion || "Sin ubicacion"}</strong></article><article><span>Detalle</span><strong>{[fosterHome.calle, fosterHome.numero].filter(Boolean).join(" ") || "Sin detalle adicional"}</strong></article><article><span>Solicitud vinculada</span><strong>{fosterHome.idSolicitud ? `#${fosterHome.idSolicitud}${fosterHome.tipoSolicitud ? ` - ${fosterHome.tipoSolicitud}` : ""}` : "Sin solicitud asociada"}</strong></article><article><span>Total reportado</span><strong>{fosterHome.totalPerritos}</strong></article></div><div className="profile-subsection"><span className="profile-subsection__title">Perritos alojados</span>{fosterHome.perrosAlojados.length ? <div className="profile-inline-grid">{fosterHome.perrosAlojados.map((dog) => <article key={`${fosterHome.idCasaCuna}-${dog.idPerrito}`} className="profile-inline-card"><strong>{dog.nombrePerrito || `Perrito #${dog.idPerrito}`}</strong><span>Expediente #{dog.idPerrito}</span></article>)}</div> : <div className="profile-empty-state profile-empty-state--compact">No hay perritos alojados en esta casa cuna.</div>}</div></article>)}</div>}
+      {!fosterHomes.length ? <div className="profile-empty-state">Esta cuenta no tiene casas cuna registradas actualmente.</div> : <div className="profile-stack">{fosterHomes.map((fosterHome) => <article key={fosterHome.idCasaCuna} className="profile-collection-card"><div className="profile-collection-card__header"><div><span className="profile-collection-card__eyebrow">Casa cuna asignada</span><h3>{fosterHome.nombre || "Casa cuna sin nombre"}</h3></div><span className="profile-panel__note">{fosterHome.perrosAlojados.length} perritos alojados</span></div><div className="profile-detail-grid"><article><span>Ubicacion</span><strong>{fosterHome.ubicacion || "Sin ubicacion"}</strong></article><article><span>Detalle</span><strong>{[fosterHome.calle, fosterHome.numero].filter(Boolean).join(" ") || "Sin detalle adicional"}</strong></article><article><span>Solicitud vinculada</span><strong>{fosterHome.tipoSolicitud || "Solicitud asociada"}</strong></article><article><span>Total reportado</span><strong>{fosterHome.totalPerritos}</strong></article></div><div className="profile-subsection"><span className="profile-subsection__title">Perritos alojados</span>{fosterHome.perrosAlojados.length ? <div className="profile-inline-grid">{fosterHome.perrosAlojados.map((dog) => <article key={`${fosterHome.idCasaCuna}-${dog.idPerrito}`} className="profile-inline-card"><strong>{dog.nombrePerrito || "Perrito alojado"}</strong><span>Alojado actualmente</span></article>)}</div> : <div className="profile-empty-state profile-empty-state--compact">No hay perritos alojados en esta casa cuna.</div>}</div></article>)}</div>}
     </section>
   );
 

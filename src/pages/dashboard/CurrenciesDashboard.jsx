@@ -130,7 +130,7 @@ const CurrenciesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, nombre, simbolo o estado"
+            placeholder="Buscar por nombre, simbolo o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -163,7 +163,7 @@ const CurrenciesDashboard = () => {
                     <tr key={currency.idMoneda}>
                       <td>{currency.nombre}</td>
                       <td>{currency.simbolo}</td>
-                      <td>{currency.estado || currency.idEstado}</td>
+                      <td>{currency.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

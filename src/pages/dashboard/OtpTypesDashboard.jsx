@@ -131,7 +131,7 @@ const OtpTypesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, nombre o estado"
+            placeholder="Buscar por nombre o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -162,7 +162,7 @@ const OtpTypesDashboard = () => {
                   return (
                     <tr key={otpType.idTipoOtp}>
                       <td>{otpType.nombre}</td>
-                      <td>{otpType.estado || otpType.idEstado}</td>
+                      <td>{otpType.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

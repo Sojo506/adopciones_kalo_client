@@ -170,7 +170,7 @@ const AccountsDashboard = () => {
                       <td>{account.identificacion}</td>
                       <td>{account.usuario}</td>
                       <td>{account.usuarioNombre || "-"}</td>
-                      <td>{account.estado || account.idEstado}</td>
+                      <td>{account.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

@@ -201,7 +201,7 @@ const ProvinceFormPage = () => {
                     <option value="">Selecciona un pais</option>
                     {countries.map((country) => (
                       <option key={country.idPais} value={country.idPais}>
-                        {country.nombre} ({country.estado || country.idEstado})
+                        {country.nombre} ({country.estado || "-"})
                       </option>
                     ))}
                   </select>

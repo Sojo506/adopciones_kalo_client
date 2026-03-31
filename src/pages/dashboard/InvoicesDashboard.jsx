@@ -98,7 +98,7 @@ const InvoicesDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar factura",
-      text: `Se desactivara la factura "${invoice.idFactura}".`,
+      text: "Se desactivara la factura seleccionada.",
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -169,7 +169,7 @@ const InvoicesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, moneda, fecha, monto o estado"
+            placeholder="Buscar por moneda, fecha, monto o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -204,13 +204,13 @@ const InvoicesDashboard = () => {
 
                   return (
                     <tr key={invoice.idFactura}>
-                      <td>{invoice.moneda || invoice.idMoneda}</td>
+                      <td>{invoice.moneda || "Moneda registrada"}</td>
                       <td>{invoice.tasaImpuestoAplicada}</td>
                       <td>{formatMoney(invoice.subtotal, invoice.simbolo)}</td>
                       <td>{formatMoney(invoice.impuesto, invoice.simbolo)}</td>
                       <td>{formatMoney(invoice.total, invoice.simbolo)}</td>
                       <td>{formatDateTime(invoice.fechaFactura)}</td>
-                      <td>{invoice.estado || invoice.idEstado}</td>
+                      <td>{invoice.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

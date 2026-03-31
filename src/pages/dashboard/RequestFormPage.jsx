@@ -251,7 +251,7 @@ const RequestFormPage = () => {
 
         {isEditing && currentRequest?.idPerrito ? (
           <div className="dashboard-alert">
-            Esta solicitud ya aparece ligada al perrito #{currentRequest.idPerrito}
+            Esta solicitud ya aparece ligada a un perrito
             {currentRequest.nombrePerrito ? ` (${currentRequest.nombrePerrito})` : ""} por medio de
             una adopcion asociada.
           </div>

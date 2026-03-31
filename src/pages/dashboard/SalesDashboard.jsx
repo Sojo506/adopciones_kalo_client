@@ -87,7 +87,7 @@ const SalesDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar venta",
-      text: `Se desactivara la venta #${sale.idVenta}.`,
+      text: "Se desactivara la venta seleccionada.",
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -158,7 +158,7 @@ const SalesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, cliente, identificacion, total o estado"
+            placeholder="Buscar por cliente, identificacion, total o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -193,7 +193,7 @@ const SalesDashboard = () => {
                       <td>{sale.cliente || "-"}</td>
                       <td>{formatCurrency(sale.totalVenta)}</td>
                       <td>{formatDateTime(sale.fechaVenta)}</td>
-                      <td>{sale.estado || sale.idEstado}</td>
+                      <td>{sale.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

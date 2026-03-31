@@ -145,7 +145,7 @@ const DogEventsDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar evento",
-      text: `Se desactivara el evento #${dogEvent.idEvento}.`,
+      text: "Se desactivara el evento seleccionado.",
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -231,7 +231,7 @@ const DogEventsDashboard = () => {
               <option value="">Todos los perritos</option>
               {dogs.map((dog) => (
                 <option key={dog.idPerrito} value={dog.idPerrito}>
-                  #{dog.idPerrito} - {dog.nombre}
+                  {dog.nombre || "Perrito registrado"}
                 </option>
               ))}
             </select>
@@ -242,7 +242,7 @@ const DogEventsDashboard = () => {
               className="form-control dashboard-search"
               disabled={eventsLoading || deletingId !== null}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Buscar por ID, perrito, tipo, fecha, detalle o estado"
+              placeholder="Buscar por perrito, tipo, fecha, detalle o estado"
               value={search}
             />
             <span className="dashboard-muted">
@@ -283,12 +283,12 @@ const DogEventsDashboard = () => {
 
                   return (
                     <tr key={dogEvent.idEvento}>
-                      <td>{dogEvent.nombrePerrito || dogEvent.idPerrito}</td>
-                      <td>{dogEvent.tipoEvento || dogEvent.idTipoEvento}</td>
+                      <td>{dogEvent.nombrePerrito || "Perrito asociado"}</td>
+                      <td>{dogEvent.tipoEvento || "Tipo registrado"}</td>
                       <td>{formatDate(dogEvent.fechaEvento)}</td>
                       <td>{dogEvent.detalle || "-"}</td>
                       <td>{formatMoney(dogEvent.totalGasto)}</td>
-                      <td>{dogEvent.estado || dogEvent.idEstado}</td>
+                      <td>{dogEvent.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

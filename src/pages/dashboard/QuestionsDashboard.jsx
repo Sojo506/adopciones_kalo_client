@@ -137,7 +137,7 @@ const QuestionsDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, pregunta, tipo de respuesta o estado"
+            placeholder="Buscar por pregunta, tipo de respuesta o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -169,8 +169,8 @@ const QuestionsDashboard = () => {
                   return (
                     <tr key={question.idPregunta}>
                       <td>{question.pregunta}</td>
-                      <td>{question.tipoRespuesta || question.idTipoRespuesta}</td>
-                      <td>{question.estado || question.idEstado}</td>
+                      <td>{question.tipoRespuesta || "Tipo registrado"}</td>
+                      <td>{question.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

@@ -299,7 +299,7 @@ const DogImageFormPage = () => {
                     <option value="">Selecciona un perrito</option>
                     {dogOptions.map((dog) => (
                       <option key={dog.idPerrito} value={dog.idPerrito}>
-                        #{dog.idPerrito} - {dog.nombre}
+                        {dog.nombre || "Perrito registrado"}
                       </option>
                     ))}
                   </select>

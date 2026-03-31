@@ -57,7 +57,6 @@ const buildEventLabel = (dogEvent) => {
   }
 
   const parts = [
-    `#${dogEvent.idEvento}`,
     dogEvent.nombrePerrito,
     dogEvent.tipoEvento,
     formatDate(dogEvent.fechaEvento),
@@ -420,7 +419,7 @@ const EventDetailFormPage = () => {
                     type="text"
                     value={
                       selectedEvent
-                        ? `#${selectedEvent.idPerrito} - ${selectedEvent.nombrePerrito}`
+                        ? selectedEvent.nombrePerrito || "Perrito asociado"
                         : "Selecciona un evento"
                     }
                   />

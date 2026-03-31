@@ -79,7 +79,7 @@ const SaleProductsDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar linea de venta",
-      text: `Se desactivara la linea de la venta #${saleProduct.idVenta} para el producto #${saleProduct.idProducto}.`,
+      text: `Se desactivara la linea de ${saleProduct.producto || "producto seleccionado"}.`,
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -171,8 +171,6 @@ const SaleProductsDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>Venta</th>
-                  <th>Producto</th>
                   <th>Nombre producto</th>
                   <th>Tipo movimiento</th>
                   <th>Cantidad</th>
@@ -189,14 +187,12 @@ const SaleProductsDashboard = () => {
 
                   return (
                     <tr key={cacheKey}>
-                      <td>{saleProduct.idVenta}</td>
-                      <td>{saleProduct.idProducto}</td>
                       <td>{saleProduct.producto || "-"}</td>
                       <td>{saleProduct.tipoMovimiento || "-"}</td>
                       <td>{saleProduct.cantidad}</td>
                       <td>{formatCurrency(saleProduct.precioUnitario)}</td>
                       <td>{formatCurrency(saleProduct.total)}</td>
-                      <td>{saleProduct.estado || saleProduct.idEstado}</td>
+                      <td>{saleProduct.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

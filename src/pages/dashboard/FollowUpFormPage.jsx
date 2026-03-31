@@ -33,7 +33,7 @@ const toDateInputValue = (value) => {
 };
 
 const buildAdoptionLabel = (adoption) => {
-  const segments = [`#${adoption.idAdopcion}`];
+  const segments = [];
 
   if (adoption.adoptante) {
     segments.push(adoption.adoptante);
@@ -43,15 +43,13 @@ const buildAdoptionLabel = (adoption) => {
 
   if (adoption.nombrePerrito) {
     segments.push(`Perrito: ${adoption.nombrePerrito}`);
-  } else if (adoption.idPerrito) {
-    segments.push(`Perrito #${adoption.idPerrito}`);
   }
 
-  return segments.join(" - ");
+  return segments.join(" - ") || "Adopcion activa";
 };
 
 const buildTrackingTypeLabel = (trackingType) => {
-  return `#${trackingType.idTipoSeguimiento} - ${trackingType.nombre}`;
+  return trackingType.nombre || "Tipo de seguimiento";
 };
 
 const mapFollowUpToForm = (followUp) => ({
@@ -566,7 +564,7 @@ const FollowUpFormPage = () => {
               {selectedAdoption ? (
                 <div className="dashboard-alert">
                   Adoptante: {selectedAdoption.adoptante || selectedAdoption.identificacion || "-"}
-                  . Perrito: {selectedAdoption.nombrePerrito || `#${selectedAdoption.idPerrito}`}.
+                  . Perrito: {selectedAdoption.nombrePerrito || "Perrito asociado"}.
                 </div>
               ) : null}
 

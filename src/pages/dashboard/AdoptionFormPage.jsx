@@ -40,13 +40,11 @@ const toDateInputValue = (value) => {
 };
 
 const buildRequestLabel = (request) => {
-  const base = `#${request.idSolicitud}`;
-  return request.solicitante ? `${base} - ${request.solicitante}` : base;
+  return request.solicitante || "Solicitud disponible";
 };
 
 const buildDogLabel = (dog) => {
-  const base = `#${dog.idPerrito}`;
-  return dog.nombre ? `${base} - ${dog.nombre}` : base;
+  return dog.nombre || "Perrito disponible";
 };
 
 const mapAdoptionToForm = (adoption) => ({

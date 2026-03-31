@@ -130,7 +130,7 @@ const DistrictsDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, nombre, canton o estado"
+            placeholder="Buscar por nombre, canton o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -163,8 +163,8 @@ const DistrictsDashboard = () => {
                   return (
                     <tr key={district.idDistrito}>
                       <td>{district.nombre}</td>
-                      <td>{district.canton || district.idCanton}</td>
-                      <td>{district.estado || district.idEstado}</td>
+                      <td>{district.canton || "Canton relacionado"}</td>
+                      <td>{district.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

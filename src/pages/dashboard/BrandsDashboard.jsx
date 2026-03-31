@@ -130,7 +130,7 @@ const BrandsDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, nombre o estado"
+            placeholder="Buscar por nombre o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -161,7 +161,7 @@ const BrandsDashboard = () => {
                   return (
                     <tr key={brand.idMarca}>
                       <td>{brand.nombre}</td>
-                      <td>{brand.estado || brand.idEstado}</td>
+                      <td>{brand.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

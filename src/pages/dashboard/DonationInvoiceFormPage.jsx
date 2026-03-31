@@ -60,12 +60,12 @@ const formatDateTime = (value) => {
 const buildDonationLabel = (donation) => {
   const donorLabel = donation?.donador || donation?.identificacion || "Donacion sin donador";
   const campaignLabel = donation?.campania || "Sin campania";
-  return `#${donation.idDonacion} - ${donorLabel} - ${campaignLabel} - ${formatMoney(donation.monto)}`;
+  return `${donorLabel} - ${campaignLabel} - ${formatMoney(donation.monto)}`;
 };
 
 const buildInvoiceLabel = (invoice) => {
   const amountLabel = formatMoney(invoice?.total, invoice?.simbolo);
-  return `${invoice?.idFactura} - ${invoice?.moneda || "Sin moneda"} - ${amountLabel}`;
+  return `${invoice?.moneda || "Sin moneda"} - ${amountLabel}`;
 };
 
 const mapDonationInvoiceToForm = (donationInvoice) => ({

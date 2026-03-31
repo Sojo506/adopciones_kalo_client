@@ -171,7 +171,7 @@ const CampaignsDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, nombre, descripcion, fecha o estado"
+            placeholder="Buscar por nombre, descripcion, fecha o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -221,7 +221,7 @@ const CampaignsDashboard = () => {
                       <td>{campaign.nombre}</td>
                       <td>{campaign.descripcion || "Sin descripcion"}</td>
                       <td>{buildDateRangeLabel(campaign)}</td>
-                      <td>{campaign.estado || campaign.idEstado}</td>
+                      <td>{campaign.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link
