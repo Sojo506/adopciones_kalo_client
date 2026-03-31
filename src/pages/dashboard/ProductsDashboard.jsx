@@ -164,7 +164,7 @@ const ProductsDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, nombre, categoria, marca, precio o estado"
+            placeholder="Buscar por nombre, categoria, marca, precio o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -212,11 +212,11 @@ const ProductsDashboard = () => {
                         )}
                       </td>
                       <td>{product.nombre}</td>
-                      <td>{product.categoria || product.idCategoria}</td>
-                      <td>{product.marca || product.idMarca}</td>
+                      <td>{product.categoria || "Categoria registrada"}</td>
+                      <td>{product.marca || "Marca registrada"}</td>
                       <td>{numberFormatter.format(Number(product.precio || 0))}</td>
                       <td>{Number(product.stock || 0)}</td>
-                      <td>{product.estado || product.idEstado}</td>
+                      <td>{product.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

@@ -337,7 +337,7 @@ const DonationFormPage = () => {
                     <option value="">Selecciona una campania</option>
                     {campaignOptions.map((campaign) => (
                       <option key={campaign.idCampania} value={campaign.idCampania}>
-                        #{campaign.idCampania} - {campaign.nombre}
+                        {campaign.nombre || "Campania registrada"}
                       </option>
                     ))}
                   </select>

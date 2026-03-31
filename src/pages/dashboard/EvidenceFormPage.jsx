@@ -10,9 +10,9 @@ import { useAuth } from "../../hooks/useAuth";
 const EMPTY_FORM = {
   idSeguimiento: "",
   fechaEvidencia: "",
+  imageUrl: "",
   comentarios: "",
   idEstado: "1",
-  clearImage: false,
 };
 
 const previewStyle = {
@@ -39,7 +39,7 @@ const toDateInputValue = (value) => {
 };
 
 const buildFollowUpLabel = (followUp) => {
-  const segments = [`#${followUp.idSeguimiento}`];
+  const segments = [];
 
   if (followUp.tipoSeguimiento) {
     segments.push(followUp.tipoSeguimiento);
@@ -55,15 +55,24 @@ const buildFollowUpLabel = (followUp) => {
     segments.push(`Perrito: ${followUp.nombrePerrito}`);
   }
 
-  return segments.join(" - ");
+  return segments.join(" - ") || "Seguimiento programado";
+};
+
+const isValidHttpUrl = (value) => {
+  try {
+    const url = new URL(String(value || "").trim());
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
 };
 
 const mapEvidenceToForm = (evidence) => ({
   idSeguimiento: String(evidence?.idSeguimiento ?? ""),
   fechaEvidencia: toDateInputValue(evidence?.fechaEvidencia),
+  imageUrl: evidence?.imageUrl ?? "",
   comentarios: evidence?.comentarios ?? "",
   idEstado: String(evidence?.idEstado ?? "1"),
-  clearImage: false,
 });
 
 const getSelectableFollowUps = ({ followUps, currentEvidence }) => {
@@ -108,7 +117,6 @@ const EvidenceFormPage = () => {
   const [states, setStates] = useState([]);
   const [followUps, setFollowUps] = useState([]);
   const [currentEvidence, setCurrentEvidence] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null);
   const [catalogsLoading, setCatalogsLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -134,8 +142,8 @@ const EvidenceFormPage = () => {
 
   const watchedFollowUpId = watch("idSeguimiento");
   const watchedEvidenceDate = watch("fechaEvidencia");
+  const watchedImageUrl = watch("imageUrl");
   const watchedComments = watch("comentarios");
-  const watchedClearImage = watch("clearImage");
 
   const selectedFollowUp = useMemo(() => {
     return (
@@ -146,27 +154,12 @@ const EvidenceFormPage = () => {
   }, [followUpOptions, watchedFollowUpId]);
 
   const previewUrl = useMemo(() => {
-    if (selectedFile) {
-      return URL.createObjectURL(selectedFile);
-    }
-
-    if (watchedClearImage) {
-      return null;
-    }
-
-    return currentEvidence?.imageUrl || null;
-  }, [currentEvidence?.imageUrl, selectedFile, watchedClearImage]);
+    const normalizedImageUrl = String(watchedImageUrl || "").trim();
+    return isValidHttpUrl(normalizedImageUrl) ? normalizedImageUrl : null;
+  }, [watchedImageUrl]);
 
   const hasRequiredData = states.length > 0 && followUpOptions.length > 0;
   const formDisabled = catalogsLoading || detailLoading || saving || !hasRequiredData;
-
-  useEffect(() => {
-    return () => {
-      if (selectedFile && previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl, selectedFile]);
 
   useEffect(() => {
     document.title = isEditing
@@ -206,7 +199,6 @@ const EvidenceFormPage = () => {
             idSeguimiento: String(defaultFollowUp?.idSeguimiento ?? ""),
             fechaEvidencia: getClampedEvidenceDate(defaultFollowUp),
             idEstado: String(activeState?.idEstado ?? 1),
-            clearImage: false,
           });
         }
       } catch (error) {
@@ -300,36 +292,24 @@ const EvidenceFormPage = () => {
       return;
     }
 
-    const hasCurrentImage = Boolean(currentEvidence?.imageUrl) && !watchedClearImage;
-    const hasNewImage = Boolean(selectedFile);
+    const hasImageUrl = Boolean(String(watchedImageUrl || "").trim());
     const hasComments = Boolean(String(watchedComments || "").trim());
 
-    if (hasCurrentImage || hasNewImage || hasComments) {
+    if (hasImageUrl || hasComments) {
       setContentError("");
     }
-  }, [contentError, currentEvidence?.imageUrl, selectedFile, watchedClearImage, watchedComments]);
-
-  const onFileChange = (event) => {
-    const nextFile = event.target.files?.[0] || null;
-    setSelectedFile(nextFile);
-    setContentError("");
-
-    if (nextFile) {
-      setValue("clearImage", false, { shouldDirty: true });
-    }
-  };
+  }, [contentError, watchedComments, watchedImageUrl]);
 
   const onSubmit = async (values) => {
     if (!isAdmin || !hasRequiredData) {
       return;
     }
 
-    const hasCurrentImage = Boolean(currentEvidence?.imageUrl) && !values.clearImage;
-    const hasNewImage = Boolean(selectedFile);
-    const hasComments = Boolean(String(values.comentarios || "").trim());
+    const imageUrl = String(values.imageUrl || "").trim();
+    const comentarios = String(values.comentarios || "").trim();
 
-    if (!hasCurrentImage && !hasNewImage && !hasComments) {
-      setContentError("Debes agregar una imagen o un comentario para guardar la evidencia.");
+    if (!imageUrl && !comentarios) {
+      setContentError("Debes agregar una imagen URL o un comentario para guardar la evidencia.");
       return;
     }
 
@@ -337,25 +317,17 @@ const EvidenceFormPage = () => {
       setSaving(true);
       setContentError("");
 
-      const formData = new FormData();
-      formData.append("idSeguimiento", values.idSeguimiento);
-      formData.append("fechaEvidencia", values.fechaEvidencia);
-      formData.append("comentarios", String(values.comentarios || "").trim());
-
-      if (isEditing) {
-        formData.append("idEstado", values.idEstado);
-        formData.append("clearImage", values.clearImage ? "true" : "false");
-      } else {
-        formData.append("idEstado", "1");
-      }
-
-      if (selectedFile) {
-        formData.append("image", selectedFile);
-      }
+      const payload = {
+        idSeguimiento: values.idSeguimiento,
+        fechaEvidencia: values.fechaEvidencia,
+        comentarios,
+        imageUrl,
+        idEstado: isEditing ? values.idEstado : "1",
+      };
 
       const savedEvidence = isEditing
-        ? await evidencesApi.updateEvidence(idEvidencia, formData)
-        : await evidencesApi.createEvidence(formData);
+        ? await evidencesApi.updateEvidence(idEvidencia, payload)
+        : await evidencesApi.createEvidence(payload);
 
       Swal.fire({
         icon: "success",
@@ -404,7 +376,7 @@ const EvidenceFormPage = () => {
           </p>
           <h1>{isEditing ? "Actualizar evidencia" : "Crear evidencia"}</h1>
           <p className="dashboard-page__lede">
-            Registra la imagen y los comentarios que documentan el cumplimiento de un seguimiento.
+            Registra la imagen URL y los comentarios que documentan el cumplimiento de un seguimiento.
           </p>
         </div>
         <Link className="dashboard-btn dashboard-btn--ghost" to="/dashboard/evidencias">
@@ -419,13 +391,13 @@ const EvidenceFormPage = () => {
         </div>
 
         <div className="dashboard-alert">
-          Puedes guardar evidencia con imagen, con comentario o con ambos. Si editas una evidencia
-          existente tambien puedes quitar la imagen actual.
+          Puedes guardar evidencia con imagen URL, con comentario o con ambos. Si editas una
+          evidencia existente, deja vacio `imageUrl` para quitar la imagen actual.
         </div>
 
         {selectedFollowUp ? (
           <div className="dashboard-alert">
-            Seguimiento seleccionado: #{selectedFollowUp.idSeguimiento}. Ventana valida del{" "}
+            Seguimiento seleccionado. Ventana valida del{" "}
             {toDateInputValue(selectedFollowUp.fechaInicio)} al{" "}
             {toDateInputValue(selectedFollowUp.fechaFin)}.
           </div>
@@ -532,6 +504,26 @@ const EvidenceFormPage = () => {
                 )}
 
                 <label className="dashboard-input dashboard-input--full">
+                  <span>Imagen URL</span>
+                  <input
+                    className="form-control"
+                    placeholder="https://ejemplo.com/evidencia.jpg"
+                    type="text"
+                    {...register("imageUrl", {
+                      maxLength: {
+                        value: 500,
+                        message: "La imagen URL no puede superar 500 caracteres",
+                      },
+                      validate: (value) =>
+                        !String(value || "").trim() ||
+                        isValidHttpUrl(value) ||
+                        "Ingresa una URL valida que inicie con http o https",
+                    })}
+                  />
+                  {errors.imageUrl ? <small>{errors.imageUrl.message}</small> : null}
+                </label>
+
+                <label className="dashboard-input dashboard-input--full">
                   <span>Comentarios</span>
                   <textarea
                     className="form-control"
@@ -547,33 +539,13 @@ const EvidenceFormPage = () => {
                 </label>
               </div>
 
-              <label className="dashboard-input">
-                <span>{isEditing ? "Nueva imagen (opcional)" : "Imagen (opcional)"}</span>
-                <input
-                  accept="image/png,image/jpeg,image/webp,image/avif,image/gif"
-                  className="form-control"
-                  onChange={onFileChange}
-                  type="file"
-                />
-              </label>
-
-              {isEditing && currentEvidence?.imageUrl ? (
-                <div className="dashboard-input" style={{ maxWidth: "360px" }}>
-                  <span>Imagen actual</span>
-                  <label className="dashboard-checkbox" style={{ display: "flex", gap: "0.75rem" }}>
-                    <input type="checkbox" {...register("clearImage")} />
-                    <span>Quitar imagen actual al guardar</span>
-                  </label>
-                </div>
-              ) : null}
-
               {contentError ? <small>{contentError}</small> : null}
 
               {selectedFollowUp ? (
                 <div className="dashboard-alert">
                   Adoptante: {selectedFollowUp.adoptante || selectedFollowUp.identificacion || "-"}
                   . Perrito:{" "}
-                  {selectedFollowUp.nombrePerrito || `#${selectedFollowUp.idPerrito}`}. Tipo:{" "}
+                  {selectedFollowUp.nombrePerrito || "Perrito asociado"}. Tipo:{" "}
                   {selectedFollowUp.tipoSeguimiento || "-"}.
                 </div>
               ) : null}

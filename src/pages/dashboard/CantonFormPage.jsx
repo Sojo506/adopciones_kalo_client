@@ -203,7 +203,7 @@ const CantonFormPage = () => {
                     <option value="">Selecciona una provincia</option>
                     {provinces.map((province) => (
                       <option key={province.idProvincia} value={province.idProvincia}>
-                        {province.nombre} ({province.pais || province.idPais}, {province.estado || province.idEstado})
+                        {province.nombre} ({province.pais || "Pais relacionado"}, {province.estado || "-"})
                       </option>
                     ))}
                   </select>

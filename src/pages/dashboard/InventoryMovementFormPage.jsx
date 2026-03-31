@@ -332,7 +332,7 @@ const InventoryMovementFormPage = () => {
                         disabled
                         value={
                           currentMovement
-                            ? `#${currentMovement.idProducto} - ${currentMovement.producto}`
+                            ? currentMovement.producto || "Producto asociado"
                             : ""
                         }
                       />
@@ -352,7 +352,7 @@ const InventoryMovementFormPage = () => {
                       <option value="">Selecciona un producto</option>
                       {inventories.map((inventory) => (
                         <option key={inventory.idInventario} value={inventory.idProducto}>
-                          #{inventory.idProducto} - {inventory.producto} (stock {inventory.cantidad})
+                          {inventory.producto || "Producto registrado"} (stock {inventory.cantidad})
                         </option>
                       ))}
                     </select>

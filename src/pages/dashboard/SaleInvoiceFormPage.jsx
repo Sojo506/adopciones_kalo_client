@@ -44,12 +44,12 @@ const formatDateTime = (value) => {
 
 const buildSaleLabel = (sale) => {
   const clientLabel = sale?.cliente || sale?.identificacion || "Venta sin cliente";
-  return `#${sale.idVenta} - ${clientLabel}`;
+  return clientLabel;
 };
 
 const buildInvoiceLabel = (invoice) => {
   const amountLabel = formatMoney(invoice?.total, invoice?.simbolo);
-  return `${invoice?.idFactura} - ${invoice?.moneda || "Sin moneda"} - ${amountLabel}`;
+  return `${invoice.idFactura} - ${invoice?.moneda || "Moneda registrada"} - ${amountLabel}`;
 };
 
 const mapSaleInvoiceToForm = (saleInvoice) => ({

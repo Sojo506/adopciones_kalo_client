@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAdminDashboardSummary } from "../../api/adminReports";
 import { adminQuickActions } from "../../data/adminReports";
@@ -219,16 +219,15 @@ const DashboardHome = () => {
                   {summary?.followUpAlerts?.length ? (
                     summary.followUpAlerts.map((followUp) => (
                       <div key={followUp.idSeguimiento} className="dashboard-inline-list__item">
-                        <strong>
-                          #{followUp.idSeguimiento} · {followUp.nombrePerrito || "Sin perrito"}
-                        </strong>
+                        <strong>{followUp.nombrePerrito || "Perrito con seguimiento"}</strong>
                         <span>
-                          {followUp.adoptante || followUp.identificacion || "Sin adoptante"} ·{" "}
+                          {followUp.adoptante || followUp.identificacion || "Sin adoptante"}{" / "}
                           {followUp.prioridadLabel}
                         </span>
                         <small>
-                          {followUp.tipoSeguimiento || "Seguimiento"} · vence el{" "}
-                          {formatDate(followUp.fechaFin)} · {formatCount(followUp.cantidadEvidencias)} evidencias
+                          {followUp.tipoSeguimiento || "Seguimiento"}{" / "}vence el{" "}
+                          {formatDate(followUp.fechaFin)}{" / "}
+                          {formatCount(followUp.cantidadEvidencias)} evidencias
                         </small>
                       </div>
                     ))
@@ -255,12 +254,13 @@ const DashboardHome = () => {
                   {summary?.lowStockProducts?.length ? (
                     summary.lowStockProducts.map((product) => (
                       <div key={product.idInventario} className="dashboard-inline-list__item">
-                        <strong>{product.producto || `Producto ${product.idProducto}`}</strong>
+                        <strong>{product.producto || "Producto registrado"}</strong>
                         <span>
-                          {product.categoria || "Sin categoria"} · {product.marca || "Sin marca"}
+                          {product.categoria || "Sin categoria"}{" / "}
+                          {product.marca || "Sin marca"}
                         </span>
                         <small>
-                          {formatCount(product.cantidad)} unidades · valor estimado{" "}
+                          {formatCount(product.cantidad)} unidades{" / "}valor estimado{" "}
                           {formatMoney(product.valorEstimado)}
                         </small>
                       </div>
@@ -288,14 +288,15 @@ const DashboardHome = () => {
                   {summary?.recentInvoices?.length ? (
                     summary.recentInvoices.map((invoice) => (
                       <div key={invoice.idFactura} className="dashboard-inline-list__item">
-                        <strong>{invoice.idFactura}</strong>
+                        <strong>Factura registrada</strong>
                         <span>
-                          {invoice.moneda || invoice.idMoneda || "Sin moneda"} · total{" "}
+                          {invoice.moneda || "Moneda registrada"}{" / "}total{" "}
                           {invoice.simbolo ? `${invoice.simbolo} ` : ""}
                           {formatMoney(invoice.total)}
                         </span>
                         <small>
-                          {formatDate(invoice.fechaFactura)} · {formatCount(invoice.cantidadVentas)} ventas ·{" "}
+                          {formatDate(invoice.fechaFactura)}{" / "}
+                          {formatCount(invoice.cantidadVentas)} ventas{" / "}{" "}
                           {formatCount(invoice.cantidadDonaciones)} donaciones
                         </small>
                       </div>
@@ -316,3 +317,4 @@ const DashboardHome = () => {
 };
 
 export default DashboardHome;
+

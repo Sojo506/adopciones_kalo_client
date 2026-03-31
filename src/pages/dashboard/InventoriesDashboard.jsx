@@ -144,7 +144,7 @@ const InventoriesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, producto, cantidad o estado"
+            placeholder="Buscar por producto, cantidad o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -175,9 +175,9 @@ const InventoriesDashboard = () => {
 
                   return (
                     <tr key={inventory.idInventario}>
-                      <td>{inventory.producto || inventory.idProducto}</td>
+                      <td>{inventory.producto || "Producto registrado"}</td>
                       <td>{Number(inventory.cantidad || 0)}</td>
-                      <td>{inventory.estado || inventory.idEstado}</td>
+                      <td>{inventory.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

@@ -6,6 +6,7 @@ const unwrapResponse = (response) => response.data?.data ?? response.data ?? [];
 let evidencesCache = null;
 const evidenceDetailCache = new Map();
 const evidencesByFollowUpCache = new Map();
+const isFormDataPayload = (value) => typeof FormData !== "undefined" && value instanceof FormData;
 
 const clearEvidenceCaches = ({ idEvidencia = null, idSeguimiento = null } = {}) => {
   evidencesCache = null;
@@ -70,12 +71,18 @@ export const getEvidenceById = async (idEvidencia, { force = false } = {}) => {
   });
 };
 
-export const createEvidence = async (formData) => {
-  const response = await axiosInstance.post("/evidences", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+export const createEvidence = async (payload) => {
+  const response = await axiosInstance.post(
+    "/evidences",
+    payload,
+    isFormDataPayload(payload)
+      ? {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      : undefined,
+  );
   const data = unwrapResponse(response);
   invalidateRelatedCaches({
     idEvidencia: data?.idEvidencia,
@@ -87,12 +94,18 @@ export const createEvidence = async (formData) => {
   return data;
 };
 
-export const updateEvidence = async (idEvidencia, formData) => {
-  const response = await axiosInstance.put(`/evidences/${idEvidencia}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+export const updateEvidence = async (idEvidencia, payload) => {
+  const response = await axiosInstance.put(
+    `/evidences/${idEvidencia}`,
+    payload,
+    isFormDataPayload(payload)
+      ? {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      : undefined,
+  );
   const data = unwrapResponse(response);
   clearEvidenceCaches();
   invalidateFollowUpCaches();

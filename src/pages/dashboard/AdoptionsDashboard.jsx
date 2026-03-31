@@ -20,13 +20,10 @@ const formatDate = (value) => {
   }).format(date);
 };
 
-const buildRequestLabel = (adoption) => {
-  return `#${adoption.idSolicitud}`;
-};
+const buildRequestLabel = () => "Solicitud de adopcion";
 
 const buildDogLabel = (adoption) => {
-  const base = `#${adoption.idPerrito}`;
-  return adoption.nombrePerrito ? `${base} - ${adoption.nombrePerrito}` : base;
+  return adoption.nombrePerrito || "Perrito asociado";
 };
 
 const buildAdopterLabel = (adoption) => {
@@ -99,7 +96,7 @@ const AdoptionsDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar adopcion",
-      text: `Se desactivara la adopcion #${adoption.idAdopcion}.`,
+      text: `Se desactivara la adopcion de ${buildDogLabel(adoption).toLowerCase()}.`,
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -179,7 +176,7 @@ const AdoptionsDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, adoptante, solicitud, perrito, fecha o estado"
+            placeholder="Buscar por adoptante, solicitud, perrito, fecha o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -217,7 +214,7 @@ const AdoptionsDashboard = () => {
                       <td>{buildAdopterLabel(adoption)}</td>
                       <td>{buildDogLabel(adoption)}</td>
                       <td>{formatDate(adoption.fechaAdopcion)}</td>
-                      <td>{adoption.estado || adoption.idEstado}</td>
+                      <td>{adoption.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

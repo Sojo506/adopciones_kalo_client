@@ -185,7 +185,7 @@ const UsersDashboard = () => {
                       <td>{currentUser.cuenta?.usuario || "-"}</td>
                       <td>{currentUser.cuenta?.correo || "-"}</td>
                       <td>{currentUser.tipoUsuario || "-"}</td>
-                      <td>{currentUser.estado || currentUser.idEstado}</td>
+                      <td>{currentUser.estado || "-"}</td>
                       <td>
                         {[currentUser.direccion?.pais, currentUser.direccion?.provincia, currentUser.direccion?.distrito]
                           .filter(Boolean)

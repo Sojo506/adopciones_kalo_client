@@ -5,12 +5,11 @@ import * as responsesApi from "../../api/responses";
 import { useAuth } from "../../hooks/useAuth";
 
 const buildRequestLabel = (response) => {
-  const base = `#${response.idSolicitud}`;
-  return response.solicitante ? `${base} - ${response.solicitante}` : base;
+  return response.solicitante || response.identificacion || "Solicitud asociada";
 };
 
 const buildQuestionLabel = (response) => {
-  return `#${response.idPregunta} - ${response.pregunta}`;
+  return response.pregunta || "Pregunta registrada";
 };
 
 const formatResponsePreview = (value) => {
@@ -94,7 +93,7 @@ const ResponsesDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar respuesta",
-      text: `Se desactivara la respuesta #${response.idRespuesta}.`,
+      text: "Se desactivara la respuesta seleccionada.",
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -206,11 +205,11 @@ const ResponsesDashboard = () => {
                   return (
                     <tr key={response.idRespuesta}>
                       <td>{buildRequestLabel(response)}</td>
-                      <td>{response.tipoSolicitud || response.idTipoSolicitud}</td>
+                      <td>{response.tipoSolicitud || "Tipo registrado"}</td>
                       <td>{buildQuestionLabel(response)}</td>
-                      <td>{response.tipoRespuesta || response.idTipoRespuesta}</td>
+                      <td>{response.tipoRespuesta || "Tipo registrado"}</td>
                       <td title={response.respuesta}>{formatResponsePreview(response.respuesta)}</td>
-                      <td>{response.estado || response.idEstado}</td>
+                      <td>{response.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

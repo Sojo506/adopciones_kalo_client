@@ -41,7 +41,7 @@ const formatMoney = (amount, symbol) => {
 };
 
 const buildInvoiceLabel = (invoice) => {
-  return `${invoice.idFactura} - ${invoice.moneda || "Sin moneda"} - ${formatMoney(invoice.total, invoice.simbolo)}`;
+  return `${invoice.idFactura} - ${invoice.moneda || "Moneda registrada"} - ${formatMoney(invoice.total, invoice.simbolo)}`;
 };
 
 const mapPayPalPaymentToForm = (paypalPayment) => ({

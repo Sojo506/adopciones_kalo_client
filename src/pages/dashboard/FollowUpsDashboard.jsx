@@ -20,9 +20,8 @@ const formatDate = (value) => {
   }).format(date);
 };
 
-const buildAdoptionLabel = (followUp) => {
-  return `#${followUp.idAdopcion}`;
-};
+const buildAdoptionLabel = (followUp) =>
+  followUp.adoptante ? `Adopcion de ${followUp.adoptante}` : "Adopcion vinculada";
 
 const buildAdopterLabel = (followUp) => {
   const base = String(followUp.identificacion || "-");
@@ -30,8 +29,7 @@ const buildAdopterLabel = (followUp) => {
 };
 
 const buildDogLabel = (followUp) => {
-  const base = `#${followUp.idPerrito}`;
-  return followUp.nombrePerrito ? `${base} - ${followUp.nombrePerrito}` : base;
+  return followUp.nombrePerrito || "Perrito asociado";
 };
 
 const formatCommentsPreview = (value) => {
@@ -117,7 +115,7 @@ const FollowUpsDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar seguimiento",
-      text: `Se desactivara el seguimiento #${followUp.idSeguimiento}.`,
+      text: `Se desactivara el seguimiento de ${buildDogLabel(followUp).toLowerCase()}.`,
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -195,7 +193,7 @@ const FollowUpsDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, adopcion, adoptante, perrito, tipo, fechas, comentario o estado"
+            placeholder="Buscar por adopcion, adoptante, perrito, tipo, fechas, comentario o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -235,13 +233,13 @@ const FollowUpsDashboard = () => {
                       <td>{buildAdoptionLabel(followUp)}</td>
                       <td>{buildAdopterLabel(followUp)}</td>
                       <td>{buildDogLabel(followUp)}</td>
-                      <td>{followUp.tipoSeguimiento || followUp.idTipoSeguimiento}</td>
+                      <td>{followUp.tipoSeguimiento || "Seguimiento programado"}</td>
                       <td>{formatDate(followUp.fechaInicio)}</td>
                       <td>{formatDate(followUp.fechaFin)}</td>
                       <td title={followUp.comentarios}>
                         {formatCommentsPreview(followUp.comentarios)}
                       </td>
-                      <td>{followUp.estado || followUp.idEstado}</td>
+                      <td>{followUp.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

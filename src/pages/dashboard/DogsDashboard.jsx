@@ -190,7 +190,7 @@ const DogsDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, nombre, fecha, edad, peso, raza, sexo o estado"
+            placeholder="Buscar por nombre, fecha, edad, peso, raza, sexo o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -244,9 +244,9 @@ const DogsDashboard = () => {
                       <td>{dog.edad ?? "-"}</td>
                       <td>{formatNumber(dog.peso)}</td>
                       <td>{formatNumber(dog.estatura)}</td>
-                      <td>{dog.sexo || dog.idSexo}</td>
-                      <td>{dog.raza || dog.idRaza}</td>
-                      <td>{dog.estado || dog.idEstado}</td>
+                      <td>{dog.sexo || "Sexo registrado"}</td>
+                      <td>{dog.raza || "Raza registrada"}</td>
+                      <td>{dog.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

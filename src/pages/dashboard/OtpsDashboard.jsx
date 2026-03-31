@@ -88,7 +88,7 @@ const OtpsDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar codigo OTP",
-      text: `Se desactivara el OTP #${otp.idCodigoOtp}.`,
+      text: "Se desactivara el codigo OTP seleccionado.",
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -193,13 +193,13 @@ const OtpsDashboard = () => {
                   return (
                     <tr key={otp.idCodigoOtp}>
                       <td>{otp.usuario || "-"}</td>
-                      <td>{otp.tipoOtp || otp.idTipoOtp}</td>
+                      <td>{otp.tipoOtp || "Tipo OTP registrado"}</td>
                       <td title={otp.codigoHash || ""}>{truncateHash(otp.codigoHash)}</td>
                       <td>{formatDateTime(otp.fechaExpiracion)}</td>
                       <td>{formatDateTime(otp.fechaUso)}</td>
                       <td>{otp.intentos}</td>
                       <td>{formatDateTime(otp.fechaCreacion)}</td>
-                      <td>{otp.estado || otp.idEstado}</td>
+                      <td>{otp.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

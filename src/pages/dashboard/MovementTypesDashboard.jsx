@@ -131,7 +131,7 @@ const MovementTypesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, nombre o estado"
+            placeholder="Buscar por nombre o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -162,7 +162,7 @@ const MovementTypesDashboard = () => {
                   return (
                     <tr key={movementType.idTipoMovimiento}>
                       <td>{movementType.nombre}</td>
-                      <td>{movementType.estado || movementType.idEstado}</td>
+                      <td>{movementType.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

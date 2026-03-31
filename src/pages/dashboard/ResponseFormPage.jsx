@@ -18,12 +18,11 @@ const EMPTY_FORM = {
 const buildRelationKey = (idSolicitud, idPregunta) => `${String(idSolicitud)}:${String(idPregunta)}`;
 
 const buildRequestLabel = (request) => {
-  const base = `#${request.idSolicitud}`;
-  return request.solicitante ? `${base} - ${request.solicitante}` : base;
+  return request.solicitante || "Solicitud disponible";
 };
 
 const buildQuestionLabel = (requestQuestion) => {
-  return `#${requestQuestion.idPregunta} - ${requestQuestion.pregunta}`;
+  return requestQuestion.pregunta || "Pregunta disponible";
 };
 
 const mapResponseToForm = (response) => ({

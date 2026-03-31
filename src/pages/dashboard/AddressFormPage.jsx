@@ -308,7 +308,7 @@ const AddressFormPage = () => {
                     <option value="">Selecciona un pais</option>
                     {countries.map((country) => (
                       <option key={country.idPais} value={country.idPais}>
-                        {country.nombre} ({country.estado || country.idEstado})
+                        {country.nombre} ({country.estado || "-"})
                       </option>
                     ))}
                   </select>
@@ -325,7 +325,7 @@ const AddressFormPage = () => {
                     <option value="">Selecciona una provincia</option>
                     {filteredProvinces.map((province) => (
                       <option key={province.idProvincia} value={province.idProvincia}>
-                        {province.nombre} ({province.estado || province.idEstado})
+                        {province.nombre} ({province.estado || "-"})
                       </option>
                     ))}
                   </select>
@@ -342,7 +342,7 @@ const AddressFormPage = () => {
                     <option value="">Selecciona un canton</option>
                     {filteredCantons.map((canton) => (
                       <option key={canton.idCanton} value={canton.idCanton}>
-                        {canton.nombre} ({canton.estado || canton.idEstado})
+                        {canton.nombre} ({canton.estado || "-"})
                       </option>
                     ))}
                   </select>
@@ -358,7 +358,7 @@ const AddressFormPage = () => {
                     <option value="">Selecciona un distrito</option>
                     {filteredDistricts.map((district) => (
                       <option key={district.idDistrito} value={district.idDistrito}>
-                        {district.nombre} ({district.estado || district.idEstado})
+                        {district.nombre} ({district.estado || "-"})
                       </option>
                     ))}
                   </select>

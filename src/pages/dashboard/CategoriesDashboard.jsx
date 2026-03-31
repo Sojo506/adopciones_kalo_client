@@ -130,7 +130,7 @@ const CategoriesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, nombre o estado"
+            placeholder="Buscar por nombre o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -161,7 +161,7 @@ const CategoriesDashboard = () => {
                   return (
                     <tr key={category.idCategoria}>
                       <td>{category.nombre}</td>
-                      <td>{category.estado || category.idEstado}</td>
+                      <td>{category.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

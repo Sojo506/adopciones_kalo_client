@@ -95,7 +95,7 @@ const DonationsDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar donacion",
-      text: `Se desactivara la donacion #${donation.idDonacion}.`,
+      text: "Se desactivara la donacion seleccionada.",
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -165,7 +165,7 @@ const DonationsDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por ID, donador, identificacion, campania, monto, fecha, mensaje o estado"
+            placeholder="Buscar por donador, identificacion, campania, monto, fecha, mensaje o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -200,11 +200,11 @@ const DonationsDashboard = () => {
                     <tr key={donation.idDonacion}>
                       <td>{donation.identificacion}</td>
                       <td>{donation.donador || "-"}</td>
-                      <td>{donation.campania || donation.idCampania}</td>
+                      <td>{donation.campania || "Campania registrada"}</td>
                       <td>{formatAmount(donation.monto)}</td>
                       <td>{formatDate(donation.fechaDonacion)}</td>
                       <td>{donation.mensaje || "Sin mensaje"}</td>
-                      <td>{donation.estado || donation.idEstado}</td>
+                      <td>{donation.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

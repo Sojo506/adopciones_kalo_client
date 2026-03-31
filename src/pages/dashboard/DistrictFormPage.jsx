@@ -201,8 +201,8 @@ const DistrictFormPage = () => {
                     <option value="">Selecciona un canton</option>
                     {cantons.map((canton) => (
                       <option key={canton.idCanton} value={canton.idCanton}>
-                        {canton.nombre} ({canton.provincia || canton.idProvincia},{" "}
-                        {canton.estado || canton.idEstado})
+                        {canton.nombre} ({canton.provincia || "Provincia relacionada"},{" "}
+                        {canton.estado || "-"})
                       </option>
                     ))}
                   </select>

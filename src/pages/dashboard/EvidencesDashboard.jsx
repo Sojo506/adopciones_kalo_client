@@ -30,13 +30,17 @@ const formatDate = (value) => {
 };
 
 const buildFollowUpLabel = (evidence) => {
-  const segments = [`#${evidence.idSeguimiento}`];
+  const segments = [];
 
   if (evidence.tipoSeguimiento) {
     segments.push(evidence.tipoSeguimiento);
   }
 
-  return segments.join(" - ");
+  if (evidence.nombrePerrito) {
+    segments.push(evidence.nombrePerrito);
+  }
+
+  return segments.join(" - ") || "Seguimiento programado";
 };
 
 const buildAdopterLabel = (evidence) => {
@@ -45,8 +49,7 @@ const buildAdopterLabel = (evidence) => {
 };
 
 const buildDogLabel = (evidence) => {
-  const base = `#${evidence.idPerrito}`;
-  return evidence.nombrePerrito ? `${base} - ${evidence.nombrePerrito}` : base;
+  return evidence.nombrePerrito || "Perrito asociado";
 };
 
 const formatCommentsPreview = (value) => {
@@ -164,7 +167,7 @@ const EvidencesDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar evidencia",
-      text: `Se desactivara la evidencia #${evidence.idEvidencia}.`,
+      text: `Se desactivara la evidencia del ${formatDate(evidence.fechaEvidencia).toLowerCase()}.`,
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -257,7 +260,7 @@ const EvidencesDashboard = () => {
               <option value="">Todos los seguimientos</option>
               {followUps.map((followUp) => (
                 <option key={followUp.idSeguimiento} value={followUp.idSeguimiento}>
-                  #{followUp.idSeguimiento} - {followUp.tipoSeguimiento || "Seguimiento"}
+                  {followUp.tipoSeguimiento || "Seguimiento"}{followUp.nombrePerrito ? ` - ${followUp.nombrePerrito}` : ""}
                 </option>
               ))}
             </select>
@@ -284,7 +287,7 @@ const EvidencesDashboard = () => {
             {selectedFollowUp ? (
               <>
                 No hay evidencias registradas para el seguimiento{" "}
-                <strong>#{selectedFollowUp.idSeguimiento}</strong>.
+                <strong>{selectedFollowUp.tipoSeguimiento || "seleccionado"}</strong>.
               </>
             ) : (
               "No hay evidencias que coincidan con tu busqueda."
@@ -315,7 +318,7 @@ const EvidencesDashboard = () => {
                       <td>
                         {evidence.imageUrl ? (
                           <img
-                            alt={`Evidencia ${evidence.idEvidencia}`}
+                            alt="Vista previa de evidencia"
                             loading="lazy"
                             src={evidence.imageUrl}
                             style={previewStyle}
@@ -331,7 +334,7 @@ const EvidencesDashboard = () => {
                       <td title={evidence.comentarios}>
                         {formatCommentsPreview(evidence.comentarios)}
                       </td>
-                      <td>{evidence.estado || evidence.idEstado}</td>
+                      <td>{evidence.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

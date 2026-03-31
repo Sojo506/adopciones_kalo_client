@@ -15,12 +15,11 @@ const EMPTY_FORM = {
 };
 
 const buildRequestTypeLabel = (requestType) => {
-  const base = `#${requestType.idTipoSolicitud}`;
-  return requestType.nombre ? `${base} - ${requestType.nombre}` : base;
+  return requestType.nombre || "Tipo de solicitud";
 };
 
 const buildQuestionLabel = (question) => {
-  return `#${question.idPregunta} - ${question.pregunta}`;
+  return question.pregunta || "Pregunta disponible";
 };
 
 const mapRequestQuestionToForm = (requestQuestion) => ({

@@ -96,7 +96,7 @@ const SaleInvoicesDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar relacion venta-factura",
-      text: `Se desactivara la relacion entre la venta #${saleInvoice.idVenta} y la factura ${saleInvoice.idFactura}.`,
+      text: `Se desactivara la relacion de factura para ${saleInvoice.cliente || "la compra seleccionada"}.`,
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -169,7 +169,7 @@ const SaleInvoicesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingKey !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por venta, cliente, factura, moneda, total o estado"
+            placeholder="Buscar por cliente, moneda, total o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -188,9 +188,7 @@ const SaleInvoicesDashboard = () => {
             <table className="dashboard-table">
               <thead>
                 <tr>
-                  <th>Venta</th>
                   <th>Cliente</th>
-                  <th>Factura</th>
                   <th>Moneda</th>
                   <th>Total factura</th>
                   <th>Fecha factura</th>
@@ -205,13 +203,11 @@ const SaleInvoicesDashboard = () => {
 
                   return (
                     <tr key={cacheKey}>
-                      <td>{saleInvoice.idVenta}</td>
                       <td>{saleInvoice.cliente || "-"}</td>
-                      <td>{saleInvoice.idFactura}</td>
                       <td>{saleInvoice.moneda || "-"}</td>
                       <td>{formatMoney(saleInvoice.totalFactura, saleInvoice.simbolo)}</td>
                       <td>{formatDateTime(saleInvoice.fechaFactura)}</td>
-                      <td>{saleInvoice.estado || saleInvoice.idEstado}</td>
+                      <td>{saleInvoice.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

@@ -48,7 +48,6 @@ const buildEventLabel = (dogEvent) => {
   }
 
   const parts = [
-    `#${dogEvent.idEvento}`,
     dogEvent.nombrePerrito,
     dogEvent.tipoEvento,
     formatDate(dogEvent.fechaEvento),
@@ -187,7 +186,7 @@ const EventDetailsDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar detalle",
-      text: `Se desactivara el detalle #${eventDetail.idDetalleEvento}.`,
+      text: "Se desactivara el detalle seleccionado.",
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -287,7 +286,7 @@ const EventDetailsDashboard = () => {
               className="form-control dashboard-search"
               disabled={detailsLoading || deletingId !== null}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Buscar por ID, evento, perrito, descripcion, comprobante o estado"
+              placeholder="Buscar por evento, perrito, descripcion, comprobante o estado"
               value={search}
             />
             <span className="dashboard-muted">
@@ -330,12 +329,12 @@ const EventDetailsDashboard = () => {
 
                   return (
                     <tr key={eventDetail.idDetalleEvento}>
-                      <td>{buildEventLabel(linkedEvent) || eventDetail.idEvento}</td>
-                      <td>{eventDetail.nombrePerrito || eventDetail.idPerrito || "-"}</td>
+                      <td>{buildEventLabel(linkedEvent) || "Evento relacionado"}</td>
+                      <td>{eventDetail.nombrePerrito || "Perrito asociado"}</td>
                       <td>
                         {eventDetail.comprobanteUrl ? (
                           <img
-                            alt={`Comprobante ${eventDetail.idDetalleEvento}`}
+                            alt="Comprobante del evento"
                             loading="lazy"
                             src={eventDetail.comprobanteUrl}
                             style={imageStyle}
@@ -355,7 +354,7 @@ const EventDetailsDashboard = () => {
                       </td>
                       <td>{eventDetail.descripcion || "-"}</td>
                       <td>{formatMoney(eventDetail.monto)}</td>
-                      <td>{eventDetail.estado || eventDetail.idEstado}</td>
+                      <td>{eventDetail.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link

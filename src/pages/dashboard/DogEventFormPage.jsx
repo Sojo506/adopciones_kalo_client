@@ -319,7 +319,7 @@ const DogEventFormPage = () => {
                     <option value="">Selecciona un perrito</option>
                     {dogOptions.map((dog) => (
                       <option key={dog.idPerrito} value={dog.idPerrito}>
-                        #{dog.idPerrito} - {dog.nombre}
+                        {dog.nombre || "Perrito registrado"}
                       </option>
                     ))}
                   </select>
@@ -422,7 +422,7 @@ const DogEventFormPage = () => {
                     type="text"
                     value={
                       selectedDog
-                        ? `#${selectedDog.idPerrito} - ${selectedDog.nombre}`
+                        ? selectedDog.nombre || "Perrito asociado"
                         : "Selecciona un perrito"
                     }
                   />

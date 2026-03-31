@@ -89,7 +89,7 @@ const RefreshTokensDashboard = () => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar refresh token",
-      text: `Se desactivara el refresh token #${refreshToken.idRefreshToken}.`,
+      text: "Se desactivara el refresh token seleccionado.",
       showCancelButton: true,
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
@@ -200,7 +200,7 @@ const RefreshTokensDashboard = () => {
                       <td title={refreshToken.userAgent || ""}>{truncateText(refreshToken.userAgent, 24)}</td>
                       <td>{formatDateTime(refreshToken.fechaExpiracion)}</td>
                       <td>{formatDateTime(refreshToken.fechaRevocacion)}</td>
-                      <td>{refreshToken.estado || refreshToken.idEstado}</td>
+                      <td>{refreshToken.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link
