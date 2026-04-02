@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import Sidebar from "../../components/layout/Sidebar";
 import {
@@ -109,14 +109,16 @@ const DashboardRouteFallback = () => (
   <div className="dashboard-empty-state">Cargando modulo...</div>
 );
 const Dashboard = () => {
-  const [menuOpenPath, setMenuOpenPath] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
-  const menuOpen = menuOpenPath === location.pathname;
 
-  const closeMenu = () => setMenuOpenPath(null);
-  const toggleMenu = () => {
-    setMenuOpenPath((currentPath) => (currentPath === location.pathname ? null : location.pathname));
-  };
+  useEffect(() => {
+    setMenuOpen(false);
+    window.scrollTo({ top: 0, left: 0 });
+  }, [location.pathname]);
+
+  const closeMenu = () => setMenuOpen(false);
+  const toggleMenu = () => setMenuOpen((currentValue) => !currentValue);
 
   return (
     <main className="dashboard-layout">
