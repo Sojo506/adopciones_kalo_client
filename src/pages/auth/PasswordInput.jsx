@@ -16,7 +16,7 @@ const PasswordInput = ({
         <div className="mb-3">
             <label className="form-label">{label}</label>
 
-            <div className="input-group">
+            <div className={`password-field ${error ? "password-field--invalid" : ""}`}>
                 <input
                     {...register(name, {
                         ...validation,
@@ -32,14 +32,16 @@ const PasswordInput = ({
                         },
                     })}
                     type={show ? "text" : "password"}
-                    className={`form-control ${error ? "is-invalid" : ""}`}
+                    className="password-field__input"
                     autoComplete="new-password"
                 />
 
                 <button
                     type="button"
-                    className="btn btn-outline-secondary"
+                    className="password-field__toggle"
                     onClick={() => setShow(!show)}
+                    aria-label={show ? "Ocultar contraseña" : "Mostrar contraseña"}
+                    aria-pressed={show}
                 >
                     {show ? <BiHide /> : <BiShow />}
                 </button>
