@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { getActiveCampaigns } from "../../api/campaigns";
+import PayPalProvider, { isPayPalConfigured } from "../../components/payments/PayPalProvider";
 import { capturePayPalOrder, createPayPalOrder } from "../../api/paypalCheckout";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -375,13 +376,21 @@ const CampaignsPage = () => {
                   )}
 
                   <div className="campaign-modal__paypal-wrap">
-                    <PayPalCheckout
-                      campaign={selectedCampaign}
-                      amount={Number(amount)}
-                      message={message}
-                      onSuccess={handlePayPalSuccess}
-                      onCancel={() => setStep(1)}
-                    />
+                    {isPayPalConfigured ? (
+                      <PayPalProvider>
+                        <PayPalCheckout
+                          campaign={selectedCampaign}
+                          amount={Number(amount)}
+                          message={message}
+                          onSuccess={handlePayPalSuccess}
+                          onCancel={() => setStep(1)}
+                        />
+                      </PayPalProvider>
+                    ) : (
+                      <div className="campaign-paypal-error">
+                        PayPal no esta configurado en este ambiente.
+                      </div>
+                    )}
                   </div>
 
                   <button
