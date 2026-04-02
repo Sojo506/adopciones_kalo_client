@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import { getBrands, getCategories, getProducts } from "../../api/catalogs";
+import { getStoreCatalog } from "../../api/catalogs";
 import { useAuth } from "../../hooks/useAuth";
 import { addItem, selectCartItems } from "../../store/cartSlice";
 
@@ -51,17 +51,13 @@ const StorePage = () => {
       setError("");
 
       try {
-        const [nextProducts, nextCategories, nextBrands] = await Promise.all([
-          getProducts({ force: true }),
-          getCategories(),
-          getBrands(),
-        ]);
+        const storeCatalog = await getStoreCatalog();
 
         if (ignore) return;
 
-        setProducts(Array.isArray(nextProducts) ? nextProducts : []);
-        setCategories(Array.isArray(nextCategories) ? nextCategories : []);
-        setBrands(Array.isArray(nextBrands) ? nextBrands : []);
+        setProducts(Array.isArray(storeCatalog?.products) ? storeCatalog.products : []);
+        setCategories(Array.isArray(storeCatalog?.categories) ? storeCatalog.categories : []);
+        setBrands(Array.isArray(storeCatalog?.brands) ? storeCatalog.brands : []);
       } catch {
         if (!ignore) setError("No pudimos cargar los productos. Intenta nuevamente en unos segundos.");
       } finally {

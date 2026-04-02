@@ -1,18 +1,20 @@
+import { Suspense, lazy } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import Home from "../pages/public/Home";
-import DogAdoptionPage from "../pages/public/DogAdoptionPage";
-import FollowUpPage from "../pages/public/FollowUpPage";
-import StorePage from "../pages/public/StorePage";
-import ProductDetailPage from "../pages/public/ProductDetailPage";
-import CartPage from "../pages/public/CartPage";
-import ProfilePage from "../pages/public/ProfilePage";
-import Login from "../pages/auth/Login";
-import ForgotPassword from "../pages/auth/ForgotPassword";
-import Signup from "../pages/auth/Signup";
-import VerifyEmail from "../pages/auth/VerifyEmail";
-import Dashboard from "../pages/dashboard/Dashboard";
-import CampaignsPage from "../pages/public/CampaignsPage";
+
+const Home = lazy(() => import("../pages/public/Home"));
+const DogAdoptionPage = lazy(() => import("../pages/public/DogAdoptionPage"));
+const FollowUpPage = lazy(() => import("../pages/public/FollowUpPage"));
+const StorePage = lazy(() => import("../pages/public/StorePage"));
+const ProductDetailPage = lazy(() => import("../pages/public/ProductDetailPage"));
+const CartPage = lazy(() => import("../pages/public/CartPage"));
+const ProfilePage = lazy(() => import("../pages/public/ProfilePage"));
+const Login = lazy(() => import("../pages/auth/Login"));
+const ForgotPassword = lazy(() => import("../pages/auth/ForgotPassword"));
+const Signup = lazy(() => import("../pages/auth/Signup"));
+const VerifyEmail = lazy(() => import("../pages/auth/VerifyEmail"));
+const Dashboard = lazy(() => import("../pages/dashboard/Dashboard"));
+const CampaignsPage = lazy(() => import("../pages/public/CampaignsPage"));
 
 const LoadingRouteState = () => (
   <div className="d-flex justify-content-center align-items-center" style={{ height: "60vh" }}>
@@ -72,57 +74,59 @@ const VerifyEmailRoute = ({ children }) => {
 
 const AppRouter = () => {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/adopciones" element={<DogAdoptionPage />} />
-      <Route
-        path="/seguimiento"
-        element={
-          <AuthenticatedRoute>
-            <FollowUpPage />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route path="/tienda" element={<StorePage />} />
-      <Route path="/tienda/:idProducto" element={<ProductDetailPage />} />
-      <Route
-        path="/carrito"
-        element={
-          <AuthenticatedRoute>
-            <CartPage />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route path="/campanias" element={<CampaignsPage />} />
-      <Route
-        path="/perfil"
-        element={
-          <AuthenticatedRoute>
-            <ProfilePage />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route path="/login" element={<Login />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route
-        path="/verify-email"
-        element={
-          <VerifyEmailRoute>
-            <VerifyEmail />
-          </VerifyEmailRoute>
-        }
-      />
-      <Route
-        path="/dashboard/*"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <Suspense fallback={<LoadingRouteState />}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/adopciones" element={<DogAdoptionPage />} />
+        <Route
+          path="/seguimiento"
+          element={
+            <AuthenticatedRoute>
+              <FollowUpPage />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route path="/tienda" element={<StorePage />} />
+        <Route path="/tienda/:idProducto" element={<ProductDetailPage />} />
+        <Route
+          path="/carrito"
+          element={
+            <AuthenticatedRoute>
+              <CartPage />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route path="/campanias" element={<CampaignsPage />} />
+        <Route
+          path="/perfil"
+          element={
+            <AuthenticatedRoute>
+              <ProfilePage />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route
+          path="/verify-email"
+          element={
+            <VerifyEmailRoute>
+              <VerifyEmail />
+            </VerifyEmailRoute>
+          }
+        />
+        <Route
+          path="/dashboard/*"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Suspense>
   );
 };
 

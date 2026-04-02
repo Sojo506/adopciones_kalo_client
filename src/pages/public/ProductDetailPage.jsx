@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
-import { getProducts } from "../../api/catalogs";
+import { getCatalogProductById } from "../../api/catalogs";
 import { useAuth } from "../../hooks/useAuth";
 import { addItem, selectCartItems } from "../../store/cartSlice";
 
@@ -32,12 +32,8 @@ const ProductDetailPage = () => {
       setError("");
 
       try {
-        const products = await getProducts();
+        const found = await getCatalogProductById(idProducto);
         if (ignore) return;
-
-        const found = products.find(
-          (p) => String(p.idProducto) === String(idProducto)
-        );
 
         if (found) {
           setProduct(found);

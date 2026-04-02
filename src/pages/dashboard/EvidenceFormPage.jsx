@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -10,9 +10,9 @@ import { useAuth } from "../../hooks/useAuth";
 const EMPTY_FORM = {
   idSeguimiento: "",
   fechaEvidencia: "",
-  imageUrl: "",
   comentarios: "",
   idEstado: "1",
+  clearImage: false,
 };
 
 const previewStyle = {
@@ -58,21 +58,12 @@ const buildFollowUpLabel = (followUp) => {
   return segments.join(" - ") || "Seguimiento programado";
 };
 
-const isValidHttpUrl = (value) => {
-  try {
-    const url = new URL(String(value || "").trim());
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
-};
-
 const mapEvidenceToForm = (evidence) => ({
   idSeguimiento: String(evidence?.idSeguimiento ?? ""),
   fechaEvidencia: toDateInputValue(evidence?.fechaEvidencia),
-  imageUrl: evidence?.imageUrl ?? "",
   comentarios: evidence?.comentarios ?? "",
   idEstado: String(evidence?.idEstado ?? "1"),
+  clearImage: false,
 });
 
 const getSelectableFollowUps = ({ followUps, currentEvidence }) => {
@@ -117,10 +108,12 @@ const EvidenceFormPage = () => {
   const [states, setStates] = useState([]);
   const [followUps, setFollowUps] = useState([]);
   const [currentEvidence, setCurrentEvidence] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [catalogsLoading, setCatalogsLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [contentError, setContentError] = useState("");
+  const fileInputRef = useRef(null);
 
   const isEditing = Boolean(idEvidencia);
 
@@ -142,8 +135,8 @@ const EvidenceFormPage = () => {
 
   const watchedFollowUpId = watch("idSeguimiento");
   const watchedEvidenceDate = watch("fechaEvidencia");
-  const watchedImageUrl = watch("imageUrl");
   const watchedComments = watch("comentarios");
+  const watchedClearImage = watch("clearImage");
 
   const selectedFollowUp = useMemo(() => {
     return (
@@ -154,17 +147,48 @@ const EvidenceFormPage = () => {
   }, [followUpOptions, watchedFollowUpId]);
 
   const previewUrl = useMemo(() => {
-    const normalizedImageUrl = String(watchedImageUrl || "").trim();
-    return isValidHttpUrl(normalizedImageUrl) ? normalizedImageUrl : null;
-  }, [watchedImageUrl]);
+    if (selectedFile) {
+      return URL.createObjectURL(selectedFile);
+    }
+
+    if (watchedClearImage) {
+      return null;
+    }
+
+    return currentEvidence?.imageUrl || null;
+  }, [currentEvidence?.imageUrl, selectedFile, watchedClearImage]);
+
+  const selectedFileName =
+    selectedFile?.name ||
+    (currentEvidence?.imageUrl && !watchedClearImage
+      ? "Usando la imagen actual"
+      : "Ningun archivo seleccionado");
+
+  const dashboardEvidenceImageInputId = isEditing
+    ? "dashboard-evidence-image-edit"
+    : "dashboard-evidence-image-create";
 
   const hasRequiredData = states.length > 0 && followUpOptions.length > 0;
   const formDisabled = catalogsLoading || detailLoading || saving || !hasRequiredData;
 
   useEffect(() => {
+    return () => {
+      if (selectedFile && previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl, selectedFile]);
+
+  useEffect(() => {
     document.title = isEditing
-      ? "Editar evidencia | Dashboard Kalö"
-      : "Nueva evidencia | Dashboard Kalö";
+      ? "Editar evidencia | Dashboard KalÃ¶"
+      : "Nueva evidencia | Dashboard KalÃ¶";
+  }, [isEditing]);
+
+  useEffect(() => {
+    document.title = isEditing
+      ? "Editar evidencia | Dashboard Kalo"
+      : "Nueva evidencia | Dashboard Kalo";
   }, [isEditing]);
 
   useEffect(() => {
@@ -199,7 +223,12 @@ const EvidenceFormPage = () => {
             idSeguimiento: String(defaultFollowUp?.idSeguimiento ?? ""),
             fechaEvidencia: getClampedEvidenceDate(defaultFollowUp),
             idEstado: String(activeState?.idEstado ?? 1),
+            clearImage: false,
           });
+          setSelectedFile(null);
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
         }
       } catch (error) {
         Swal.fire({
@@ -226,6 +255,10 @@ const EvidenceFormPage = () => {
         const detail = await evidencesApi.getEvidenceById(idEvidencia, { force: true });
         setCurrentEvidence(detail);
         reset(mapEvidenceToForm(detail));
+        setSelectedFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
       } catch (error) {
         Swal.fire({
           icon: "error",
@@ -292,24 +325,36 @@ const EvidenceFormPage = () => {
       return;
     }
 
-    const hasImageUrl = Boolean(String(watchedImageUrl || "").trim());
+    const hasCurrentImage = Boolean(currentEvidence?.imageUrl) && !watchedClearImage;
+    const hasNewImage = Boolean(selectedFile);
     const hasComments = Boolean(String(watchedComments || "").trim());
 
-    if (hasImageUrl || hasComments) {
+    if (hasCurrentImage || hasNewImage || hasComments) {
       setContentError("");
     }
-  }, [contentError, watchedComments, watchedImageUrl]);
+  }, [contentError, currentEvidence?.imageUrl, selectedFile, watchedClearImage, watchedComments]);
+
+  const onFileChange = (event) => {
+    const nextFile = event.target.files?.[0] || null;
+    setSelectedFile(nextFile);
+    setContentError("");
+
+    if (nextFile) {
+      setValue("clearImage", false, { shouldDirty: true });
+    }
+  };
 
   const onSubmit = async (values) => {
     if (!isAdmin || !hasRequiredData) {
       return;
     }
 
-    const imageUrl = String(values.imageUrl || "").trim();
+    const hasCurrentImage = Boolean(currentEvidence?.imageUrl) && !values.clearImage;
+    const hasNewImage = Boolean(selectedFile);
     const comentarios = String(values.comentarios || "").trim();
 
-    if (!imageUrl && !comentarios) {
-      setContentError("Debes agregar una imagen URL o un comentario para guardar la evidencia.");
+    if (!hasCurrentImage && !hasNewImage && !comentarios) {
+      setContentError("Debes agregar una imagen o un comentario para guardar la evidencia.");
       return;
     }
 
@@ -317,17 +362,25 @@ const EvidenceFormPage = () => {
       setSaving(true);
       setContentError("");
 
-      const payload = {
-        idSeguimiento: values.idSeguimiento,
-        fechaEvidencia: values.fechaEvidencia,
-        comentarios,
-        imageUrl,
-        idEstado: isEditing ? values.idEstado : "1",
-      };
+      const formData = new FormData();
+      formData.append("idSeguimiento", values.idSeguimiento);
+      formData.append("fechaEvidencia", values.fechaEvidencia);
+      formData.append("comentarios", comentarios);
+
+      if (isEditing) {
+        formData.append("idEstado", values.idEstado);
+        formData.append("clearImage", values.clearImage ? "true" : "false");
+      } else {
+        formData.append("idEstado", "1");
+      }
+
+      if (selectedFile) {
+        formData.append("image", selectedFile);
+      }
 
       const savedEvidence = isEditing
-        ? await evidencesApi.updateEvidence(idEvidencia, payload)
-        : await evidencesApi.createEvidence(payload);
+        ? await evidencesApi.updateEvidence(idEvidencia, formData)
+        : await evidencesApi.createEvidence(formData);
 
       Swal.fire({
         icon: "success",
@@ -376,7 +429,7 @@ const EvidenceFormPage = () => {
           </p>
           <h1>{isEditing ? "Actualizar evidencia" : "Crear evidencia"}</h1>
           <p className="dashboard-page__lede">
-            Registra la imagen URL y los comentarios que documentan el cumplimiento de un seguimiento.
+            Registra una imagen y los comentarios que documentan el cumplimiento de un seguimiento.
           </p>
         </div>
         <Link className="dashboard-btn dashboard-btn--ghost" to="/dashboard/evidencias">
@@ -391,8 +444,8 @@ const EvidenceFormPage = () => {
         </div>
 
         <div className="dashboard-alert">
-          Puedes guardar evidencia con imagen URL, con comentario o con ambos. Si editas una
-          evidencia existente, deja vacio `imageUrl` para quitar la imagen actual.
+          Puedes guardar evidencia con imagen, con comentario o con ambos. Si editas una evidencia
+          existente tambien puedes quitar la imagen actual.
         </div>
 
         {selectedFollowUp ? (
@@ -503,25 +556,45 @@ const EvidenceFormPage = () => {
                   </label>
                 )}
 
-                <label className="dashboard-input dashboard-input--full">
-                  <span>Imagen URL</span>
+                <div className="dashboard-input dashboard-input--full">
+                  <span>{isEditing ? "Nueva imagen (opcional)" : "Imagen (opcional)"}</span>
                   <input
-                    className="form-control"
-                    placeholder="https://ejemplo.com/evidencia.jpg"
-                    type="text"
-                    {...register("imageUrl", {
-                      maxLength: {
-                        value: 500,
-                        message: "La imagen URL no puede superar 500 caracteres",
-                      },
-                      validate: (value) =>
-                        !String(value || "").trim() ||
-                        isValidHttpUrl(value) ||
-                        "Ingresa una URL valida que inicie con http o https",
-                    })}
+                    accept="image/png,image/jpeg,image/webp,image/avif,image/gif"
+                    className="upload-picker__input"
+                    id={dashboardEvidenceImageInputId}
+                    onChange={onFileChange}
+                    ref={fileInputRef}
+                    type="file"
                   />
-                  {errors.imageUrl ? <small>{errors.imageUrl.message}</small> : null}
-                </label>
+                  <div
+                    className={`upload-picker${
+                      selectedFile
+                        ? " is-filled"
+                        : currentEvidence?.imageUrl && !watchedClearImage
+                          ? " is-existing"
+                          : ""
+                    }`}
+                  >
+                    <div className="upload-picker__row">
+                      <label className="upload-picker__button" htmlFor={dashboardEvidenceImageInputId}>
+                        Elegir archivo
+                      </label>
+                      <div className="upload-picker__meta">
+                        <strong>
+                          {selectedFile
+                            ? "Nueva imagen lista para subir"
+                            : currentEvidence?.imageUrl && !watchedClearImage
+                              ? "Se mantendra la imagen actual"
+                              : "Selecciona una imagen desde tu equipo"}
+                        </strong>
+                        <span>{selectedFileName}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span className="upload-picker__help">
+                    Formatos permitidos: JPG, PNG, WEBP, AVIF o GIF.
+                  </span>
+                </div>
 
                 <label className="dashboard-input dashboard-input--full">
                   <span>Comentarios</span>
@@ -538,6 +611,16 @@ const EvidenceFormPage = () => {
                   {errors.comentarios ? <small>{errors.comentarios.message}</small> : null}
                 </label>
               </div>
+
+              {isEditing && currentEvidence?.imageUrl ? (
+                <div className="dashboard-input" style={{ maxWidth: "360px" }}>
+                  <span>Imagen actual</span>
+                  <label className="dashboard-checkbox" style={{ display: "flex", gap: "0.75rem" }}>
+                    <input disabled={Boolean(selectedFile)} type="checkbox" {...register("clearImage")} />
+                    <span>Quitar imagen actual al guardar</span>
+                  </label>
+                </div>
+              ) : null}
 
               {contentError ? <small>{contentError}</small> : null}
 

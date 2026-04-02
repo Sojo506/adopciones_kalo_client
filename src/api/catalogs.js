@@ -9,6 +9,7 @@ let categoriesCache = null;
 let brandsCache = null;
 let movementTypesCache = null;
 let productsCache = null;
+let storeCatalogCache = null;
 let currenciesCache = null;
 let breedsCache = null;
 let sexesCache = null;
@@ -17,6 +18,7 @@ let responseTypesCache = null;
 let trackingTypesCache = null;
 let eventTypesCache = null;
 let questionsCache = null;
+const catalogProductDetailCache = new Map();
 
 export const clearUserTypesCache = () => {
   userTypesCache = null;
@@ -44,6 +46,8 @@ export const clearMovementTypesCache = () => {
 
 export const clearProductsCache = () => {
   productsCache = null;
+  storeCatalogCache = null;
+  catalogProductDetailCache.clear();
 };
 
 export const clearCurrenciesCache = () => {
@@ -163,6 +167,47 @@ export const getProducts = async ({ force = false } = {}) => {
     });
     productsCache = unwrapResponse(response);
     return productsCache;
+  });
+};
+
+export const getStoreCatalog = async ({ force = false } = {}) => {
+  if (!force && storeCatalogCache) {
+    return storeCatalogCache;
+  }
+
+  const requestKey = force ? "catalogs:store:force" : "catalogs:store";
+
+  return dedupeRequest(requestKey, async () => {
+    const response = await axiosInstance.get("/catalogs/store", {
+      params: force ? { force: "true", _ts: Date.now() } : undefined,
+    });
+    storeCatalogCache = response.data?.data ?? response.data ?? {
+      products: [],
+      categories: [],
+      brands: [],
+    };
+    return storeCatalogCache;
+  });
+};
+
+export const getCatalogProductById = async (idProducto, { force = false } = {}) => {
+  const cacheKey = String(idProducto);
+
+  if (!force && catalogProductDetailCache.has(cacheKey)) {
+    return catalogProductDetailCache.get(cacheKey);
+  }
+
+  const requestKey = force
+    ? `catalogs:products:detail:${cacheKey}:force`
+    : `catalogs:products:detail:${cacheKey}`;
+
+  return dedupeRequest(requestKey, async () => {
+    const response = await axiosInstance.get(`/catalogs/products/${idProducto}`, {
+      params: force ? { force: "true", _ts: Date.now() } : undefined,
+    });
+    const data = unwrapResponse(response);
+    catalogProductDetailCache.set(cacheKey, data);
+    return data;
   });
 };
 

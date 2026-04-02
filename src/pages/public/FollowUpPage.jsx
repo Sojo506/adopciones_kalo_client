@@ -9,7 +9,6 @@ import { useAuth } from "../../hooks/useAuth";
 
 const EMPTY_FORM = {
   fechaEvidencia: "",
-  imageUrl: "",
   comentarios: "",
 };
 
@@ -88,15 +87,6 @@ const getClampedEvidenceDate = (followUp) => {
 
 const buildDisplayName = (user) =>
   [user?.nombre, user?.apellidoPaterno].filter(Boolean).join(" ") || user?.usuario || "tu cuenta";
-
-const isValidHttpUrl = (value) => {
-  try {
-    const url = new URL(String(value || "").trim());
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
-};
 
 const getFollowUpTone = (followUp) => {
   const today = getTodayDateValue();
@@ -200,6 +190,33 @@ const buildDogCards = ({ followUps, requestedDogId, requestedDogName }) => {
   });
 };
 
+const buildDogGallery = (dog) => {
+  const gallery = [];
+  const seenUrls = new Set();
+
+  const addImage = (imageUrl, fallbackId) => {
+    const normalizedUrl = String(imageUrl || "").trim();
+
+    if (!normalizedUrl || seenUrls.has(normalizedUrl)) {
+      return;
+    }
+
+    seenUrls.add(normalizedUrl);
+    gallery.push({
+      id: fallbackId,
+      imageUrl: normalizedUrl,
+    });
+  };
+
+  addImage(dog?.imageUrl, `dog-${dog?.idPerrito || "main"}`);
+
+  (dog?.images || []).forEach((image, index) => {
+    addImage(image?.imageUrl, image?.idImagen || `dog-image-${index}`);
+  });
+
+  return gallery;
+};
+
 const FollowUpPage = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -213,7 +230,10 @@ const FollowUpPage = () => {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [pageError, setPageError] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedDogImageUrl, setSelectedDogImageUrl] = useState(null);
   const [evidences, setEvidences] = useState([]);
+  const fileInputRef = useRef(null);
   const initialRequestRef = useRef({
     dogId: Number(location.state?.dogId || searchParams.get("perrito") || 0) || null,
     followUpId:
@@ -236,8 +256,15 @@ const FollowUpPage = () => {
 
   const watchedValues = watch();
   const watchedComments = String(watchedValues.comentarios || "");
-  const watchedImageUrl = String(watchedValues.imageUrl || "").trim();
-  const imagePreviewUrl = isValidHttpUrl(watchedImageUrl) ? watchedImageUrl : "";
+  const previewUrl = useMemo(() => {
+    if (!selectedFile) {
+      return null;
+    }
+
+    return URL.createObjectURL(selectedFile);
+  }, [selectedFile]);
+  const selectedFileName = selectedFile?.name || "Ningun archivo seleccionado";
+  const followUpImageInputId = "followup-evidence-image";
 
   const dogCards = useMemo(
     () =>
@@ -266,6 +293,7 @@ const FollowUpPage = () => {
     () => dogCards.find((dog) => Number(dog.idPerrito) === Number(selectedDogId)) || null,
     [dogCards, selectedDogId],
   );
+  const selectedDogGallery = useMemo(() => buildDogGallery(selectedDog), [selectedDog]);
 
   const followUpTone = useMemo(() => getFollowUpTone(selectedFollowUp), [selectedFollowUp]);
   const totalAnsweredFollowUps = useMemo(
@@ -278,8 +306,19 @@ const FollowUpPage = () => {
   }, []);
 
   useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  useEffect(() => {
     if (!selectedFollowUp) {
       reset(EMPTY_FORM);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
       return;
     }
 
@@ -287,7 +326,21 @@ const FollowUpPage = () => {
       ...EMPTY_FORM,
       fechaEvidencia: getClampedEvidenceDate(selectedFollowUp),
     });
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   }, [reset, selectedFollowUp]);
+
+  useEffect(() => {
+    setSelectedDogImageUrl((currentImageUrl) => {
+      if (selectedDogGallery.some((image) => image.imageUrl === currentImageUrl)) {
+        return currentImageUrl;
+      }
+
+      return selectedDogGallery[0]?.imageUrl || null;
+    });
+  }, [selectedDogGallery]);
 
   useEffect(() => {
     if (!selectedDogId) {
@@ -511,6 +564,11 @@ const FollowUpPage = () => {
     setSelectedFollowUpId(firstFollowUp?.idSeguimiento || null);
   };
 
+  const handleFileChange = (event) => {
+    const file = event.target.files?.[0] || null;
+    setSelectedFile(file);
+  };
+
   const onSubmit = async (values) => {
     if (!selectedFollowUp?.idSeguimiento) {
       Swal.fire({
@@ -531,13 +589,11 @@ const FollowUpPage = () => {
     }
 
     const comments = String(values.comentarios || "").trim();
-    const imageUrl = String(values.imageUrl || "").trim();
-
-    if (!comments && !imageUrl) {
+    if (!comments && !selectedFile) {
       Swal.fire({
         icon: "warning",
         title: "Completa la evidencia",
-        text: "Registra al menos comentarios o una imagen URL para guardar la evidencia.",
+        text: "Registra al menos comentarios o una imagen para guardar la evidencia.",
       });
       return;
     }
@@ -553,18 +609,26 @@ const FollowUpPage = () => {
 
     try {
       setSubmitting(true);
-      await createEvidence({
-        idSeguimiento: String(selectedFollowUp.idSeguimiento),
-        fechaEvidencia: values.fechaEvidencia,
-        comentarios: comments,
-        imageUrl,
-        idEstado: "1",
-      });
+      const formData = new FormData();
+      formData.append("idSeguimiento", String(selectedFollowUp.idSeguimiento));
+      formData.append("fechaEvidencia", values.fechaEvidencia);
+      formData.append("comentarios", comments);
+      formData.append("idEstado", "1");
+
+      if (selectedFile) {
+        formData.append("image", selectedFile);
+      }
+
+      await createEvidence(formData);
       await refreshFollowUpData();
       reset({
         ...EMPTY_FORM,
         fechaEvidencia: getClampedEvidenceDate(selectedFollowUp),
       });
+      setSelectedFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
 
       Swal.fire({
         icon: "success",
@@ -682,24 +746,57 @@ const FollowUpPage = () => {
                 {selectedDogId ? (
                   <div className="adoption-dog-detail">
                     <div className="adoption-dog-detail__media">
-                      <div
-                        className="adoption-dog-detail__hero"
-                        style={{
-                          backgroundImage: selectedDog?.imageUrl
-                            ? `linear-gradient(180deg, rgba(8, 16, 25, 0.08), rgba(8, 16, 25, 0.35)), url("${selectedDog.imageUrl}")`
-                            : undefined,
-                        }}
-                      />
-                      {selectedDog?.images?.length ? (
-                        <div className="adoption-dog-detail__thumbs">
-                          {selectedDog.images.slice(0, 4).map((image) => (
+                      <div className="followup-dog-gallery__hero">
+                        {selectedDogImageUrl ? (
+                          <>
                             <div
-                              key={image.idImagen}
-                              className="adoption-dog-detail__thumb"
-                              style={{
-                                backgroundImage: `linear-gradient(180deg, rgba(8, 16, 25, 0.08), rgba(8, 16, 25, 0.24)), url("${image.imageUrl}")`,
-                              }}
+                              aria-hidden="true"
+                              className="followup-dog-gallery__hero-backdrop"
+                              style={{ backgroundImage: `url("${selectedDogImageUrl}")` }}
                             />
+                            <img
+                              alt={`Fotografia de ${
+                                selectedDog?.nombre || selectedDogCard?.nombrePerrito || "tu perrito"
+                              }`}
+                              className="followup-dog-gallery__hero-image"
+                              loading="lazy"
+                              src={selectedDogImageUrl}
+                            />
+                          </>
+                        ) : (
+                          <div className="followup-dog-gallery__empty">
+                            No hay imagen disponible para este perrito.
+                          </div>
+                        )}
+                      </div>
+                      {selectedDogGallery.length > 1 ? (
+                        <div className="followup-dog-gallery__thumbs">
+                          {selectedDogGallery.slice(0, 4).map((image, index) => (
+                            <button
+                              key={image.id}
+                              aria-label={`Ver foto ${index + 1} de ${
+                                selectedDog?.nombre || selectedDogCard?.nombrePerrito || "este perrito"
+                              }`}
+                              className={`followup-dog-gallery__thumb${
+                                image.imageUrl === selectedDogImageUrl ? " is-active" : ""
+                              }`}
+                              onClick={() => setSelectedDogImageUrl(image.imageUrl)}
+                              type="button"
+                            >
+                              <div
+                                aria-hidden="true"
+                                className="followup-dog-gallery__thumb-backdrop"
+                                style={{ backgroundImage: `url("${image.imageUrl}")` }}
+                              />
+                              <img
+                                alt={`Miniatura ${index + 1} de ${
+                                  selectedDog?.nombre || selectedDogCard?.nombrePerrito || "este perrito"
+                                }`}
+                                className="followup-dog-gallery__thumb-image"
+                                loading="lazy"
+                                src={image.imageUrl}
+                              />
+                            </button>
                           ))}
                         </div>
                       ) : null}
@@ -796,7 +893,7 @@ const FollowUpPage = () => {
 
                 {!selectedFollowUp ? (
                   <div className="adoption-empty">
-                    Cuando elijas un seguimiento podras completar fecha, comentarios e imagen URL.
+                    Cuando elijas un seguimiento podras completar fecha, comentarios y subir una imagen.
                   </div>
                 ) : (
                   <>
@@ -842,26 +939,31 @@ const FollowUpPage = () => {
                           {errors.fechaEvidencia ? <small className="text-danger">{errors.fechaEvidencia.message}</small> : null}
                         </label>
 
-                        <label className="followup-upload-field">
-                          <span>Imagen URL</span>
+                        <div className="followup-upload-field">
+                          <span>Imagen de evidencia</span>
                           <input
-                            {...register("imageUrl", {
-                              maxLength: {
-                                value: 500,
-                                message: "La imagen URL no puede superar los 500 caracteres",
-                              },
-                              validate: (value) =>
-                                !String(value || "").trim() ||
-                                isValidHttpUrl(value) ||
-                                "Ingresa una URL valida que inicie con http o https",
-                            })}
-                            className={`form-control ${errors.imageUrl ? "is-invalid" : ""}`}
-                            placeholder="https://ejemplo.com/mi-evidencia.jpg"
-                            type="text"
+                            accept="image/png,image/jpeg,image/webp,image/avif,image/gif"
+                            className="upload-picker__input"
+                            id={followUpImageInputId}
+                            onChange={handleFileChange}
+                            ref={fileInputRef}
+                            type="file"
                           />
-                          <small>Comparte un enlace seguro de la imagen que quieras adjuntar.</small>
-                          {errors.imageUrl ? <small className="text-danger">{errors.imageUrl.message}</small> : null}
-                        </label>
+                          <div className={`upload-picker${selectedFile ? " is-filled" : ""}`}>
+                            <div className="upload-picker__row">
+                              <label className="upload-picker__button" htmlFor={followUpImageInputId}>
+                                Elegir archivo
+                              </label>
+                              <div className="upload-picker__meta">
+                                <strong>{selectedFile ? "Imagen seleccionada" : "Sube una foto desde tu equipo"}</strong>
+                                <span>{selectedFileName}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <span className="upload-picker__help">
+                            Formatos permitidos: JPG, PNG, WEBP, AVIF o GIF.
+                          </span>
+                        </div>
 
                         <label className="adoption-question">
                           <span>Comentarios</span>
@@ -879,16 +981,16 @@ const FollowUpPage = () => {
                           {errors.comentarios ? <small className="text-danger">{errors.comentarios.message}</small> : null}
                         </label>
 
-                        {imagePreviewUrl ? (
+                        {previewUrl ? (
                           <div className="followup-preview">
-                            <strong>Vista previa de la imagen URL</strong>
-                            <img alt="Vista previa de la evidencia" src={imagePreviewUrl} />
+                            <strong>Vista previa de la imagen</strong>
+                            <img alt="Vista previa de la evidencia" src={previewUrl} />
                           </div>
                         ) : null}
 
                         <div className="followup-comment-preview">
                           <strong>Campos que se guardaran</strong>
-                          <pre>{`Fecha: ${watchedValues.fechaEvidencia || "Sin fecha"}\nImagen: ${watchedImageUrl || "Sin imagen"}\nComentarios: ${watchedComments.trim() || "Sin comentarios"}`}</pre>
+                          <pre>{`Fecha: ${watchedValues.fechaEvidencia || "Sin fecha"}\nImagen: ${selectedFileName}\nComentarios: ${watchedComments.trim() || "Sin comentarios"}`}</pre>
                           <small>{watchedComments.length} / 500 caracteres en comentarios</small>
                         </div>
 
