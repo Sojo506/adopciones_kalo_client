@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import Swal from "sweetalert2";
+import PayPalProvider, { isPayPalConfigured } from "../../components/payments/PayPalProvider";
 import {
   selectCartItems,
   selectCartTotal,
@@ -303,11 +304,19 @@ const CartPage = () => {
                   </strong>
                 </div>
 
-                <PayPalCheckout
-                  total={total}
-                  items={items}
-                  onSuccess={handleSuccess}
-                />
+                {isPayPalConfigured ? (
+                  <PayPalProvider>
+                    <PayPalCheckout
+                      total={total}
+                      items={items}
+                      onSuccess={handleSuccess}
+                    />
+                  </PayPalProvider>
+                ) : (
+                  <p className="cart-paypal-msg cart-paypal-msg--error">
+                    PayPal no esta configurado en este ambiente.
+                  </p>
+                )}
 
                 <Link className="cart-continue-link" to="/tienda">
                   Seguir comprando
