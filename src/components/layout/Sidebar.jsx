@@ -1,15 +1,33 @@
-import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { dashboardNavigationSections } from "../../data/dashboardModules";
+import {
+  dashboardNavigationSections,
+  findDashboardNavigationItem,
+} from "../../data/dashboardModules";
 
 const Sidebar = ({ isOpen, onClose }) => {
   const { user, isAdmin } = useAuth();
+  const location = useLocation();
   const [openSection, setOpenSection] = useState(null);
+
+  useEffect(() => {
+    const activeSectionTitle = findDashboardNavigationItem(location.pathname)?.sectionTitle || null;
+
+    if (activeSectionTitle) {
+      setOpenSection(activeSectionTitle);
+    }
+  }, [location.pathname]);
 
   const toggleSection = (sectionTitle) => {
     setOpenSection((prev) => (prev === sectionTitle ? null : sectionTitle));
   };
+
+  const displayName =
+    [user?.nombre, user?.apellidoPaterno].filter(Boolean).join(" ") ||
+    user?.usuario ||
+    "Usuario";
+  const displayRole = user?.roleName || user?.tipoUsuario || "Sesion activa";
 
   return (
     <>
@@ -18,7 +36,10 @@ const Sidebar = ({ isOpen, onClose }) => {
         onClick={onClose}
       />
 
-      <aside className={`dashboard-sidebar-minimal${isOpen ? " is-open" : ""}`}>
+      <aside
+        className={`dashboard-sidebar-minimal${isOpen ? " is-open" : ""}`}
+        aria-label="Navegacion del dashboard"
+      >
         <div className="dashboard-sidebar-minimal__header">
           <div>
             <p className="dashboard-sidebar-minimal__eyebrow">Dashboard</p>
@@ -35,9 +56,9 @@ const Sidebar = ({ isOpen, onClose }) => {
         </div>
 
         <div className="dashboard-sidebar-minimal__profile">
-          <strong>{user?.nombre || "Usuario"}</strong>
+          <strong>{displayName}</strong>
           <span>{user?.correo || user?.usuario || "Sesion activa"}</span>
-          <small>{user?.roleName || user?.tipoUsuario}</small>
+          <small>{displayRole}</small>
         </div>
 
         <div className="dashboard-sidebar-minimal__accordion">
