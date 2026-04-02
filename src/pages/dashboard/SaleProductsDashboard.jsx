@@ -4,16 +4,6 @@ import Swal from "sweetalert2";
 import * as saleProductsApi from "../../api/saleProducts";
 import { useAuth } from "../../hooks/useAuth";
 
-const formatCurrency = (value) => {
-  const amount = Number(value || 0);
-
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(amount);
-};
-
 const SaleProductsDashboard = () => {
   const { isAdmin } = useAuth();
   const [saleProducts, setSaleProducts] = useState([]);
@@ -190,8 +180,8 @@ const SaleProductsDashboard = () => {
                       <td>{saleProduct.producto || "-"}</td>
                       <td>{saleProduct.tipoMovimiento || "-"}</td>
                       <td>{saleProduct.cantidad}</td>
-                      <td>{formatCurrency(saleProduct.precioUnitario)}</td>
-                      <td>{formatCurrency(saleProduct.total)}</td>
+                      <td>&#8353; {saleProduct.precioUnitario}</td>
+                      <td>&#8353; {saleProduct.total}</td>
                       <td>{saleProduct.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">
