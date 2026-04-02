@@ -2,13 +2,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
-import { checkPendingAdoption, submitAdoptionRequest } from "../../api/adoptionRequests";
-import { getRequestTypes } from "../../api/catalogs";
-import { getAvailableDogs, getDogById } from "../../api/dogs";
-import { getActiveQuestionsByRequestType } from "../../api/requestQuestions";
+import {
+  checkPendingAdoption,
+  getAdoptionRequestFormBootstrap,
+  submitAdoptionRequest,
+} from "../../api/adoptionRequests";
+import { getDogById } from "../../api/dogs";
 import { useAuth } from "../../hooks/useAuth";
 
-const ADOPTION_REQUEST_TYPE_NAME = "Adopcion";
 const DOG_PAGE_SIZE = 6;
 
 const formatDate = (value) => {
@@ -70,20 +71,6 @@ const getQuestionError = (errors, idPregunta) =>
   errors.answers?.[String(idPregunta)]?.message ||
   "";
 
-const findAdoptionRequestType = (requestTypes) => {
-  const normalizedTarget = normalizeText(ADOPTION_REQUEST_TYPE_NAME);
-
-  return (
-    (Array.isArray(requestTypes) ? requestTypes : []).find(
-      (requestType) => normalizeText(requestType.nombre) === normalizedTarget,
-    ) ||
-    (Array.isArray(requestTypes) ? requestTypes : []).find(
-      (requestType) => Number(requestType.idTipoSolicitud) === 1,
-    ) ||
-    null
-  );
-};
-
 const DogAdoptionPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [dogs, setDogs] = useState([]);
@@ -129,20 +116,9 @@ const DogAdoptionPage = () => {
       setPageError("");
 
       try {
-        const [nextDogs, nextRequestTypes] = await Promise.all([
-          getAvailableDogs(),
-          getRequestTypes(),
-        ]);
-        const adoptionRequestType = findAdoptionRequestType(nextRequestTypes);
-
-        if (!adoptionRequestType) {
-          throw new Error("No existe un tipo de solicitud de adopcion configurado.");
-        }
-
-        const nextQuestions = await getActiveQuestionsByRequestType(
-          adoptionRequestType.idTipoSolicitud,
-          { force: true },
-        );
+        const bootstrap = await getAdoptionRequestFormBootstrap();
+        const nextDogs = Array.isArray(bootstrap?.dogs) ? bootstrap.dogs : [];
+        const nextQuestions = Array.isArray(bootstrap?.questions) ? bootstrap.questions : [];
 
         if (ignore) {
           return;

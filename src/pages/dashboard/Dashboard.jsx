@@ -1,107 +1,113 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
-import AccountsDashboard from "./AccountsDashboard";
-import AccountFormPage from "./AccountFormPage";
-import AddressFormPage from "./AddressFormPage";
-import AddressesDashboard from "./AddressesDashboard";
-import AdoptionFormPage from "./AdoptionFormPage";
-import AdoptionsDashboard from "./AdoptionsDashboard";
-import BrandFormPage from "./BrandFormPage";
-import BrandsDashboard from "./BrandsDashboard";
-import BreedFormPage from "./BreedFormPage";
-import BreedsDashboard from "./BreedsDashboard";
-import CampaignFormPage from "./CampaignFormPage";
-import CampaignsDashboard from "./CampaignsDashboard";
-import CategoriesDashboard from "./CategoriesDashboard";
-import CantonsDashboard from "./CantonsDashboard";
-import CantonFormPage from "./CantonFormPage";
-import CategoryFormPage from "./CategoryFormPage";
-import CurrenciesDashboard from "./CurrenciesDashboard";
-import CurrencyFormPage from "./CurrencyFormPage";
 import Sidebar from "../../components/layout/Sidebar";
-import CountriesDashboard from "./CountriesDashboard";
-import CountryFormPage from "./CountryFormPage";
-import DashboardHome from "./DashboardHome";
-import DashboardPlaceholder from "./DashboardPlaceholder";
-import DistrictFormPage from "./DistrictFormPage";
-import DistrictsDashboard from "./DistrictsDashboard";
-import DonationInvoiceFormPage from "./DonationInvoiceFormPage";
-import DonationInvoicesDashboard from "./DonationInvoicesDashboard";
-import DonationFormPage from "./DonationFormPage";
-import DonationsDashboard from "./DonationsDashboard";
-import DogEventFormPage from "./DogEventFormPage";
-import DogEventsDashboard from "./DogEventsDashboard";
-import DogImageFormPage from "./DogImageFormPage";
-import DogImagesDashboard from "./DogImagesDashboard";
-import DogFormPage from "./DogFormPage";
-import DogsDashboard from "./DogsDashboard";
-import EvidenceFormPage from "./EvidenceFormPage";
-import EvidencesDashboard from "./EvidencesDashboard";
-import EmailFormPage from "./EmailFormPage";
-import EmailsDashboard from "./EmailsDashboard";
-import EventDetailFormPage from "./EventDetailFormPage";
-import EventDetailsDashboard from "./EventDetailsDashboard";
-import EventTypeFormPage from "./EventTypeFormPage";
-import EventTypesDashboard from "./EventTypesDashboard";
-import FollowUpFormPage from "./FollowUpFormPage";
-import FollowUpsDashboard from "./FollowUpsDashboard";
-import FosterHomeFormPage from "./FosterHomeFormPage";
-import FosterHomesDashboard from "./FosterHomesDashboard";
-import HouseDogFormPage from "./HouseDogFormPage";
-import HouseDogsDashboard from "./HouseDogsDashboard";
-import InventoriesDashboard from "./InventoriesDashboard";
-import InventoryFormPage from "./InventoryFormPage";
-import InventoryMovementFormPage from "./InventoryMovementFormPage";
-import InventoryMovementsDashboard from "./InventoryMovementsDashboard";
-import InvoiceFormPage from "./InvoiceFormPage";
-import InvoicesDashboard from "./InvoicesDashboard";
-import MovementTypeFormPage from "./MovementTypeFormPage";
-import MovementTypesDashboard from "./MovementTypesDashboard";
-import OtpFormPage from "./OtpFormPage";
-import OtpTypeFormPage from "./OtpTypeFormPage";
-import OtpTypesDashboard from "./OtpTypesDashboard";
-import OtpsDashboard from "./OtpsDashboard";
-import PayPalPaymentFormPage from "./PayPalPaymentFormPage";
-import PayPalPaymentsDashboard from "./PayPalPaymentsDashboard";
-import PhoneFormPage from "./PhoneFormPage";
-import PhonesDashboard from "./PhonesDashboard";
-import ProductImageFormPage from "./ProductImageFormPage";
-import ProductImagesDashboard from "./ProductImagesDashboard";
-import ProductFormPage from "./ProductFormPage";
-import ProductsDashboard from "./ProductsDashboard";
-import ProvinceFormPage from "./ProvinceFormPage";
-import ProvincesDashboard from "./ProvincesDashboard";
-import QuestionFormPage from "./QuestionFormPage";
-import QuestionsDashboard from "./QuestionsDashboard";
-import RefreshTokenFormPage from "./RefreshTokenFormPage";
-import RefreshTokensDashboard from "./RefreshTokensDashboard";
-import ReportsDashboard from "./ReportsDashboard";
-import RequestFormPage from "./RequestFormPage";
-import RequestQuestionFormPage from "./RequestQuestionFormPage";
-import RequestQuestionsDashboard from "./RequestQuestionsDashboard";
-import RequestsDashboard from "./RequestsDashboard";
-import ResponseFormPage from "./ResponseFormPage";
-import ResponsesDashboard from "./ResponsesDashboard";
-import ResponseTypeFormPage from "./ResponseTypeFormPage";
-import ResponseTypesDashboard from "./ResponseTypesDashboard";
-import RequestTypeFormPage from "./RequestTypeFormPage";
-import RequestTypesDashboard from "./RequestTypesDashboard";
-import StateFormPage from "./StateFormPage";
-import StatesDashboard from "./StatesDashboard";
-import SexFormPage from "./SexFormPage";
-import SexesDashboard from "./SexesDashboard";
-import SaleFormPage from "./SaleFormPage";
-import SaleInvoiceFormPage from "./SaleInvoiceFormPage";
-import SaleInvoicesDashboard from "./SaleInvoicesDashboard";
-import SaleProductFormPage from "./SaleProductFormPage";
-import SaleProductsDashboard from "./SaleProductsDashboard";
-import SalesDashboard from "./SalesDashboard";
-import TrackingTypeFormPage from "./TrackingTypeFormPage";
-import TrackingTypesDashboard from "./TrackingTypesDashboard";
-import UserTypeFormPage from "./UserTypeFormPage";
-import UserTypesDashboard from "./UserTypesDashboard";
-import UsersDashboard from "./UsersDashboard";
-import UserFormPage from "./UserFormPage";
+import {
+  AccountsDashboard,
+  AccountFormPage,
+  AddressFormPage,
+  AddressesDashboard,
+  AdoptionFormPage,
+  AdoptionsDashboard,
+  BrandFormPage,
+  BrandsDashboard,
+  BreedFormPage,
+  BreedsDashboard,
+  CampaignFormPage,
+  CampaignsDashboard,
+  CategoriesDashboard,
+  CantonsDashboard,
+  CantonFormPage,
+  CategoryFormPage,
+  CurrenciesDashboard,
+  CurrencyFormPage,
+  CountriesDashboard,
+  CountryFormPage,
+  DashboardHome,
+  DashboardPlaceholder,
+  DistrictFormPage,
+  DistrictsDashboard,
+  DonationInvoiceFormPage,
+  DonationInvoicesDashboard,
+  DonationFormPage,
+  DonationsDashboard,
+  DogEventFormPage,
+  DogEventsDashboard,
+  DogImageFormPage,
+  DogImagesDashboard,
+  DogFormPage,
+  DogsDashboard,
+  EvidenceFormPage,
+  EvidencesDashboard,
+  EmailFormPage,
+  EmailsDashboard,
+  EventDetailFormPage,
+  EventDetailsDashboard,
+  EventTypeFormPage,
+  EventTypesDashboard,
+  FollowUpFormPage,
+  FollowUpsDashboard,
+  FosterHomeFormPage,
+  FosterHomesDashboard,
+  HouseDogFormPage,
+  HouseDogsDashboard,
+  InventoriesDashboard,
+  InventoryFormPage,
+  InventoryMovementFormPage,
+  InventoryMovementsDashboard,
+  InvoiceFormPage,
+  InvoicesDashboard,
+  MovementTypeFormPage,
+  MovementTypesDashboard,
+  OtpFormPage,
+  OtpTypeFormPage,
+  OtpTypesDashboard,
+  OtpsDashboard,
+  PayPalPaymentFormPage,
+  PayPalPaymentsDashboard,
+  PhoneFormPage,
+  PhonesDashboard,
+  ProductImageFormPage,
+  ProductImagesDashboard,
+  ProductFormPage,
+  ProductsDashboard,
+  ProvinceFormPage,
+  ProvincesDashboard,
+  QuestionFormPage,
+  QuestionsDashboard,
+  RefreshTokenFormPage,
+  RefreshTokensDashboard,
+  ReportsDashboard,
+  RequestFormPage,
+  RequestQuestionFormPage,
+  RequestQuestionsDashboard,
+  RequestsDashboard,
+  RequestTypeFormPage,
+  RequestTypesDashboard,
+  ResponseFormPage,
+  ResponsesDashboard,
+  ResponseTypeFormPage,
+  ResponseTypesDashboard,
+  SaleFormPage,
+  SaleInvoiceFormPage,
+  SaleInvoicesDashboard,
+  SaleProductFormPage,
+  SaleProductsDashboard,
+  SalesDashboard,
+  SexFormPage,
+  SexesDashboard,
+  StateFormPage,
+  StatesDashboard,
+  TrackingTypeFormPage,
+  TrackingTypesDashboard,
+  UserTypeFormPage,
+  UserTypesDashboard,
+  UsersDashboard,
+  UserFormPage,
+} from "./lazyPages";
+
+const DashboardRouteFallback = () => (
+  <div className="dashboard-empty-state">Cargando modulo...</div>
+);
 const Dashboard = () => {
   const [menuOpenPath, setMenuOpenPath] = useState(null);
   const location = useLocation();
@@ -132,7 +138,8 @@ const Dashboard = () => {
         </header>
 
         <div className="dashboard-layout__body">
-          <Routes>
+          <Suspense fallback={<DashboardRouteFallback />}>
+            <Routes>
             <Route index element={<DashboardHome />} />
             <Route path="reportes" element={<ReportsDashboard />} />
             <Route path="usuarios" element={<UsersDashboard />} />
@@ -326,9 +333,10 @@ const Dashboard = () => {
             <Route path="codigos-otp/:idCodigoOtp/editar" element={<OtpFormPage />} />
             <Route path="refresh-tokens" element={<RefreshTokensDashboard />} />
             <Route path="refresh-tokens/nuevo" element={<RefreshTokenFormPage />} />
-            <Route path="refresh-tokens/:idRefreshToken/editar" element={<RefreshTokenFormPage />} />
-            <Route path="*" element={<DashboardPlaceholder />} />
-          </Routes>
+              <Route path="refresh-tokens/:idRefreshToken/editar" element={<RefreshTokenFormPage />} />
+              <Route path="*" element={<DashboardPlaceholder />} />
+            </Routes>
+          </Suspense>
         </div>
       </section>
     </main>

@@ -158,34 +158,24 @@ const ProfilePage = () => {
     setCantons([]);
     setDistricts([]);
 
-    if (countryId) {
-      setLoadingProvinces(true);
-      try {
-        const nextProvinces = await getProvinces(countryId);
-        setProvinces(Array.isArray(nextProvinces) ? nextProvinces : []);
-      } finally {
-        setLoadingProvinces(false);
-      }
-    }
+    setLoadingProvinces(Boolean(countryId));
+    setLoadingCantons(Boolean(provinceId));
+    setLoadingDistricts(Boolean(cantonId));
 
-    if (provinceId) {
-      setLoadingCantons(true);
-      try {
-        const nextCantons = await getCantons(provinceId);
-        setCantons(Array.isArray(nextCantons) ? nextCantons : []);
-      } finally {
-        setLoadingCantons(false);
-      }
-    }
+    try {
+      const [nextProvinces, nextCantons, nextDistricts] = await Promise.all([
+        countryId ? getProvinces(countryId) : Promise.resolve([]),
+        provinceId ? getCantons(provinceId) : Promise.resolve([]),
+        cantonId ? getDistricts(cantonId) : Promise.resolve([]),
+      ]);
 
-    if (cantonId) {
-      setLoadingDistricts(true);
-      try {
-        const nextDistricts = await getDistricts(cantonId);
-        setDistricts(Array.isArray(nextDistricts) ? nextDistricts : []);
-      } finally {
-        setLoadingDistricts(false);
-      }
+      setProvinces(Array.isArray(nextProvinces) ? nextProvinces : []);
+      setCantons(Array.isArray(nextCantons) ? nextCantons : []);
+      setDistricts(Array.isArray(nextDistricts) ? nextDistricts : []);
+    } finally {
+      setLoadingProvinces(false);
+      setLoadingCantons(false);
+      setLoadingDistricts(false);
     }
   };
 
