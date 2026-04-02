@@ -74,6 +74,9 @@ const Login = () => {
                 <Link to="/signup">Regístrate aquí</Link>
               </div>
               <div className="text-center mt-2">
+                <Link to="/forgot-password">¿Olvidaste tu contraseña?</Link>
+              </div>
+              <div className="text-center mt-2">
                 <Link to="/verify-email">No me llegó el correo de verificación</Link>
               </div>
             </div>

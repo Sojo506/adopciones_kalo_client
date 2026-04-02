@@ -32,3 +32,17 @@ export const resendVerificationEmail = async ({ correo }) => {
   const response = await axiosInstance.post("/auth/resend-verification-email", { correo });
   return unwrapResponse(response);
 };
+
+export const requestPasswordRecovery = async ({ identifier }) => {
+  const response = await axiosInstance.post("/auth/forgot-password/request", { identifier });
+  return unwrapResponse(response);
+};
+
+export const confirmPasswordRecovery = async ({ identifier, code, newPassword }) => {
+  const response = await axiosInstance.post("/auth/forgot-password/confirm", {
+    identifier,
+    codigo: code,
+    newPassword,
+  });
+  return unwrapResponse(response);
+};
