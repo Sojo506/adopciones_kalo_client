@@ -10,6 +10,7 @@ const ProductDetailPage = lazy(() => import("../pages/public/ProductDetailPage")
 const CartPage = lazy(() => import("../pages/public/CartPage"));
 const ProfilePage = lazy(() => import("../pages/public/ProfilePage"));
 const Login = lazy(() => import("../pages/auth/Login"));
+const ForgotPassword = lazy(() => import("../pages/auth/ForgotPassword"));
 const Signup = lazy(() => import("../pages/auth/Signup"));
 const VerifyEmail = lazy(() => import("../pages/auth/VerifyEmail"));
 const Dashboard = lazy(() => import("../pages/dashboard/Dashboard"));
@@ -105,6 +106,7 @@ const AppRouter = () => {
           }
         />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/signup" element={<Signup />} />
         <Route
           path="/verify-email"
