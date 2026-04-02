@@ -8,6 +8,7 @@ import ProductDetailPage from "../pages/public/ProductDetailPage";
 import CartPage from "../pages/public/CartPage";
 import ProfilePage from "../pages/public/ProfilePage";
 import Login from "../pages/auth/Login";
+import ForgotPassword from "../pages/auth/ForgotPassword";
 import Signup from "../pages/auth/Signup";
 import VerifyEmail from "../pages/auth/VerifyEmail";
 import Dashboard from "../pages/dashboard/Dashboard";
@@ -102,6 +103,7 @@ const AppRouter = () => {
         }
       />
       <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/signup" element={<Signup />} />
       <Route
         path="/verify-email"
