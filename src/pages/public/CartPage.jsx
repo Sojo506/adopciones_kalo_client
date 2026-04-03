@@ -25,7 +25,7 @@ const formatPrice = (price) => {
   }).format(price);
 };
 
-const PayPalCheckout = ({ total, items, onSuccess }) => {
+const PayPalCheckout = ({ total, items, onProcessingChange, onSuccess, processing }) => {
   const [{ isPending, isRejected }] = usePayPalScriptReducer();
 
   if (isRejected) {
@@ -43,12 +43,15 @@ const PayPalCheckout = ({ total, items, onSuccess }) => {
   return (
     <PayPalButtons
       style={{ layout: "vertical", shape: "rect", color: "gold", label: "pay" }}
+      disabled={processing}
       forceReRender={[total]}
       createOrder={async () => {
         const { orderId } = await createStoreOrder({ total });
         return orderId;
       }}
       onApprove={async (data) => {
+        onProcessingChange(true);
+
         try {
           const result = await captureStoreOrder({
             orderId: data.orderID,
@@ -66,14 +69,20 @@ const PayPalCheckout = ({ total, items, onSuccess }) => {
               err?.response?.data?.message ||
               "El pago fue procesado pero hubo un error al registrar la compra. Contacta al equipo de Kalo.",
           });
+        } finally {
+          onProcessingChange(false);
         }
       }}
       onError={() => {
+        onProcessingChange(false);
         Swal.fire({
           icon: "error",
           title: "Error en el pago",
           text: "Hubo un problema al procesar tu pago con PayPal. Intenta nuevamente.",
         });
+      }}
+      onCancel={() => {
+        onProcessingChange(false);
       }}
     />
   );
@@ -84,12 +93,15 @@ const CartPage = () => {
   const items = useSelector(selectCartItems);
   const total = useSelector(selectCartTotal);
   const [checkoutDone, setCheckoutDone] = useState(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   useEffect(() => {
     document.title = "Carrito | Adopciones Kalo";
   }, []);
 
   const handleRemove = (item) => {
+    if (isProcessingPayment) return;
+
     Swal.fire({
       title: "Eliminar producto",
       text: `Quieres eliminar ${item.nombre} del carrito?`,
@@ -106,6 +118,8 @@ const CartPage = () => {
   };
 
   const handleClear = () => {
+    if (isProcessingPayment) return;
+
     Swal.fire({
       title: "Vaciar carrito",
       text: "Se eliminaran todos los productos del carrito.",
@@ -189,6 +203,7 @@ const CartPage = () => {
           {items.length > 0 && (
             <button
               className="cart-clear-btn"
+              disabled={isProcessingPayment}
               onClick={handleClear}
               type="button"
             >
@@ -249,7 +264,7 @@ const CartPage = () => {
                       <div className="cart-qty">
                         <button
                           className="cart-qty__btn"
-                          disabled={item.cantidad <= 1}
+                          disabled={isProcessingPayment || item.cantidad <= 1}
                           onClick={() =>
                             dispatch(
                               updateQuantity({
@@ -265,7 +280,9 @@ const CartPage = () => {
                         <span className="cart-qty__value">{item.cantidad}</span>
                         <button
                           className="cart-qty__btn"
-                          disabled={item.cantidad >= (item.stock ?? 0)}
+                          disabled={
+                            isProcessingPayment || item.cantidad >= (item.stock ?? 0)
+                          }
                           onClick={() =>
                             dispatch(
                               updateQuantity({
@@ -286,6 +303,7 @@ const CartPage = () => {
 
                       <button
                         className="cart-item__remove"
+                        disabled={isProcessingPayment}
                         onClick={() => handleRemove(item)}
                         type="button"
                       >
@@ -296,7 +314,7 @@ const CartPage = () => {
                 ))}
               </div>
 
-              <div className="cart-summary">
+              <div className={`cart-summary${isProcessingPayment ? " cart-summary--processing" : ""}`}>
                 <div className="cart-summary__row">
                   <span>Total</span>
                   <strong className="cart-summary__total">
@@ -304,12 +322,24 @@ const CartPage = () => {
                   </strong>
                 </div>
 
+                {isProcessingPayment && (
+                  <div className="cart-processing" aria-live="polite">
+                    <span className="spinner-border spinner-border-sm" aria-hidden="true" />
+                    <div>
+                      <strong>Procesando pago...</strong>
+                      <p>No cierres esta ventana mientras confirmamos tu compra.</p>
+                    </div>
+                  </div>
+                )}
+
                 {isPayPalConfigured ? (
                   <PayPalProvider>
                     <PayPalCheckout
                       total={total}
                       items={items}
+                      onProcessingChange={setIsProcessingPayment}
                       onSuccess={handleSuccess}
+                      processing={isProcessingPayment}
                     />
                   </PayPalProvider>
                 ) : (

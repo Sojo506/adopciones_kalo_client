@@ -279,18 +279,21 @@ Pantallas y piezas clave:
 Recorrido:
 
 1. La tienda consume el catalogo publico de productos, categorias y marcas.
-2. El usuario filtra y agrega productos al carrito.
-3. El carrito se persiste en `localStorage`.
-4. La ruta `/carrito` exige sesion autenticada.
-5. Desde `CartPage`, PayPal crea la orden usando el total del carrito.
-6. Tras la aprobacion, el frontend envia `orderId` e items reales al backend.
-7. La API valida stock y registra venta, factura, pago e inventario.
-8. El frontend limpia el carrito, muestra compra exitosa y permite descargar el PDF de factura desde `pdfBase64`.
+2. `ProductDetailPage` consume el detalle publico del producto y puede mostrar una galeria con las imagenes activas disponibles.
+3. El usuario filtra y agrega productos al carrito.
+4. El carrito se persiste en `localStorage`.
+5. La ruta `/carrito` exige sesion autenticada.
+6. Desde `CartPage`, PayPal crea la orden usando el total del carrito.
+7. Mientras PayPal y la API confirman la compra, la UI bloquea cambios del carrito y muestra un estado visual de procesamiento.
+8. Tras la aprobacion, el frontend envia `orderId` e items reales al backend.
+9. La API valida stock y registra venta, factura, pago e inventario.
+10. El frontend limpia el carrito, muestra compra exitosa y permite descargar el PDF de factura desde `pdfBase64`.
 
 Notas importantes:
 
 - La UI muestra precios en CRC.
 - El backend convierte a USD para PayPal en el flujo de tienda.
+- El detalle publico de producto mantiene `imageUrl` y ademas puede incluir `imagenes` para la galeria.
 
 ### 7. Perfil del usuario
 
