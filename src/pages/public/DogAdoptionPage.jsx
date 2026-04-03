@@ -459,7 +459,7 @@ const DogAdoptionPage = () => {
                 {paginatedDogs.map((dog) => (
                   <button
                     key={dog.idPerrito}
-                    className={`adoption-dog-card${Number(selectedDogId) === Number(dog.idPerrito) ? " is-selected" : ""}`}
+                    className={`adoption-dog-card${Number(selectedDogId) === Number(dog.idPerrito) ? " is-selected" : ""} cursor-pointer`}
                     onClick={() => setSelectedDogId(dog.idPerrito)}
                     type="button"
                   >
@@ -754,7 +754,7 @@ const DogAdoptionPage = () => {
                       actual para que el equipo pueda darle seguimiento.
                     </p>
                     <button
-                      className="home-btn home-btn--primary"
+                      className="home-btn home-btn--primary cursor-pointer"
                       disabled={submitting || !questions.length || !isAuthenticated || authLoading || hasPendingAdoption}
                       type="submit"
                     >
