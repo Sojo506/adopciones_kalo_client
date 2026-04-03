@@ -9,6 +9,7 @@ const StorePage = lazy(() => import("../pages/public/StorePage"));
 const ProductDetailPage = lazy(() => import("../pages/public/ProductDetailPage"));
 const CartPage = lazy(() => import("../pages/public/CartPage"));
 const ProfilePage = lazy(() => import("../pages/public/ProfilePage"));
+const NotFoundPage = lazy(() => import("../pages/public/NotFoundPage"));
 const Login = lazy(() => import("../pages/auth/Login"));
 const ForgotPassword = lazy(() => import("../pages/auth/ForgotPassword"));
 const Signup = lazy(() => import("../pages/auth/Signup"));
@@ -124,7 +125,7 @@ const AppRouter = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
   );

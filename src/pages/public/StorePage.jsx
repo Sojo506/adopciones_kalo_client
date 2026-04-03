@@ -2,9 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import InlineCartQuantityControl from "../../components/store/InlineCartQuantityControl";
 import { getStoreCatalog } from "../../api/catalogs";
 import { useAuth } from "../../hooks/useAuth";
-import { addItem, selectCartItems } from "../../store/cartSlice";
+import { addItem, selectCartItems, updateQuantity } from "../../store/cartSlice";
 
 const formatPrice = (price) => {
   if (price === undefined || price === null) return "Sin precio";
@@ -125,6 +126,18 @@ const StorePage = () => {
     dispatch(addItem(product));
   };
 
+  const handleStoreQuantityChange = (event, product, nextQuantity) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    dispatch(
+      updateQuantity({
+        idProducto: product.idProducto,
+        cantidad: nextQuantity,
+      })
+    );
+  };
+
   const hasActiveFilters = search || selectedCategory || selectedBrand;
 
   const handleClearFilters = () => {
@@ -237,9 +250,11 @@ const StorePage = () => {
           <>
             <div className="store-grid">
               {paginated.map((product) => {
-                const inCart = cartItems.find((i) => i.idProducto === product.idProducto)?.cantidad ?? 0;
+                const itemInCart = cartItems.find((i) => i.idProducto === product.idProducto);
+                const inCart = itemInCart?.cantidad ?? 0;
                 const available = (product.stock ?? 0) - inCart;
                 const outOfStock = available <= 0;
+                const isAdded = inCart > 0;
 
                 return (
                   <Link
@@ -282,17 +297,32 @@ const StorePage = () => {
                           </span>
                         </div>
 
-                        <button
-                          className="store-btn"
-                          disabled={outOfStock}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleAddToCart(product);
-                          }}
-                          type="button"
-                        >
-                          {outOfStock ? "Agotado" : "Agregar"}
-                        </button>
+                        {isAdded ? (
+                          <InlineCartQuantityControl
+                            disableIncrement={inCart >= (product.stock ?? 0)}
+                            onDecrement={(event) =>
+                              handleStoreQuantityChange(event, product, inCart - 1)
+                            }
+                            onIncrement={(event) =>
+                              handleStoreQuantityChange(event, product, inCart + 1)
+                            }
+                            quantity={inCart}
+                            variant="store"
+                          />
+                        ) : (
+                          <button
+                            className="store-btn"
+                            disabled={outOfStock}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleAddToCart(product);
+                            }}
+                            type="button"
+                          >
+                            {outOfStock ? "Agotado" : "Agregar"}
+                          </button>
+                        )}
                       </div>
                     </div>
                   </Link>

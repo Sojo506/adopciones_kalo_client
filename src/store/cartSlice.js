@@ -61,11 +61,20 @@ const cartSlice = createSlice({
 
     updateQuantity(state, action) {
       const { idProducto, cantidad } = action.payload;
-      const item = state.items.find((i) => i.idProducto === idProducto);
+      const itemIndex = state.items.findIndex((i) => i.idProducto === idProducto);
 
-      if (item) {
-        item.cantidad = Math.max(1, cantidad);
+      if (itemIndex === -1) {
+        persistCart(state.items);
+        return;
       }
+
+      if (cantidad <= 0) {
+        state.items.splice(itemIndex, 1);
+        persistCart(state.items);
+        return;
+      }
+
+      state.items[itemIndex].cantidad = cantidad;
 
       persistCart(state.items);
     },
