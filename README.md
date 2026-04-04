@@ -9,7 +9,7 @@ El frontend esta construido para hablar con la API del proyecto y orquestar los 
 - Registro, login, verificacion de email y recuperacion de password
 - Navegacion publica de perritos disponibles para adopcion
 - Solicitud de adopcion con preguntas dinamicas
-- Seguimiento post adopcion con carga de evidencias
+- Seguimiento post adopcion con carga de evidencias y aprobacion administrativa
 - Campanas con donacion por PayPal
 - Tienda solidaria con carrito y checkout PayPal
 - Perfil del usuario con compras, solicitudes y seguimientos
@@ -329,10 +329,21 @@ Recorrido:
 
 1. La pagina carga seguimientos del usuario autenticado.
 2. Agrupa seguimientos por perrito.
-3. Permite ver historial de evidencias por seguimiento.
-4. El usuario puede subir una imagen y/o comentarios con fecha.
-5. Las evidencias viajan como `multipart/form-data`.
-6. Tras crear evidencia, la UI invalida caches relacionadas y actualiza historial.
+3. Solo muestra seguimientos vigentes y activos; los vencidos o inactivos no aparecen en la vista publica.
+4. Permite ver historial de evidencias por seguimiento.
+5. El usuario final solo puede enviar `fechaEvidencia` e imagen.
+6. La vista publica no muestra comentarios administrativos ni estados internos del seguimiento.
+7. Las evidencias viajan como `multipart/form-data`.
+8. Toda evidencia creada desde perfil nace en estado `Pendiente`.
+9. El usuario final solo ve estados publicos de evidencia cuando aplican, como `Pendiente` o `Aprobado`.
+10. Tras crear evidencia, la UI invalida caches relacionadas y actualiza historial.
+
+Reglas visibles en la UI:
+
+- El formulario publico exige fecha e imagen.
+- Los comentarios se administran solo desde dashboard.
+- El estado del seguimiento no se expone al usuario final.
+- La aprobacion de evidencias no ocurre en la vista publica.
 
 ### 9. Dashboard administrativo y reportes
 
@@ -398,6 +409,12 @@ Agrupa:
 - adopciones
 - seguimientos
 - evidencias
+
+En este bloque, el dashboard de evidencias es la superficie de revision del equipo:
+
+- las evidencias creadas por usuarios finales llegan en `Pendiente`
+- el equipo las revisa y aprueba desde `EvidencesDashboard`
+- el formulario administrativo limita estados a `Pendiente`, `Aprobado` e `Inactivo`
 
 ### Tienda, inventario y ventas
 
