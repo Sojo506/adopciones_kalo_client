@@ -11,21 +11,26 @@ const EMPTY_FORM = {
   fechaEvidencia: "",
 };
 
-const formatDate = (value) => {
-  if (!value) return "Sin fecha";
+const parseDisplayDate = (value) => {
+  if (!value) return null;
+
+  if (typeof value === "string") {
+    const trimmedValue = value.trim();
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmedValue)) {
+      const [year, month, day] = trimmedValue.split("-").map(Number);
+      return new Date(year, month - 1, day);
+    }
+  }
+
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Sin fecha";
-  return new Intl.DateTimeFormat("es-CR", { dateStyle: "medium" }).format(date);
+  return Number.isNaN(date.getTime()) ? null : date;
 };
 
-const formatDateTime = (value) => {
-  if (!value) return "Sin fecha";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Sin fecha";
-  return new Intl.DateTimeFormat("es-CR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(date);
+const formatDate = (value) => {
+  const date = parseDisplayDate(value);
+  if (!date) return "Sin fecha";
+  return new Intl.DateTimeFormat("es-CR", { dateStyle: "medium" }).format(date);
 };
 
 const formatMetric = (value, suffix) => {
@@ -1030,7 +1035,7 @@ const FollowUpPage = () => {
                             />
                           ) : null}
                           <small className="followup-evidence-card__date">
-                            Registrado el {formatDateTime(evidence.fechaEvidencia)}
+                            Fecha de la evidencia: {formatDate(evidence.fechaEvidencia)}
                           </small>
                         </article>
                       );
