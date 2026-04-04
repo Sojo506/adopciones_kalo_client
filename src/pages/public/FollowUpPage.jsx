@@ -9,7 +9,6 @@ import { useAuth } from "../../hooks/useAuth";
 
 const EMPTY_FORM = {
   fechaEvidencia: "",
-  comentarios: "",
 };
 
 const formatDate = (value) => {
@@ -94,15 +93,6 @@ const getFollowUpTone = (followUp) => {
   const end = toDateInputValue(followUp?.fechaFin);
   const hasResponses = Number(followUp?.cantidadEvidencias || 0) > 0;
 
-  if (Number(followUp?.idEstado) !== 1) {
-    return {
-      label: "Seguimiento no disponible",
-      accent: "muted",
-      canSubmit: false,
-      description: "Este seguimiento ya no admite nuevas respuestas desde el perfil.",
-    };
-  }
-
   if (start && today < start) {
     return {
       label: `Disponible desde ${formatDate(start)}`,
@@ -114,10 +104,10 @@ const getFollowUpTone = (followUp) => {
 
   if (end && today > end) {
     return {
-      label: hasResponses ? "Ventana cerrada con respuestas" : "Ventana cerrada",
+      label: hasResponses ? "Ventana cerrada con evidencias" : "Ventana cerrada",
       accent: "warning",
-      canSubmit: true,
-      description: "Todavia puedes registrar una respuesta tardia usando una fecha dentro del rango.",
+      canSubmit: false,
+      description: "La ventana de este seguimiento ya vencio y no admite nuevas cargas.",
     };
   }
 
@@ -134,7 +124,33 @@ const getFollowUpTone = (followUp) => {
     label: "Pendiente de responder",
     accent: "pending",
     canSubmit: true,
-    description: "Completa el formulario para dejar evidencia de como va la adopcion.",
+    description: "Completa la fecha y sube una imagen para dejar evidencia de como va la adopcion.",
+  };
+};
+
+const getEvidenceTone = (evidence) => {
+  const normalizedState = normalizeText(evidence?.estado);
+
+  if (normalizedState === "aprobado") {
+    return {
+      accent: "success",
+      label: evidence?.estado || "Aprobada",
+      visible: true,
+    };
+  }
+
+  if (normalizedState === "pendiente") {
+    return {
+      accent: "pending",
+      label: evidence?.estado || "Pendiente",
+      visible: true,
+    };
+  }
+
+  return {
+    accent: "muted",
+    label: evidence?.estado || "Registrada",
+    visible: false,
   };
 };
 
@@ -231,6 +247,7 @@ const FollowUpPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [pageError, setPageError] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [fileError, setFileError] = useState("");
   const [selectedDogImageUrl, setSelectedDogImageUrl] = useState(null);
   const [evidences, setEvidences] = useState([]);
   const fileInputRef = useRef(null);
@@ -250,12 +267,8 @@ const FollowUpPage = () => {
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors },
   } = useForm({ defaultValues: EMPTY_FORM });
-
-  const watchedValues = watch();
-  const watchedComments = String(watchedValues.comentarios || "");
   const previewUrl = useMemo(() => {
     if (!selectedFile) {
       return null;
@@ -327,6 +340,7 @@ const FollowUpPage = () => {
       fechaEvidencia: getClampedEvidenceDate(selectedFollowUp),
     });
     setSelectedFile(null);
+    setFileError("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -406,7 +420,7 @@ const FollowUpPage = () => {
           setEvidences([]);
           Swal.fire({
             icon: "error",
-            title: "No pudimos cargar las respuestas previas",
+            title: "No pudimos cargar las evidencias previas",
             text:
               error?.response?.data?.message ||
               "Intenta nuevamente para revisar el historial de seguimiento.",
@@ -567,6 +581,7 @@ const FollowUpPage = () => {
   const handleFileChange = (event) => {
     const file = event.target.files?.[0] || null;
     setSelectedFile(file);
+    setFileError("");
   };
 
   const onSubmit = async (values) => {
@@ -588,21 +603,12 @@ const FollowUpPage = () => {
       return;
     }
 
-    const comments = String(values.comentarios || "").trim();
-    if (!comments && !selectedFile) {
+    if (!selectedFile) {
+      setFileError("La imagen es obligatoria para enviar esta evidencia.");
       Swal.fire({
         icon: "warning",
-        title: "Completa la evidencia",
-        text: "Registra al menos comentarios o una imagen para guardar la evidencia.",
-      });
-      return;
-    }
-
-    if (comments.length > 500) {
-      Swal.fire({
-        icon: "warning",
-        title: "Tus respuestas son muy largas",
-        text: "Resume un poco los comentarios para no superar los 500 caracteres permitidos.",
+        title: "Falta la imagen",
+        text: "Selecciona una imagen antes de enviar la evidencia.",
       });
       return;
     }
@@ -612,12 +618,9 @@ const FollowUpPage = () => {
       const formData = new FormData();
       formData.append("idSeguimiento", String(selectedFollowUp.idSeguimiento));
       formData.append("fechaEvidencia", values.fechaEvidencia);
-      formData.append("comentarios", comments);
-      formData.append("idEstado", "1");
+      setFileError("");
 
-      if (selectedFile) {
-        formData.append("image", selectedFile);
-      }
+      formData.append("image", selectedFile);
 
       await createEvidence(formData);
       await refreshFollowUpData();
@@ -626,6 +629,7 @@ const FollowUpPage = () => {
         fechaEvidencia: getClampedEvidenceDate(selectedFollowUp),
       });
       setSelectedFile(null);
+      setFileError("");
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -633,7 +637,7 @@ const FollowUpPage = () => {
       Swal.fire({
         icon: "success",
         title: "Evidencia registrada",
-        text: "La evidencia quedo guardada correctamente para este perrito.",
+        text: "La evidencia quedo enviada en estado pendiente para revision del equipo.",
       });
     } catch (error) {
       Swal.fire({
@@ -664,7 +668,7 @@ const FollowUpPage = () => {
             </h1>
             <p>
               Revisa los seguimientos programados para {buildDisplayName(user)} y registra cada
-              etapa con informacion clara, fechas correctas y, si quieres, una imagen de apoyo.
+              etapa con una fecha correcta y una imagen clara para revision del equipo.
             </p>
           </div>
 
@@ -805,8 +809,8 @@ const FollowUpPage = () => {
                     <div className="adoption-dog-detail__content">
                       <p className="adoption-dog-detail__lead">
                         Cada seguimiento queda asociado a este perrito y a tu cuenta. Puedes
-                        registrar la evidencia real del seguimiento y revisar tus respuestas
-                        previas en una sola vista.
+                        registrar la evidencia real del seguimiento y revisar tus envios previos
+                        en una sola vista.
                       </p>
 
                       <div className="adoption-dog-detail__meta">
@@ -846,7 +850,6 @@ const FollowUpPage = () => {
                         ) : (
                           <div className="followup-card-list">
                             {selectedDogFollowUps.map((followUp) => {
-                              const tone = getFollowUpTone(followUp);
                               return (
                                 <button
                                   key={followUp.idSeguimiento}
@@ -858,9 +861,6 @@ const FollowUpPage = () => {
                                     <strong>
                                       {followUp.tipoSeguimiento || "Seguimiento programado"}
                                     </strong>
-                                    <span className={`followup-badge followup-badge--${tone.accent}`}>
-                                      {tone.label}
-                                    </span>
                                   </div>
                                   <span>
                                     Ventana: {formatDate(followUp.fechaInicio)} al{" "}
@@ -888,26 +888,17 @@ const FollowUpPage = () => {
                     <p className="adoption-panel__eyebrow">Formulario de evidencia</p>
                     <h2>{selectedFollowUp?.tipoSeguimiento || "Selecciona un seguimiento"}</h2>
                   </div>
-                  {selectedFollowUp ? <span className="adoption-counter">Activo</span> : null}
                 </div>
 
                 {!selectedFollowUp ? (
                   <div className="adoption-empty">
-                    Cuando elijas un seguimiento podras completar fecha, comentarios y subir una imagen.
+                    Cuando elijas un seguimiento podras completar la fecha y subir una imagen.
                   </div>
                 ) : (
                   <>
                     <div className={`followup-banner followup-banner--${followUpTone.accent}`}>
-                      <strong>{followUpTone.label}</strong>
                       <span>{followUpTone.description}</span>
                     </div>
-
-                    {selectedFollowUp.comentarios ? (
-                      <div className="followup-guidance">
-                        <strong>Indicaciones del equipo</strong>
-                        <p>{selectedFollowUp.comentarios}</p>
-                      </div>
-                    ) : null}
 
                     <form className="adoption-form" onSubmit={handleSubmit(onSubmit)}>
                       <fieldset className="followup-form-fieldset" disabled={submitting || !followUpTone.canSubmit}>
@@ -961,25 +952,10 @@ const FollowUpPage = () => {
                             </div>
                           </div>
                           <span className="upload-picker__help">
-                            Formatos permitidos: JPG, PNG, WEBP, AVIF o GIF.
+                            La imagen es obligatoria. Formatos permitidos: JPG, PNG, WEBP, AVIF o GIF.
                           </span>
+                          {fileError ? <small className="text-danger">{fileError}</small> : null}
                         </div>
-
-                        <label className="adoption-question">
-                          <span>Comentarios</span>
-                          <textarea
-                            {...register("comentarios", {
-                              maxLength: {
-                                value: 500,
-                                message: "Los comentarios no pueden superar los 500 caracteres",
-                              },
-                            })}
-                            className={`form-control ${errors.comentarios ? "is-invalid" : ""}`}
-                            placeholder="Describe lo que corresponde registrar en esta evidencia"
-                            rows="5"
-                          />
-                          {errors.comentarios ? <small className="text-danger">{errors.comentarios.message}</small> : null}
-                        </label>
 
                         {previewUrl ? (
                           <div className="followup-preview">
@@ -988,15 +964,9 @@ const FollowUpPage = () => {
                           </div>
                         ) : null}
 
-                        <div className="followup-comment-preview">
-                          <strong>Campos que se guardaran</strong>
-                          <pre>{`Fecha: ${watchedValues.fechaEvidencia || "Sin fecha"}\nImagen: ${selectedFileName}\nComentarios: ${watchedComments.trim() || "Sin comentarios"}`}</pre>
-                          <small>{watchedComments.length} / 500 caracteres en comentarios</small>
-                        </div>
-
                         <div className="adoption-form__footer">
                           <p>
-                            La evidencia se guardara en el seguimiento actual para{" "}
+                            La evidencia se enviara en estado pendiente para{" "}
                             {selectedDog?.nombre || selectedDogCard?.nombrePerrito || "tu perrito"}.
                           </p>
                           <button
@@ -1017,7 +987,7 @@ const FollowUpPage = () => {
                 <div className="adoption-panel__header">
                   <div>
                     <p className="adoption-panel__eyebrow">Historial</p>
-                    <h2>Respuestas previas</h2>
+                    <h2>Evidencias previas</h2>
                   </div>
                   {selectedFollowUp ? <span className="adoption-counter">{evidences.length} registradas</span> : null}
                 </div>
@@ -1030,37 +1000,41 @@ const FollowUpPage = () => {
                   <div className="adoption-empty">Cargando historial del seguimiento...</div>
                 ) : !evidences.length ? (
                   <div className="adoption-empty">
-                    Aun no has enviado respuestas para este seguimiento.
+                    Aun no has enviado evidencias para este seguimiento.
                   </div>
                 ) : (
                   <div className="followup-evidence-list">
-                    {evidences.map((evidence) => (
-                      <article key={evidence.idEvidencia} className="followup-evidence-card">
-                        <div className="followup-evidence-card__header">
-                          <div>
-                            <span className="followup-evidence-card__eyebrow">Evidencia registrada</span>
-                            <strong>{formatDate(evidence.fechaEvidencia)}</strong>
+                    {evidences.map((evidence) => {
+                      const evidenceTone = getEvidenceTone(evidence);
+
+                      return (
+                        <article key={evidence.idEvidencia} className="followup-evidence-card">
+                          <div className="followup-evidence-card__header">
+                            <div>
+                              <span className="followup-evidence-card__eyebrow">Evidencia registrada</span>
+                              <strong>{formatDate(evidence.fechaEvidencia)}</strong>
+                            </div>
+                            {evidenceTone.visible ? (
+                              <span className={`followup-badge followup-badge--${evidenceTone.accent}`}>
+                                {evidenceTone.label}
+                              </span>
+                            ) : null}
                           </div>
-                          <small>{evidence.imageUrl ? "Incluye imagen" : "Solo comentario"}</small>
-                        </div>
 
-                        {evidence.imageUrl ? (
-                          <img
-                            alt="Imagen de evidencia"
-                            className="followup-evidence-card__image"
-                            loading="lazy"
-                            src={evidence.imageUrl}
-                          />
-                        ) : null}
-
-                        <p className="followup-evidence-card__body">
-                          {evidence.comentarios || "Sin comentario registrado."}
-                        </p>
-                        <small className="followup-evidence-card__date">
-                          Registrado el {formatDateTime(evidence.fechaEvidencia)}
-                        </small>
-                      </article>
-                    ))}
+                          {evidence.imageUrl ? (
+                            <img
+                              alt="Imagen de evidencia"
+                              className="followup-evidence-card__image"
+                              loading="lazy"
+                              src={evidence.imageUrl}
+                            />
+                          ) : null}
+                          <small className="followup-evidence-card__date">
+                            Registrado el {formatDateTime(evidence.fechaEvidencia)}
+                          </small>
+                        </article>
+                      );
+                    })}
                   </div>
                 )}
               </section>

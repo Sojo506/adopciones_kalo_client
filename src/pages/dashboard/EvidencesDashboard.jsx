@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
+import * as catalogsApi from "../../api/catalogs";
 import * as evidencesApi from "../../api/evidences";
 import * as followUpsApi from "../../api/followUps";
 import { useAuth } from "../../hooks/useAuth";
@@ -66,13 +67,40 @@ const formatCommentsPreview = (value) => {
   return `${normalized.slice(0, 85)}...`;
 };
 
+const normalizeText = (value) =>
+  String(value || "")
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+const getEvidenceTone = (evidence) => {
+  const normalizedState = normalizeText(evidence?.estado);
+
+  if (normalizedState === "aprobado") {
+    return { accent: "success", label: evidence?.estado || "Aprobado" };
+  }
+
+  if (normalizedState === "pendiente") {
+    return { accent: "pending", label: evidence?.estado || "Pendiente" };
+  }
+
+  if (normalizedState === "inactivo") {
+    return { accent: "muted", label: evidence?.estado || "Inactivo" };
+  }
+
+  return { accent: "soft", label: evidence?.estado || "-" };
+};
+
 const EvidencesDashboard = () => {
   const { isAdmin } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [states, setStates] = useState([]);
   const [followUps, setFollowUps] = useState([]);
   const [evidences, setEvidences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+  const [approvingId, setApprovingId] = useState(null);
   const [search, setSearch] = useState("");
 
   const selectedFollowUpId = searchParams.get("seguimiento") || "";
@@ -119,11 +147,13 @@ const EvidencesDashboard = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [followUpsData, evidencesData] = await Promise.all([
+      const [statesData, followUpsData, evidencesData] = await Promise.all([
+        catalogsApi.getStates(),
         followUpsApi.getFollowUps({ force: true }),
         evidencesApi.getEvidences({ force: true }),
       ]);
 
+      setStates(Array.isArray(statesData) ? statesData : []);
       setFollowUps(Array.isArray(followUpsData) ? followUpsData : []);
       setEvidences(Array.isArray(evidencesData) ? evidencesData : []);
     } catch (error) {
@@ -136,6 +166,12 @@ const EvidencesDashboard = () => {
       setLoading(false);
     }
   };
+
+  const approvedState = useMemo(
+    () =>
+      states.find((state) => normalizeText(state.nombre) === "aprobado") || null,
+    [states],
+  );
 
   useEffect(() => {
     document.title = "Evidencias | Dashboard Kalö";
@@ -200,6 +236,43 @@ const EvidencesDashboard = () => {
     }
   };
 
+  const onApprove = async (evidence) => {
+    if (!approvedState) {
+      Swal.fire({
+        icon: "error",
+        title: "Estado no disponible",
+        text: "No encontramos el estado Aprobado en el catalogo.",
+      });
+      return;
+    }
+
+    try {
+      setApprovingId(evidence.idEvidencia);
+      await evidencesApi.updateEvidence(evidence.idEvidencia, {
+        idSeguimiento: evidence.idSeguimiento,
+        fechaEvidencia: evidence.fechaEvidencia,
+        comentarios: evidence.comentarios || "",
+        idEstado: approvedState.idEstado,
+        clearImage: false,
+      });
+      await loadData();
+
+      Swal.fire({
+        icon: "success",
+        title: "Evidencia aprobada",
+        text: "La evidencia quedo marcada como aprobada correctamente.",
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "No pudimos aprobar",
+        text: error?.response?.data?.message || "Intenta nuevamente en un momento.",
+      });
+    } finally {
+      setApprovingId(null);
+    }
+  };
+
   if (!isAdmin) {
     return (
       <div className="dashboard-page">
@@ -248,12 +321,17 @@ const EvidencesDashboard = () => {
           corregirlas si hubo errores operativos.
         </div>
 
+        <div className="dashboard-alert">
+          Las evidencias del usuario llegan en estado pendiente y su aprobacion final se hace
+          unicamente desde este dashboard.
+        </div>
+
         <div className="dashboard-toolbar dashboard-toolbar--between">
           <label className="dashboard-input" style={{ minWidth: "320px", marginBottom: 0 }}>
             <span>Seguimiento</span>
             <select
               className="form-select"
-              disabled={loading || deletingId !== null}
+              disabled={loading || deletingId !== null || approvingId !== null}
               onChange={onSelectFollowUp}
               value={selectedFollowUpId}
             >
@@ -269,7 +347,7 @@ const EvidencesDashboard = () => {
           <div className="dashboard-toolbar dashboard-toolbar--between" style={{ gap: "0.75rem" }}>
             <input
               className="form-control dashboard-search"
-              disabled={loading || deletingId !== null}
+              disabled={loading || deletingId !== null || approvingId !== null}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Buscar por evidencia, seguimiento, adoptante, perrito, fecha, comentario o estado"
               value={search}
@@ -334,13 +412,17 @@ const EvidencesDashboard = () => {
                       <td title={evidence.comentarios}>
                         {formatCommentsPreview(evidence.comentarios)}
                       </td>
-                      <td>{evidence.estado || "-"}</td>
+                      <td>
+                        <span className={`followup-badge followup-badge--${getEvidenceTone(evidence).accent}`}>
+                          {getEvidenceTone(evidence).label}
+                        </span>
+                      </td>
                       <td>
                         <div className="dashboard-table__actions">
                           <Link
-                            className={`dashboard-btn dashboard-btn--ghost${deletingId !== null ? " is-disabled" : ""}`}
+                            className={`dashboard-btn dashboard-btn--ghost${deletingId !== null || approvingId !== null ? " is-disabled" : ""}`}
                             onClick={(event) => {
-                              if (deletingId !== null) {
+                              if (deletingId !== null || approvingId !== null) {
                                 event.preventDefault();
                               }
                             }}
@@ -349,8 +431,20 @@ const EvidencesDashboard = () => {
                             Editar
                           </Link>
                           <button
+                            className="dashboard-btn dashboard-btn--primary"
+                            disabled={
+                              approvingId !== null ||
+                              deletingId !== null ||
+                              normalizeText(evidence.estado) !== "pendiente"
+                            }
+                            onClick={() => onApprove(evidence)}
+                            type="button"
+                          >
+                            {approvingId === evidence.idEvidencia ? "Aprobando..." : "Aprobar"}
+                          </button>
+                          <button
                             className="dashboard-btn dashboard-btn--danger"
-                            disabled={isInactive || deletingId !== null}
+                            disabled={isInactive || deletingId !== null || approvingId !== null}
                             onClick={() => onDelete(evidence)}
                             type="button"
                           >

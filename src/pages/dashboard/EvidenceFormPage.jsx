@@ -11,7 +11,7 @@ const EMPTY_FORM = {
   idSeguimiento: "",
   fechaEvidencia: "",
   comentarios: "",
-  idEstado: "1",
+  idEstado: "",
   clearImage: false,
 };
 
@@ -58,11 +58,18 @@ const buildFollowUpLabel = (followUp) => {
   return segments.join(" - ") || "Seguimiento programado";
 };
 
+const normalizeText = (value) =>
+  String(value || "")
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
 const mapEvidenceToForm = (evidence) => ({
   idSeguimiento: String(evidence?.idSeguimiento ?? ""),
   fechaEvidencia: toDateInputValue(evidence?.fechaEvidencia),
   comentarios: evidence?.comentarios ?? "",
-  idEstado: String(evidence?.idEstado ?? "1"),
+  idEstado: String(evidence?.idEstado ?? ""),
   clearImage: false,
 });
 
@@ -100,6 +107,8 @@ const getClampedEvidenceDate = (followUp) => {
   return today;
 };
 
+const ALLOWED_EVIDENCE_STATES = new Set(["pendiente", "aprobado", "inactivo"]);
+
 const EvidenceFormPage = () => {
   const { idEvidencia } = useParams();
   const [searchParams] = useSearchParams();
@@ -123,6 +132,17 @@ const EvidenceFormPage = () => {
       currentEvidence,
     });
   }, [currentEvidence, followUps]);
+
+  const workflowStateOptions = useMemo(
+    () =>
+      states.filter((state) => ALLOWED_EVIDENCE_STATES.has(normalizeText(state.nombre))),
+    [states],
+  );
+
+  const approvedStateOption = useMemo(
+    () => workflowStateOptions.find((state) => normalizeText(state.nombre) === "aprobado") || null,
+    [workflowStateOptions],
+  );
 
   const {
     register,
@@ -168,7 +188,10 @@ const EvidenceFormPage = () => {
     ? "dashboard-evidence-image-edit"
     : "dashboard-evidence-image-create";
 
-  const hasRequiredData = states.length > 0 && followUpOptions.length > 0;
+  const hasRequiredData =
+    workflowStateOptions.length === 3 &&
+    followUpOptions.length > 0 &&
+    Boolean(approvedStateOption);
   const formDisabled = catalogsLoading || detailLoading || saving || !hasRequiredData;
 
   useEffect(() => {
@@ -203,7 +226,9 @@ const EvidenceFormPage = () => {
         const availableStates = Array.isArray(statesData) ? statesData : [];
         const availableFollowUps = Array.isArray(followUpsData) ? followUpsData : [];
         const preferredFollowUpId = searchParams.get("seguimiento");
-        const activeState = availableStates.find((state) => Number(state.idEstado) === 1);
+        const approvedState = availableStates.find(
+          (state) => normalizeText(state.nombre) === "aprobado",
+        );
         const defaultFollowUp =
           getSelectableFollowUps({
             followUps: availableFollowUps,
@@ -222,7 +247,7 @@ const EvidenceFormPage = () => {
             ...EMPTY_FORM,
             idSeguimiento: String(defaultFollowUp?.idSeguimiento ?? ""),
             fechaEvidencia: getClampedEvidenceDate(defaultFollowUp),
-            idEstado: String(activeState?.idEstado ?? 1),
+            idEstado: String(approvedState?.idEstado ?? ""),
             clearImage: false,
           });
           setSelectedFile(null);
@@ -366,12 +391,10 @@ const EvidenceFormPage = () => {
       formData.append("idSeguimiento", values.idSeguimiento);
       formData.append("fechaEvidencia", values.fechaEvidencia);
       formData.append("comentarios", comentarios);
+      formData.append("idEstado", values.idEstado);
 
       if (isEditing) {
-        formData.append("idEstado", values.idEstado);
         formData.append("clearImage", values.clearImage ? "true" : "false");
-      } else {
-        formData.append("idEstado", "1");
       }
 
       if (selectedFile) {
@@ -456,6 +479,13 @@ const EvidenceFormPage = () => {
           </div>
         ) : null}
 
+        {approvedStateOption ? (
+          <div className="dashboard-alert">
+            Las evidencias creadas desde dashboard inician en {approvedStateOption.nombre} por
+            defecto, pero puedes ajustarlas dentro del workflow permitido.
+          </div>
+        ) : null}
+
         {catalogsLoading || detailLoading ? (
           <div className="dashboard-empty-state">Cargando formulario...</div>
         ) : !hasRequiredData ? (
@@ -533,28 +563,21 @@ const EvidenceFormPage = () => {
                   {errors.fechaEvidencia ? <small>{errors.fechaEvidencia.message}</small> : null}
                 </label>
 
-                {isEditing ? (
-                  <label className="dashboard-input">
-                    <span>Estado</span>
-                    <select
-                      className="form-select"
-                      {...register("idEstado", { required: "El estado es obligatorio" })}
-                    >
-                      <option value="">Selecciona un estado</option>
-                      {states.map((state) => (
-                        <option key={state.idEstado} value={state.idEstado}>
-                          {state.nombre}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.idEstado ? <small>{errors.idEstado.message}</small> : null}
-                  </label>
-                ) : (
-                  <label className="dashboard-input">
-                    <span>Estado inicial</span>
-                    <input className="form-control" readOnly type="text" value="Activo" />
-                  </label>
-                )}
+                <label className="dashboard-input">
+                  <span>Estado</span>
+                  <select
+                    className="form-select"
+                    {...register("idEstado", { required: "El estado es obligatorio" })}
+                  >
+                    <option value="">Selecciona un estado</option>
+                    {workflowStateOptions.map((state) => (
+                      <option key={state.idEstado} value={state.idEstado}>
+                        {state.nombre}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.idEstado ? <small>{errors.idEstado.message}</small> : null}
+                </label>
 
                 <div className="dashboard-input dashboard-input--full">
                   <span>{isEditing ? "Nueva imagen (opcional)" : "Imagen (opcional)"}</span>

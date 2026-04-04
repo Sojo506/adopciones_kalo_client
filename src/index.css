@@ -6264,6 +6264,13 @@ a {
   align-items: start;
 }
 
+.followup-evidence-card__header > div {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
 .followup-badge {
   display: inline-flex;
   align-items: center;
