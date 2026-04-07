@@ -260,14 +260,14 @@ const DashboardHome = () => {
                           {product.marca || "Sin marca"}
                         </span>
                         <small>
-                          {formatCount(product.cantidad)} unidades{" / "}valor estimado{" "}
-                          {formatMoney(product.valorEstimado)}
+                          {formatCount(product.cantidad)} unidades{" / "}minimo{" "}
+                          {formatCount(product.stockMinimo)}{" / "}valor estimado {formatMoney(product.valorEstimado)}
                         </small>
                       </div>
                     ))
                   ) : (
                     <div className="dashboard-empty-state">
-                      No hay productos debajo del umbral operativo configurado.
+                      No hay productos por debajo de su stock minimo configurado.
                     </div>
                   )}
                 </div>
@@ -317,4 +317,3 @@ const DashboardHome = () => {
 };
 
 export default DashboardHome;
-

@@ -19,7 +19,14 @@ const InventoriesDashboard = () => {
     }
 
     return inventories.filter((inventory) =>
-      [inventory.idInventario, inventory.idProducto, inventory.producto, inventory.cantidad, inventory.estado]
+      [
+        inventory.idInventario,
+        inventory.idProducto,
+        inventory.producto,
+        inventory.cantidad,
+        inventory.stockMinimo,
+        inventory.estado,
+      ]
         .filter((value) => value !== null && value !== undefined)
         .join(" ")
         .toLowerCase()
@@ -116,6 +123,7 @@ const InventoriesDashboard = () => {
           <p className="dashboard-page__lede">
             Mantiene el stock actual por producto. Cada producto solo puede tener un inventario y
             cualquier cambio de cantidad genera un movimiento automatico de ingreso o egreso.
+            El stock minimo se configura por inventario para detectar alertas operativas.
           </p>
         </div>
         <div className="dashboard-table__actions">
@@ -135,6 +143,11 @@ const InventoriesDashboard = () => {
         </div>
 
         <div className="dashboard-alert">
+          El stock bajo se calcula comparando el stock actual contra el stock minimo configurado en
+          cada inventario.
+        </div>
+
+        <div className="dashboard-alert">
           No puedes desactivar un inventario mientras tenga stock disponible; primero debe quedar en
           cero mediante un egreso.
         </div>
@@ -144,7 +157,7 @@ const InventoriesDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por producto, cantidad o estado"
+            placeholder="Buscar por producto, stock actual, stock minimo o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -165,6 +178,7 @@ const InventoriesDashboard = () => {
                 <tr>
                   <th>Producto</th>
                   <th>Stock actual</th>
+                  <th>Stock minimo</th>
                   <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
@@ -177,6 +191,7 @@ const InventoriesDashboard = () => {
                     <tr key={inventory.idInventario}>
                       <td>{inventory.producto || "Producto registrado"}</td>
                       <td>{Number(inventory.cantidad || 0)}</td>
+                      <td>{Number(inventory.stockMinimo ?? 10)}</td>
                       <td>{inventory.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">

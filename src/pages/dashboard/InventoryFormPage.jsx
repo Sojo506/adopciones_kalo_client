@@ -10,18 +10,21 @@ import { useAuth } from "../../hooks/useAuth";
 const EMPTY_FORM = {
   idProducto: "",
   cantidad: "0",
+  stockMinimo: "10",
   idEstado: "",
 };
 
 const mapInventoryToForm = (inventory) => ({
   idProducto: String(inventory?.idProducto ?? ""),
   cantidad: String(inventory?.cantidad ?? 0),
+  stockMinimo: String(inventory?.stockMinimo ?? 10),
   idEstado: String(inventory?.idEstado ?? ""),
 });
 
 const buildPayload = (values) => ({
   idProducto: Number(values.idProducto),
   cantidad: Number(values.cantidad),
+  stockMinimo: Number(values.stockMinimo),
   idEstado: Number(values.idEstado),
 });
 
@@ -101,6 +104,7 @@ const InventoryFormPage = () => {
             ...EMPTY_FORM,
             idProducto: String(firstAvailableProduct?.idProducto ?? ""),
             cantidad: "0",
+            stockMinimo: "10",
             idEstado: String(activeState?.idEstado ?? availableStates?.[0]?.idEstado ?? ""),
           });
         }
@@ -201,7 +205,7 @@ const InventoryFormPage = () => {
           <h1>{isEditing ? "Actualizar inventario" : "Crear inventario"}</h1>
           <p className="dashboard-page__lede">
             Define el stock actual por producto. El sistema registra automaticamente el movimiento
-            que corresponda cuando la cantidad cambia.
+            que corresponda cuando la cantidad cambia y te permite configurar el stock minimo de alerta.
           </p>
         </div>
         <Link className="dashboard-btn dashboard-btn--ghost" to="/dashboard/inventario">
@@ -303,6 +307,26 @@ const InventoryFormPage = () => {
                     })}
                   />
                   {errors.cantidad ? <small>{errors.cantidad.message}</small> : null}
+                </label>
+
+                <label className="dashboard-input">
+                  <span>Stock minimo</span>
+                  <input
+                    className="form-control"
+                    min="0"
+                    step="1"
+                    type="number"
+                    {...register("stockMinimo", {
+                      required: "El stock minimo es obligatorio",
+                      min: {
+                        value: 0,
+                        message: "El stock minimo no puede ser negativo",
+                      },
+                      validate: (value) =>
+                        Number.isInteger(Number(value)) || "El stock minimo debe ser un entero",
+                    })}
+                  />
+                  {errors.stockMinimo ? <small>{errors.stockMinimo.message}</small> : null}
                 </label>
 
                 <label className="dashboard-input">

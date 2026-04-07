@@ -34,10 +34,10 @@ export const adminReportModules = [
     title: "Inventario bajo",
     badge: "Operacion comercial",
     description:
-      "Lista los productos con existencias criticas para que el equipo actue antes de quedarse sin stock.",
+      "Lista los productos con existencias criticas segun el stock minimo configurado para actuar antes de quedarse sin stock.",
     modulePath: "/dashboard/inventario",
     moduleLabel: "Abrir inventario",
-    highlights: ["Productos criticos", "Valor estimado comprometido", "Categoria y marca"],
+    highlights: ["Productos criticos", "Stock minimo configurado", "Categoria y marca"],
   },
 ];
 
@@ -60,6 +60,6 @@ export const adminQuickActions = [
   {
     to: "/dashboard/inventario",
     title: "Monitorear inventario",
-    description: "Valida existencias bajas y coordina reposicion de productos sensibles.",
+    description: "Valida existencias bajas segun el stock minimo y coordina reposicion de productos sensibles.",
   },
 ];
