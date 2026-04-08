@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import * as campaignsApi from "../../api/campaigns";
 import * as catalogsApi from "../../api/catalogs";
 import { useAuth } from "../../hooks/useAuth";
+import { toDateInputValue } from "../../utils/dateOnly";
 
 const previewStyle = {
   width: "180px",
@@ -20,21 +21,6 @@ const EMPTY_FORM = {
   fechaInicio: "",
   fechaFin: "",
   idEstado: "1",
-};
-
-const toDateInputValue = (value) => {
-  if (!value) {
-    return "";
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
-
-  const timezoneOffsetMs = date.getTimezoneOffset() * 60000;
-  return new Date(date.getTime() - timezoneOffsetMs).toISOString().slice(0, 10);
 };
 
 const mapCampaignToForm = (campaign) => ({

@@ -6,15 +6,9 @@ import { getActiveCampaigns } from "../../api/campaigns";
 import PayPalProvider, { isPayPalConfigured } from "../../components/payments/PayPalProvider";
 import { capturePayPalOrder, createPayPalOrder } from "../../api/paypalCheckout";
 import { useAuth } from "../../hooks/useAuth";
+import { formatDateOnly } from "../../utils/dateOnly";
 
-const formatDate = (value) => {
-  if (!value) return "Sin fecha";
-  try {
-    return new Intl.DateTimeFormat("es-CR", { dateStyle: "medium" }).format(new Date(value));
-  } catch {
-    return "Sin fecha";
-  }
-};
+const formatDate = (value) => formatDateOnly(value, "es-CR", { dateStyle: "medium" });
 
 // Renders PayPal buttons and handles the SDK loading state
 const PayPalCheckout = ({ campaign, amount, message, onSuccess, onCancel }) => {

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import * as campaignsApi from "../../api/campaigns";
 import { useAuth } from "../../hooks/useAuth";
+import { formatDateOnly } from "../../utils/dateOnly";
 
 const imageStyle = {
   width: "56px",
@@ -12,27 +13,9 @@ const imageStyle = {
   display: "block",
 };
 
-const formatDate = (value) => {
-  if (!value) {
-    return "Sin fecha";
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return date.toLocaleDateString("es-CR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-};
-
 const buildDateRangeLabel = (campaign) => {
-  const start = formatDate(campaign.fechaInicio);
-  const end = formatDate(campaign.fechaFin);
+  const start = formatDateOnly(campaign.fechaInicio);
+  const end = formatDateOnly(campaign.fechaFin);
   return `${start} al ${end}`;
 };
 
