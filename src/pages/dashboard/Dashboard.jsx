@@ -108,17 +108,36 @@ import {
 const DashboardRouteFallback = () => (
   <div className="dashboard-empty-state">Cargando modulo...</div>
 );
+
 const Dashboard = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     setMenuOpen(false);
+    setShowScrollTop(false);
     window.scrollTo({ top: 0, left: 0 });
   }, [location.pathname]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 240);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const closeMenu = () => setMenuOpen(false);
   const toggleMenu = () => setMenuOpen((currentValue) => !currentValue);
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  };
 
   return (
     <main className="dashboard-layout">
@@ -341,6 +360,16 @@ const Dashboard = () => {
           </Suspense>
         </div>
       </section>
+
+      <button
+        aria-label="Volver al inicio"
+        className={`dashboard-scroll-top${showScrollTop ? " is-visible" : ""}`}
+        onClick={scrollToTop}
+        title="Volver arriba"
+        type="button"
+      >
+        {"\u2191"}
+      </button>
     </main>
   );
 };
