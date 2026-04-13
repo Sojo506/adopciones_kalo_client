@@ -4,14 +4,6 @@ import Swal from "sweetalert2";
 import * as requestsApi from "../../api/requests";
 import { useAuth } from "../../hooks/useAuth";
 
-const formatDogReference = (request) => {
-  if (!request?.idPerrito) {
-    return "Sin adopción";
-  }
-
-  return request.nombrePerrito || "Perrito asociado";
-};
-
 const RequestsDashboard = () => {
   const { isAdmin } = useAuth();
   const [requests, setRequests] = useState([]);
@@ -31,8 +23,6 @@ const RequestsDashboard = () => {
         request.idSolicitud,
         request.identificacion,
         request.solicitante,
-        request.idPerrito,
-        request.nombrePerrito,
         request.tipoSolicitud,
         request.estado,
       ]
@@ -140,8 +130,9 @@ const RequestsDashboard = () => {
       <section className="dashboard-card">
         <div className="dashboard-alert">
           La solicitud guarda el formulario base. Las preguntas se asignan desde{" "}
-          <Link to="/dashboard/tipos-solicitud-pregunta">Tipo solicitud-pregunta</Link> y el
-          perrito solo aparece aqui cuando ya existe una adopcion asociada.
+          <Link to="/dashboard/tipos-solicitud-pregunta">Tipo solicitud-pregunta</Link>. El
+          perrito se define despues desde <Link to="/dashboard/adopciones">Adopciones</Link> si el
+          proceso corresponde a una adopcion.
         </div>
 
         <div className="dashboard-alert">
@@ -154,7 +145,7 @@ const RequestsDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por identificacion, solicitante, perrito, tipo o estado"
+            placeholder="Buscar por identificacion, solicitante, tipo o estado"
             value={search}
           />
           <span className="dashboard-muted">
@@ -176,7 +167,6 @@ const RequestsDashboard = () => {
                   <th>Identificacion</th>
                   <th>Solicitante</th>
                   <th>Tipo de solicitud</th>
-                  <th>Perrito</th>
                   <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
@@ -190,7 +180,6 @@ const RequestsDashboard = () => {
                       <td>{request.identificacion}</td>
                       <td>{request.solicitante || "-"}</td>
                       <td>{request.tipoSolicitud || "Tipo registrado"}</td>
-                      <td>{formatDogReference(request)}</td>
                       <td>{request.estado || "-"}</td>
                       <td>
                         <div className="dashboard-table__actions">

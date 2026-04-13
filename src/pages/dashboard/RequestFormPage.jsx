@@ -71,6 +71,10 @@ const RequestFormPage = () => {
   const hasRequiredData =
     states.length > 0 && userOptions.length > 0 && requestTypeOptions.length > 0;
   const formDisabled = catalogsLoading || detailLoading || saving || !hasRequiredData;
+  const hasLockedCoreFields =
+    Number(currentRequest?.activeResponses || 0) > 0 ||
+    Number(currentRequest?.activeAdoptions || 0) > 0 ||
+    Number(currentRequest?.activeFosterHomes || 0) > 0;
 
   const {
     register,
@@ -249,11 +253,19 @@ const RequestFormPage = () => {
           actual aunque luego se haya desactivado.
         </div>
 
-        {isEditing && currentRequest?.idPerrito ? (
+        {isEditing && hasLockedCoreFields ? (
           <div className="dashboard-alert">
-            Esta solicitud ya aparece ligada a un perrito
-            {currentRequest.nombrePerrito ? ` (${currentRequest.nombrePerrito})` : ""} por medio de
-            una adopcion asociada.
+            Esta solicitud ya tiene dependencias activas y por eso no se puede cambiar el
+            solicitante ni el tipo de solicitud.
+            {Number(currentRequest?.activeResponses || 0) > 0
+              ? ` Respuestas activas: ${currentRequest.activeResponses}.`
+              : ""}
+            {Number(currentRequest?.activeAdoptions || 0) > 0
+              ? ` Adopciones activas: ${currentRequest.activeAdoptions}.`
+              : ""}
+            {Number(currentRequest?.activeFosterHomes || 0) > 0
+              ? ` Casas cuna activas: ${currentRequest.activeFosterHomes}.`
+              : ""}
           </div>
         ) : null}
 
@@ -272,6 +284,7 @@ const RequestFormPage = () => {
                   <span>Solicitante</span>
                   <select
                     className="form-select"
+                    disabled={formDisabled || hasLockedCoreFields}
                     {...register("identificacion", {
                       required: "El solicitante es obligatorio",
                     })}
@@ -290,6 +303,7 @@ const RequestFormPage = () => {
                   <span>Tipo de solicitud</span>
                   <select
                     className="form-select"
+                    disabled={formDisabled || hasLockedCoreFields}
                     {...register("idTipoSolicitud", {
                       required: "El tipo de solicitud es obligatorio",
                     })}
