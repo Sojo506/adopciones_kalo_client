@@ -52,7 +52,17 @@ const buildAddressLabel = (address) => {
 };
 
 const buildRequestLabel = (request) => {
-  return request.solicitante || request.tipoSolicitud || "Solicitud disponible";
+  const parts = [`#${request.idSolicitud}`];
+
+  if (request.solicitante) {
+    parts.push(request.solicitante);
+  }
+
+  if (request.tipoSolicitud) {
+    parts.push(request.tipoSolicitud);
+  }
+
+  return parts.join(" - ");
 };
 
 const mapFosterHomeToForm = (fosterHome) => ({
@@ -71,7 +81,12 @@ const buildPayload = (values) => ({
   idEstado: Number(values.idEstado),
 });
 
-const getSelectableRequests = ({ requests, fosterHomes, currentFosterHome }) => {
+const getSelectableRequests = ({
+  requests,
+  fosterHomes,
+  currentFosterHome,
+  selectedIdentification,
+}) => {
   const currentRequestId = Number(currentFosterHome?.idSolicitud || 0);
   const usedRequestIds = new Set(
     (Array.isArray(fosterHomes) ? fosterHomes : [])
@@ -95,6 +110,17 @@ const getSelectableRequests = ({ requests, fosterHomes, currentFosterHome }) => 
       normalizeCatalogName(request.tipoSolicitud) === CASA_CUNA_REQUEST_TYPE_KEY;
 
     if (!isCasaCunaRequest) {
+      return false;
+    }
+
+    if (!selectedIdentification) {
+      return false;
+    }
+
+    if (
+      selectedIdentification &&
+      String(request.identificacion) !== String(selectedIdentification)
+    ) {
       return false;
     }
 
@@ -134,14 +160,6 @@ const FosterHomeFormPage = () => {
     );
   }, [currentFosterHome?.identificacion, users]);
 
-  const requestOptions = useMemo(() => {
-    return getSelectableRequests({
-      requests,
-      fosterHomes,
-      currentFosterHome,
-    });
-  }, [currentFosterHome, fosterHomes, requests]);
-
   const hasRequiredData = states.length > 0 && addressOptions.length > 0 && managerOptions.length > 0;
   const formDisabled = catalogsLoading || detailLoading || saving || !hasRequiredData;
 
@@ -156,6 +174,15 @@ const FosterHomeFormPage = () => {
   const watchedAddressId = watch("idDireccion");
   const watchedIdentification = watch("identificacion");
   const watchedRequestId = watch("idSolicitud");
+
+  const requestOptions = useMemo(() => {
+    return getSelectableRequests({
+      requests,
+      fosterHomes,
+      currentFosterHome,
+      selectedIdentification: watchedIdentification,
+    });
+  }, [currentFosterHome, fosterHomes, requests, watchedIdentification]);
 
   const selectedAddress = useMemo(() => {
     return (
@@ -331,7 +358,7 @@ const FosterHomeFormPage = () => {
       <section className="dashboard-card">
         <div className="dashboard-alert">
           La solicitud es opcional. Si la asignas, solo se muestran solicitudes activas de tipo
-          Casa Cuna que todavia no esten usadas por otra casa cuna.
+          Casa Cuna del mismo encargado y que todavia no esten usadas por otra casa cuna.
         </div>
 
         <div className="dashboard-alert">
@@ -407,7 +434,6 @@ const FosterHomeFormPage = () => {
                     {requestOptions.map((request) => (
                       <option key={request.idSolicitud} value={request.idSolicitud}>
                         {buildRequestLabel(request)}
-                        {request.tipoSolicitud ? ` (${request.tipoSolicitud})` : ""}
                       </option>
                     ))}
                   </select>
@@ -442,8 +468,7 @@ const FosterHomeFormPage = () => {
 
             {selectedRequest ? (
               <p className="dashboard-muted">
-                Solicitud seleccionada: {buildRequestLabel(selectedRequest)}
-                {selectedRequest.tipoSolicitud ? ` (${selectedRequest.tipoSolicitud})` : ""}.
+                Solicitud seleccionada: {buildRequestLabel(selectedRequest)}.
               </p>
             ) : (
               <p className="dashboard-muted">

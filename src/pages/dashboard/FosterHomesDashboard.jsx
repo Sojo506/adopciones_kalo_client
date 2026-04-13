@@ -15,8 +15,8 @@ const buildRequestLabel = (fosterHome) => {
   }
 
   return fosterHome.tipoSolicitud
-    ? fosterHome.tipoSolicitud
-    : "Solicitud asociada";
+    ? `#${fosterHome.idSolicitud} - ${fosterHome.tipoSolicitud}`
+    : `#${fosterHome.idSolicitud} - Solicitud asociada`;
 };
 
 const buildAddressLabel = (fosterHome) => {
