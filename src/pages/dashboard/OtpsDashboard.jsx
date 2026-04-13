@@ -158,7 +158,7 @@ const OtpsDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por id, cuenta, usuario, tipo, hash o estado"
+            placeholder="Buscar por cuenta, usuario, tipo, hash o estado"
             value={search}
           />
           <span className="dashboard-muted">

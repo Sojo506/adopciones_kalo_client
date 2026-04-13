@@ -136,7 +136,7 @@ const AccountsDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por id, usuario, nombre o estado"
+            placeholder="Buscar por usuario, nombre o estado"
             value={search}
           />
           <span className="dashboard-muted">

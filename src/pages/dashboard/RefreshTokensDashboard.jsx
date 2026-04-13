@@ -159,7 +159,7 @@ const RefreshTokensDashboard = () => {
             className="form-control dashboard-search"
             disabled={loading || deletingId !== null}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por id, cuenta, usuario, jti, ip, agente o estado"
+            placeholder="Buscar por cuenta, usuario, jti, ip, agente o estado"
             value={search}
           />
           <span className="dashboard-muted">
